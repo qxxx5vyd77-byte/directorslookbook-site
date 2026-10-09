@@ -565,6 +565,31 @@ button,input,select,textarea{font:inherit;color:inherit}
 .howto-tx{margin-top:6px;font:400 13px/1.45 var(--f-body);max-width:420px}.howto-tx summary{cursor:pointer}
 @media (max-width:759px){.deck-m{height:auto;flex-wrap:wrap;padding-top:6px;padding-bottom:6px;row-gap:6px}.deck-m select{flex:1 1 30%}.deck-m #m-suit{flex:1 1 30%}}
 
+/* cheat sheets */
+.cheats{margin:22px 0 8px}
+.cheat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:10px}
+.cheat-tile{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--well);border:1px solid var(--rule);padding:8px;cursor:pointer;color:inherit;font:inherit}
+.cheat-tile:hover,.cheat-tile:focus-visible{border-color:currentColor}
+.ct-mosaic{display:grid;grid-template-columns:1fr 1fr;gap:2px;aspect-ratio:4/3;overflow:hidden}
+.ct-mosaic img{width:100%;height:100%;object-fit:cover;display:block}
+.ct-face{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--table);overflow:hidden}
+.ct-face .cs-type{font-size:30px}.ct-face .cs-sw{width:100%;height:100%}
+.ct-name{font:500 16px/1.2 var(--f-display)}.ct-n{font:400 12px/1.2 var(--f-body);color:var(--muted)}
+.cheat{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);overflow:auto;padding:24px 12px}
+.cheat-in{max-width:1040px;margin:0 auto;background:var(--paper,#fff);color:var(--text,#111);padding:20px 22px 14px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.cheat-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:10px}
+.cheat-top h2{margin:0;font:500 28px/1.1 var(--f-display)}.cheat-act{display:flex;gap:6px}
+.cs-g h3{margin:16px 0 8px;font:600 13px/1.2 var(--f-body);text-transform:uppercase;letter-spacing:.06em}.cs-g h3 small{color:var(--muted);font-weight:400}
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.cs-item{display:grid;grid-template-columns:64px 1fr auto;gap:8px;align-items:center;border:1px solid var(--rule);padding:5px;break-inside:avoid}
+.cs-item img,.cs-item .cs-sw,.cs-item .cs-type,.cs-item .cs-mus{width:64px;height:48px;object-fit:cover;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--table);font-size:13px;text-align:center;line-height:1.15}
+.cs-t{display:flex;flex-direction:column;min-width:0}.cs-t b{font:600 13px/1.2 var(--f-body)}.cs-t span{font:400 11px/1.3 var(--f-body);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cs-copy{border:1px solid var(--rule);background:transparent;color:inherit;width:30px;height:30px;cursor:pointer}
+.cheat-foot{margin:14px 0 0;font:400 11px/1.3 var(--f-body);color:var(--muted);text-align:right}
+@media print{body.cheat-open .page,body.cheat-open .toast,body.cheat-open .totop{display:none!important}body.cheat-open .cheat{position:static;background:none;padding:0;overflow:visible}body.cheat-open .cheat-in{box-shadow:none;max-width:none;padding:0}.cheat-act{display:none}.cs-copy{display:none}.cs-item{grid-template-columns:56px 1fr}}
+@media (max-width:759px){.cheat-row{grid-template-columns:repeat(2,1fr)}.cheat{padding:0}.cheat-in{min-height:100%;padding:14px}.cs-grid{grid-template-columns:1fr}}
+.cs-open{all:unset;cursor:pointer;font:inherit}.cs-open:hover,.cs-open:focus-visible{text-decoration:underline}
+
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
 .stage{--sg-sky-t:#E4E8EB;--sg-sky-b:#F6F6F2;--sg-sun:#FFFFFF;--sg-sunl:#B3BAC0;--sg-far:#CAD0D3;--sg-mid:#A9B0B5;--sg-tree:#959DA3;--sg-subj:#262A2E;--sg-fg:#6E767C;--sg-win:#F2D48A;--sg-hand:#8A7A6E;--sg-ground:#CBD0C9;--sg-road:#9AA09D;--sg-zebra:#F6F6F2;--sg-door:#8C4E46;--sg-pic:#EADCC5;--vfc:rgba(30,34,38,.35);
@@ -1066,6 +1091,8 @@ body{background-image:none;letter-spacing:-.005em}
       </div>
     </form>
     <a class="skip" href="#jobs">Skip the examples</a><section class="starts" id="starts" aria-labelledby="starts-h"><div class="starts-head"><h2 id="starts-h" class="lbl">Or start from a look</h2><div class="howto" id="howto" hidden></div></div><div class="start-row" id="start-row"></div></section>
+    <section class="cheats" id="cheats" aria-labelledby="cheats-h"><h2 id="cheats-h" class="lbl">Cheat sheets</h2><div class="cheat-row" id="cheat-row"></div></section>
+    <div class="cheat" id="cheat" hidden role="dialog" aria-modal="true" aria-labelledby="cheat-title"><div class="cheat-in"><div class="cheat-top"><h2 id="cheat-title"></h2><div class="cheat-act"><button class="btn small" type="button" id="cheat-print">Print or save PDF</button><button class="btn small" type="button" id="cheat-close" aria-label="Close the cheat sheet">Close</button></div></div><div id="cheat-body"></div><p class="cheat-foot">directorslookbook.app · say the feeling, get the look</p></div></div>
     <div class="jobrow"><span class="lbl">Making</span><div class="jobs" id="jobs" role="group" aria-label="What you are making"></div></div>
     <p class="job-note" id="job-note"></p>
     <div class="moods" id="moods" role="group" aria-label="Moods"></div>
@@ -1077,7 +1104,7 @@ body{background-image:none;letter-spacing:-.005em}
   <div class="look" id="look" aria-label="The look at a glance"></div>
   <div class="hand-foot"><div class="hand-pos" id="hand-pos"></div><p class="cohere" id="cohere" aria-live="polite" aria-label="How well the look holds together"></p><p class="hand-mem">Your look is remembered on this device.</p></div>
   <section class="shots" id="shots" hidden aria-labelledby="shots-h">
-    <div class="shots-head"><h2 id="shots-h">Shot list</h2><p class="sub" id="shots-sub"></p><button class="btn small" type="button" id="add-shot">+ Add shot</button></div>
+    <div class="shots-head"><h2 id="shots-h">Shot list</h2><p class="sub" id="shots-sub"></p><button class="btn small" type="button" id="add-shot">+ Add shot</button><button class="btn small primary" type="button" id="copy-multi" hidden title="One prompt with every shot and the cuts between them">Copy as one multi-shot prompt</button></div>
     <div class="shots-list" id="shots-list"></div>
     <datalist id="shot-cams"></datalist>
   </section>
@@ -1106,6 +1133,7 @@ body{background-image:none;letter-spacing:-.005em}
         <div class="rb" data-job="game"><div class="rb-h"><span>Music · Suno, seamless loop</span><button class="copy icon" type="button" data-copy="r-gmusic" aria-label="Copy music prompt" title="Copy music prompt">⧉</button></div><div class="box" id="r-gmusic"></div></div>
         <div class="rb photo" data-job="video"><div class="rb-h"><span>Image prompt · any image AI</span><button class="copy icon" type="button" data-copy="r-image" aria-label="Copy image prompt" title="Copy image prompt">⧉</button></div><div class="box" id="r-image"></div></div>
         <div class="rb" data-job="video"><div class="rb-h"><span>Video prompt · any video AI</span><button class="copy icon" type="button" data-copy="r-video" aria-label="Copy video prompt" title="Copy video prompt">⧉</button></div><div class="box" id="r-video"></div></div>
+        <div class="rb" data-job="video" id="rb-multi" hidden><div class="rb-h"><span>Multi-shot prompt · one generation, with cuts</span><button class="copy icon" type="button" data-copy="r-multi" aria-label="Copy multi-shot prompt" title="Copy multi-shot prompt">⧉</button></div><div class="box" id="r-multi"></div></div>
         <div class="rb" data-job="video"><div class="rb-h"><span>Music prompt · Suno or any music AI</span><button class="copy icon" type="button" data-copy="r-style" aria-label="Copy music prompt" title="Copy music prompt">⧉</button></div><div class="box" id="r-style"></div></div>
         <div class="rb game" data-job="video"><div class="rb-h"><span>Music, leave out</span><button class="copy icon" type="button" data-copy="r-exclude" aria-label="Copy the leave-out list" title="Copy the leave-out list">⧉</button></div><div class="box" id="r-exclude"></div></div>
         <div class="rb game"><div class="rb-h"><span>Type for titles and captions</span><button class="copy icon" type="button" data-copy="r-type" aria-label="Copy type for titles and captions" title="Copy type for titles and captions">⧉</button></div><div class="box" id="r-type"></div></div>
@@ -1126,7 +1154,7 @@ body{background-image:none;letter-spacing:-.005em}
       <div class="mini-hand" id="mini-hand" aria-label="Your look"></div>
       <div class="deck-head">
         <div class="tabs" role="tablist" id="tabs" aria-label="Suits"></div>
-        <div class="deck-side"><label class="sortwrap"><span class="lbl">Sort</span><select id="sort" aria-label="Sort the library"><option value="deck">Default</option><option value="az">A to Z</option><option value="kind">Kind</option><option value="era">Era</option></select></label><button class="chip" type="button" id="cmp-toggle" aria-pressed="false" title="Tap up to 3 cards to see them side by side">Compare</button><button class="chip" type="button" id="shelf-link" title="Copy a link that carries your shelf">Copy shelf link</button><button class="btn small" type="button" id="print-sheet" title="Print the cards in view as a lesson sheet, oldest first">Print sheet</button></div>
+        <div class="deck-side"><label class="sortwrap"><span class="lbl">Sort</span><select id="sort" aria-label="Sort the library"><option value="deck">Default</option><option value="az">A to Z</option><option value="kind">Kind</option><option value="era">Era</option></select></label><button class="chip" type="button" id="cmp-toggle" aria-pressed="false" title="Tap up to 3 cards to see them side by side">Compare</button><button class="chip" type="button" id="seq-toggle" aria-pressed="false" title="Tap camera cards to add them, in order, as video shots">Build a sequence</button><button class="chip" type="button" id="shelf-link" title="Copy a link that carries your shelf">Copy shelf link</button><button class="btn small" type="button" id="print-sheet" title="Print the cards in view as a lesson sheet, oldest first">Print sheet</button></div>
       </div>
       <div class="deck-tools">
         <div class="kinds" id="kinds" role="group" aria-label="Kinds"></div>
@@ -1946,6 +1974,9 @@ function recipeParts(ids) {
   const fAsk = stockAsk(film, h.color); const filmAsk = lit ? dropLight(fitAsk(fAsk, subj)) : fitAsk(fAsk, subj);
   const ar = S.aspect || '', arPhrase = ar ? ` Aspect ratio ${ar}.` : '';
   const parts = { subj, lightPhrase, filmAsk, colPhrase, arPhrase };
+  /* one prompt for video tools that make several shots in one generation (Veo, Kling multi-shot, Sora): the look once, then the shots with hard cuts (Matt, 2026-10-09) */
+  const mshots = S.job === 'video' ? S.shots.filter(x => BY_ID.get(x.cam)) : [];
+  const multi = mshots.length >= 2 ? `${subj}.${lightPhrase} ${filmAsk}.${colPhrase} The same subject, look and light in every shot.\n\n` + mshots.map((x, i) => { const cam = BY_ID.get(x.cam); const move = String(cam.ask || cam.name).split(',')[0].trim(); const beat = x.note ? x.note.replace(/[.\s]+$/, '') : ''; return `Shot ${i + 1}${x.sec ? ` (${x.sec} s)` : ''}: ${move}${beat ? `, ${beat}` : ''}.`; }).join('\nCUT TO\n') + `\n\n${mshots.length} shots, hard cuts, about ${mshots.reduce((a, x) => a + (Number(x.sec) || 4), 0)} seconds in all.${arPhrase}` : '';
   const image = `${subj}. ${filmAsk}.${stillCam}${lightPhrase}${colPhrase}${title && S.job !== 'photo' && !film.owns_type ? ` Title lettering "${title}": ${ty.ask}.` : ''}${arPhrase}`;
   const video = shots.length ? shots.map((x, i) => shotBlock(x, i + 1, dir, parts)).join('\n\n') : videoPrompt(cam, dir, parts);
   const f = ty.font || {};
@@ -1973,7 +2004,7 @@ function recipeParts(ids) {
   const drawn = h.film && !h.film.photo && h.film.kind === 'medium'; /* a print or a painting has no lens: drop lens and studio-light words (teacher playtest) */
   const indoor = /\b(chapel|church|room|kitchen|cafe|café|studio|library|office|bar|diner|interior|indoors|hall|shop|bakery|restaurant|garage|bedroom|attic)\b/i.test(subj);
   const portrait = /\b(portrait|portraits|bride|groom|wedding)\b/i.test(subj); const np = t => { t = np0(t); if (typeof t !== 'string') return t; if (portrait) t = t.replace(/available-light street photograph, slight motion blur/g, 'available-light portrait, sharp on the eyes'); if (indoor) t = t.replace(/towering over the camera against the sky/g, 'towering over the camera').replace(/, lots of sky/g, ''); if (!drawn) return t; t = t.replace(/shooting straight into the sun/g, 'facing straight into the sun').replace(/, lens flare, haze/g, ', glowing haze').replace(/camera canted (\d+) degrees so the horizon tilts, held steady/g, 'composition tilted $1 degrees so the horizon slants').replace(/low angle shot from near ground level looking up at the subject/g, 'seen from below, looking up at the subject').replace(/towering over the camera/g, 'towering over the viewer').replace(/,?\s*hot saturated colou?r/g, '').replace(/\brim light\b/g, 'a bright edge line').replace(/, glowing haze/g, '').replace(/, wide lens\b/g, ', wide view').replace(/\blens flare\b/g, 'light bloom'); return t.replace(/,?\s*\b\d+\s?mm lens\b/gi, '').replace(/,?\s*(lens flare|catchlights?|bokeh|shallow depth of field|f\/\d(\.\d)?)/gi, ''); }; /* framing words written for people, reworded for a product or a place (persona round 3) */
-  return { h, image: np(image), video: np(video), shots, style: sc.ask || '', exclude: sc.exclude || '', type, lead, site, palette, keyart: np(keyart), capsule: np(capsule), sprite, ui, gmusic };
+  return { h, image: np(image), video: np(video), multi: np(multi), shots, style: sc.ask || '', exclude: sc.exclude || '', type, lead, site, palette, keyart: np(keyart), capsule: np(capsule), sprite, ui, gmusic };
 }
 /* the lint for the hand, then once per shot with that shot's camera in the camera slot */
 function recipeLint(r) {
@@ -2049,7 +2080,7 @@ function downloadPalette(fmt) {
 function handNames(r) { return JOB_SUITS[S.job].filter(s => r.h[s]).map(s => [s, s === 'camera' && r.shots.length ? r.shots.map(x => BY_ID.get(x.cam).name).join(' > ') : r.h[s].name]); }
 function renderRecipe() {
   const r = recipeParts();
-  $('#r-image').textContent = toolPrompt(r.image, 'image', r.h); $('#r-video').textContent = toolPrompt(r.video, 'video', r.h); $('#r-style').textContent = r.style;
+  $('#r-image').textContent = toolPrompt(r.image, 'image', r.h); $('#r-video').textContent = toolPrompt(r.video, 'video', r.h); { const rb = $('#rb-multi'); if (rb) { rb.hidden = !r.multi; $('#r-multi').textContent = r.multi ? toolPrompt(r.multi, 'video', r.h) : ''; } const cm = $('#copy-multi'); if (cm) cm.hidden = !r.multi; } $('#r-style').textContent = r.style;
   $('#r-exclude').textContent = r.exclude; $('#r-type').textContent = r.type; $('#r-lead').textContent = r.lead;
   /* game boxes */
   { const set = (id, v) => { const el = $(id); if (el) el.textContent = v; }; set('#r-keyart', toolPrompt(r.keyart, 'image', r.h)); set('#r-capsule', toolPrompt(r.capsule, 'image', r.h)); set('#r-sprite', r.sprite); set('#r-ui', toolPrompt(r.ui, 'image', r.h)); set('#r-gmusic', r.gmusic); }
@@ -2813,7 +2844,7 @@ function printSheet() {
 
 /* events */
 document.addEventListener('click', e => {
-  { const cd = e.target.closest && e.target.closest('.card[data-id]'); if (cd && !cd.closest('.sh-card') && !e.target.closest('button, a, input, select, label, [data-hold], [data-swap]')) { if (S.cmpOn && cd.closest('#spread')) { toggleCmp(cd.dataset.id); return; } const list = cd.closest('#spread') ? spreadList().map(c => c.id) : null; openSheet(cd.dataset.id, list, !!cd.closest('#hand')); return; } } /* a click anywhere on a card opens it (teacher playtest) */
+  { const cd = e.target.closest && e.target.closest('.card[data-id]'); if (cd && !cd.closest('.sh-card') && !e.target.closest('button, a, input, select, label, [data-hold], [data-swap]')) { if (S.seqOn && cd.closest('#spread')) { const c = BY_ID.get(cd.dataset.id); if (c && c.suit === 'camera' && c.kind !== 'light') { if (S.job !== 'video') { S.job = 'video'; if (!S.aspectUser) setAspect(ASPECT_DEF.video); repairHand(); campaignHold(); } S.shots.push(cleanShot({ cam: c.id, dir: null, sec: 4, note: '' })); S.shotsAuto = false; S.shotsTouched = true; renderHand(false); persist(); toast(`Shot ${S.shots.length}: ${c.name}. Tap more cameras, or open the shot list to copy the multi-shot prompt.`); } else toast('Only camera shots and moves go into a sequence.'); return; } /* Build a sequence (Matt, 2026-10-09) */ if (S.cmpOn && cd.closest('#spread')) { toggleCmp(cd.dataset.id); return; } const list = cd.closest('#spread') ? spreadList().map(c => c.id) : null; openSheet(cd.dataset.id, list, !!cd.closest('#hand')); return; } } /* a click anywhere on a card opens it (teacher playtest) */
   if (e.target.closest('#start-more')) { const ex = D.examples || []; startOff = (startOff + 8) % ex.length; renderStarts(); $('#start-row').scrollTo({ left: 0, behavior: REDUCED ? 'auto' : 'smooth' }); return; }
   { const t0 = e.target.closest('[data-start],[data-start-copy]'); if (t0) { if (t0.dataset.start != null) startLook(+t0.dataset.start); else { const t = startPrompt(+t0.dataset.startCopy); try { navigator.clipboard.writeText(t); } catch (err) {} toast('Prompt copied. Use this look to open it and change it.'); } return; } }
   const t = e.target.closest('button, .card, [data-close]'); if (!t) return;
@@ -2852,6 +2883,13 @@ document.addEventListener('click', e => {
   if (t.id === 'm-cmp') { const c = $('#cmp-toggle'); if (c) c.click(); t.setAttribute('aria-pressed', c ? c.getAttribute('aria-pressed') : 'false'); return; }
   if (t.id === 'clear-seen') { clearSeen(); return; }
   if (t.id === 'undated') { S.undatedTouched = true; S.undated = !S.undated; saveView(); renderSpread(); return; }
+  if (t.dataset && t.dataset.cheat) { openCheat(t.dataset.cheat); return; }
+  if (t.id === 'cheat-close') { closeCheat(); return; }
+  if (t.id === 'cheat-print') { window.print(); return; }
+  if (t.dataset && t.dataset.cheatOpen) { const id = t.dataset.cheatOpen, ch = CHEATS.find(x => x.key === S.cheatKey); closeCheat(); const list = ch ? [...new Set(ch.groups().flatMap(g => g[1]))].map(c => c.id) : null; openSheet(id, list, false); return; } /* browse: the sheet opens the card, and the card's arrows walk the sheet */
+  if (t.dataset && t.dataset.cheatCopy) { const c = BY_ID.get(t.dataset.cheatCopy); if (c) copyText(c.ask || c.name, t).then(() => toast(`Copied the words for ${c.name}.`)); return; }
+  if (t.id === 'copy-multi') { const r = recipeParts(); copyText(toolPrompt(r.multi, 'video', r.h), t).then(() => toast(`Copied one prompt with ${S.shots.length} shots and the cuts between them.`)); return; }
+  if (t.id === 'seq-toggle') { S.seqOn = !S.seqOn; if (S.seqOn) { S.cmpOn = false; S.cmp = []; if (S.tab !== 'camera') { const ct = $('#tabs [data-tab="camera"]'); if (ct) ct.click(); } toast('Tap camera cards in the order you want them. Each one becomes the next shot.'); } t.setAttribute('aria-pressed', String(!!S.seqOn)); renderSpread(); return; }
   if (t.id === 'cmp-toggle') { S.cmpOn = !S.cmpOn; if (!S.cmpOn) S.cmp = []; renderSpread(); return; }
   if (t.id === 'print-sheet') { printSheet(); return; }
   if (t.id === 'shelf-link') { copyText(shelfLink(), t).then(() => toast(`Shelf link copied (${S.shelf.size} cards).`)); return; }
@@ -2878,6 +2916,7 @@ document.addEventListener('click', e => {
 const inField = el => !!(el && (el.matches('input, textarea, select, [contenteditable]') || el.isContentEditable));
 $('#tabs').addEventListener('keydown', e => { const keys = ['ArrowRight', 'ArrowLeft', 'Home', 'End']; if (!keys.includes(e.key)) return; const tabs = $$('#tabs .tab'); const i = tabs.findIndex(b => b.getAttribute('aria-selected') === 'true'); const j = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length; const n = tabs[j]; if (n) { n.click(); n.focus(); e.preventDefault(); } });
 document.addEventListener('keydown', e => {
+  if (!$('#cheat').hidden) { if (e.key === 'Escape') { closeCheat(); return; } if (e.key === 'Tab') { const f = $$('#cheat button').filter(x => x.offsetParent !== null); if (f.length) { const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } } return; } }
   if (!$('#sheet').hidden && e.key === 'Tab') { const f = $$('#sheet button, #sheet a[href], #sheet input, #sheet select, #sheet [tabindex]:not([tabindex="-1"])').filter(x => !x.disabled && x.offsetParent !== null); if (f.length) { const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } else if (!$('#sheet').contains(document.activeElement)) { e.preventDefault(); a.focus(); } } return; } /* focus stays in the open card (screen-reader playtest) */
   if (!$('#sheet').hidden) { if (e.key === 'Escape') closeSheet(); else if (e.key === 'ArrowLeft') moveSheet(-1); else if (e.key === 'ArrowRight') moveSheet(1); return; }
   if ((e.key === 'z' || e.key === 'Z') && !e.metaKey && !e.ctrlKey && !e.altKey && !inField(e.target)) { e.preventDefault(); undoDeal(); return; }
@@ -3008,6 +3047,43 @@ const HOT = window.claude && window.claude.hot;
 try { if (HOT && HOT.snapshot) HOT.snapshot(() => ({ hand: S.hand, holds: S.holds, take: S.take, tab: S.tab, job: S.job, moods: [...S.moods], subject: S.subject, aspect: S.aspect, aspectUser: S.aspectUser, title: S.title, shots: S.shots, feeling: $('#feel').value })); } catch (e) {}
 if (HOT && HOT.ready) HOT.ready(boot); else boot((HOT && HOT.data) || null);
 
+
+/* cheat sheets: one page per major category, grouped by type, each item with its picture and its words to copy (Matt, 2026-10-09) */
+const LIGHT_NATURAL = /golden|blue hour|overcast|open shade|window|contre|harsh|dappled|god ?rays|backlit|moon|sun/i;
+const CHEATS = [
+  { key: 'shots', title: 'Camera shots and angles', groups: () => [['Shots and angles', BY_SUIT.camera.filter(c => c.kind === 'angle')], ['Lenses', BY_SUIT.camera.filter(c => c.kind === 'lens')]] },
+  { key: 'moves', title: 'Camera moves', groups: () => [['Moves', BY_SUIT.camera.filter(c => c.kind === 'move')], ['Frame rate and capture', BY_SUIT.camera.filter(c => c.kind === 'capture')]] },
+  { key: 'light', title: 'Lighting', groups: () => { const L = BY_SUIT.camera.filter(c => c.kind === 'light'); return [['Natural light', L.filter(c => LIGHT_NATURAL.test(c.name))], ['Studio and practical light', L.filter(c => !LIGHT_NATURAL.test(c.name))]]; } },
+  { key: 'poses', title: 'Poses and acting beats', groups: () => [['Acting beats', BY_SUIT.camera.filter(c => c.kind === 'direction')]] },
+  { key: 'film', title: 'Film stocks and grades', groups: () => [['Film stocks', BY_SUIT.film.filter(c => c.kind === 'stock')], ['Grades', BY_SUIT.film.filter(c => c.kind === 'grade').concat(BY_SUIT.color.filter(c => c.kind === 'grade'))]] },
+  { key: 'art', title: 'Art styles', groups: () => Object.entries(D.tags || {}).map(([k, label]) => [label, BY_SUIT.film.filter(c => (c.kind === 'medium' || c.kind === 'technique') && (c.tags || []).includes(k))]).filter(g => g[1].length) },
+  { key: 'movements', title: 'Art movements', groups: () => [['Oldest to newest', BY_SUIT.film.filter(c => c.kind === 'movement').slice().sort((a, b) => ((a.era && a.era.from) ?? 9999) - ((b.era && b.era.from) ?? 9999))]] },
+  { key: 'palettes', title: 'Colour palettes', groups: () => { const P = BY_SUIT.color.filter(c => c.kind === 'palette'); const by = re => P.filter(c => re.test((c.name + ' ' + (c.feels || []).join(' ') + ' ' + (c.ask || '')).toLowerCase())); const mono = by(/monochrome|\bink\b|greyscale|sepia|black and white/), neon = by(/neon|acid|electric|vapor|candy|hot /).filter(c => !mono.includes(c)), pastel = by(/pastel|blush|soft|airy|powder/).filter(c => !mono.includes(c) && !neon.includes(c)), warm = by(/warm|golden|sunset|terracotta|ochre|amber|desert|earth|sienna/).filter(c => ![...mono, ...neon, ...pastel].includes(c)); const cool = P.filter(c => ![...mono, ...neon, ...pastel, ...warm].includes(c)); return [['Warm', warm], ['Cool and natural', cool], ['Pastel', pastel], ['Neon and bold', neon], ['Monochrome', mono]]; } },
+  { key: 'fonts', title: 'Fonts', groups: () => Object.entries(SUIT.type.kinds).map(([k, label]) => [label, BY_SUIT.type.filter(c => c.kind === k)]) },
+  { key: 'web', title: 'Internet aesthetics and web layouts', groups: () => [['Internet aesthetics', BY_SUIT.film.filter(c => c.kind === 'aesthetic')], ['Web layouts', BY_SUIT.web]] },
+  { key: 'music', title: 'Music styles', groups: () => Object.entries(SUIT.score.kinds || {}).map(([k, label]) => [label, BY_SUIT.score.filter(c => c.kind === k)]).filter(g => g[1].length) },
+];
+function cheatThumb(c) {
+  if (c.example) return `<img src="${esc(c.example.img)}" alt="" loading="lazy">`;
+  if (c.colors && c.colors.length) return `<i class="cs-sw" style="background:linear-gradient(90deg,${c.colors.map((k, i, a) => `${k.hex} ${i / a.length * 100}% ${(i + 1) / a.length * 100}%`).join(',')})"></i>`;
+  if (c.suit === 'type') return `<span class="cs-type" style="${typeStyle(c)}">${esc(c.sample || 'Aa')}</span>`;
+  if (c.suit === 'score') return `<span class="cs-mus">${c.bpm ? esc(c.bpm) + ' bpm' : '♪'}${c.key ? '<br>' + esc(c.key) : ''}</span>`;
+  return '<span class="cs-mus">·</span>';
+}
+function renderCheatTiles() {
+  const row = $('#cheat-row'); if (!row) return;
+  row.innerHTML = CHEATS.map(ch => { const items = [...new Set(ch.groups().flatMap(g => g[1]))]; const pics = items.filter(c => c.example).slice(0, 4);
+    const face = pics.length >= 4 ? `<span class="ct-mosaic">${pics.map(c => `<img src="${esc(c.example.img)}" alt="" loading="lazy">`).join('')}</span>` : `<span class="ct-face">${cheatThumb(items[0] || {})}</span>`;
+    return `<button class="cheat-tile" type="button" data-cheat="${ch.key}">${face}<span class="ct-name">${esc(ch.title)}</span><span class="ct-n">${items.length} on one page</span></button>`; }).join('');
+}
+function openCheat(key) {
+  const ch = CHEATS.find(x => x.key === key); if (!ch) return; S.cheatKey = key;
+  $('#cheat-title').textContent = ch.title;
+  $('#cheat-body').innerHTML = ch.groups().filter(g => g[1].length).map(([label, list]) => `<section class="cs-g"><h3>${esc(label)} <small>${list.length}</small></h3><div class="cs-grid">${list.map(c => `<div class="cs-item">${cheatThumb(c)}<div class="cs-t"><b><button class="cs-open" type="button" data-cheat-open="${esc(c.id)}">${esc(c.name)}</button></b><span>${esc((c.feels || []).slice(0, 3).join(' · '))}</span></div><button class="cs-copy" type="button" data-cheat-copy="${esc(c.id)}" aria-label="Copy the words for ${esc(c.name)}" title="Copy the words for this look">⧉</button></div>`).join('')}</div></section>`).join('');
+  const d = $('#cheat'); d.hidden = false; document.body.classList.add('cheat-open', 'noscroll'); lastFocus = document.activeElement; setTimeout(() => $('#cheat-close').focus(), 30);
+}
+function closeCheat() { $('#cheat').hidden = true; document.body.classList.remove('cheat-open', 'noscroll'); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+renderCheatTiles();
 renderStarts();
 /* the 30 s how-it-works video sits beside the start row on the live site (the file ships with the public build only) */
 if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port === '8766') { const h = $('#howto'); if (h) { const ph = window.matchMedia('(max-width: 759px)').matches ? '-9x16' : ''; /* phones get the vertical phone recording (IG playtest) */ h.innerHTML = '<p class="lbl">How it works, under 30 s</p><video controls playsinline preload="none" poster="media/how-it-works' + ph + '.jpg" aria-label="How Director\'s Lookbook works, under 30 seconds"><source src="media/how-it-works' + ph + '.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="media/how-it-works.vtt"></video>' + (D.tutorial_tx ? `<details class="howto-tx"><summary>Transcript</summary><p>${esc(D.tutorial_tx)}</p></details>` : ''); h.hidden = false; } }
@@ -3028,9 +3104,13 @@ if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port ===
   const copier = () => { const d = new Date().toISOString().slice(0, 10); try { if (localStorage.getItem('dd.copier') === d) return; localStorage.setItem('dd.copier', d); } catch (e) {} ev('copier'); };
   document.addEventListener('submit', e => { if (e.target && e.target.id === 'feel-form') getter(); }, true);
   document.addEventListener('click', e => {
-    const t = e.target.closest('button, a, [data-job], [data-palette], [data-start], [data-start-copy], #start-more'); if (!t) return;
+    const t = e.target.closest('button, a, [data-job], [data-palette], [data-start], [data-start-copy], #start-more, #copy-multi, #seq-toggle, [data-cheat], [data-cheat-copy], [data-cheat-open]'); if (!t) return;
     if (t.id === 'deal-btn') return; /* the form's submit already counts it */
     else if (t.id === 'start-more') ev('start_more');
+    else if (t.id === 'copy-multi') { ev('copy_multi'); copier(); }
+    else if (t.dataset && t.dataset.cheat) ev('cheat_' + t.dataset.cheat);
+    else if (t.dataset && t.dataset.cheatCopy) { ev('cheat_copy'); ev('copy'); copier(); }
+    else if (t.id === 'seq-toggle') ev('seq');
     else if (t.dataset && t.dataset.start != null) ev('start_look');
     else if (t.dataset && t.dataset.startCopy != null) { ev('start_copy'); ev('copy'); copier(); }
     else if (t.id === 'copy-all') { ev('copy_all'); copier(); }
