@@ -2846,7 +2846,7 @@ if (HOT && HOT.ready) HOT.ready(boot); else boot((HOT && HOT.data) || null);
   document.addEventListener('submit', e => { if (e.target && e.target.id === 'feel-form') ev('get'); }, true);
   document.addEventListener('click', e => {
     const t = e.target.closest('button, a, [data-job], [data-palette]'); if (!t) return;
-    if (t.id === 'deal-btn') ev('get');
+    if (t.id === 'deal-btn') return; /* the form's submit already counts it */
     else if (t.id === 'surprise-btn') ev('surprise');
     else if (t.id === 'shake') ev('remix');
     else if (t.id === 'copy-all') { ev('copy_all'); copier(); }
