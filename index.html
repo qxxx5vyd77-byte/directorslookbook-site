@@ -721,6 +721,9 @@ label.step-h{font:600 15px/1.2 var(--f-body)!important;text-transform:none!impor
 .slot.optional .slot-tools [data-clear]{flex-basis:auto}
 .slot-tools+.slot-tools{margin-top:-2px}
 
+.cs-item video.mv,.ct-face video.mv{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;display:block;background:#000}
+.ct-face video.mv{height:100%;aspect-ratio:auto}
+
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
 .stage{--sg-sky-t:#E4E8EB;--sg-sky-b:#F6F6F2;--sg-sun:#FFFFFF;--sg-sunl:#B3BAC0;--sg-far:#CAD0D3;--sg-mid:#A9B0B5;--sg-tree:#959DA3;--sg-subj:#262A2E;--sg-fg:#6E767C;--sg-win:#F2D48A;--sg-hand:#8A7A6E;--sg-ground:#CBD0C9;--sg-road:#9AA09D;--sg-zebra:#F6F6F2;--sg-door:#8C4E46;--sg-pic:#EADCC5;--vfc:rgba(30,34,38,.35);
@@ -3261,7 +3264,7 @@ function renderGuide() {
     return `<li class="guide-step${held ? ' done' : ''}"><span class="gs-n">${i + 1}</span><span class="gs-t"><b>${esc(SHEET_SHORT[k])}${opt ? ' <small>optional</small>' : ''}</b><span class="gs-v">${held ? esc(c.name) : c ? `dealt: ${esc(c.name)}` : 'not picked yet'}</span></span><button class="btn small${held ? '' : ' primary'}" type="button" data-guide="${k}">${held ? 'Change' : 'Pick'}</button></li>`; }).join('')}</ol>`;
 }
 function guideNext(key) { const steps = guideSteps(); const i = steps.indexOf(key); return i >= 0 ? steps[i + 1] : null; }
-function showTab(t) { S.startTab = t; document.querySelectorAll('.sw-tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.startTab === t))); document.querySelectorAll('.sw-panel').forEach(p => { p.hidden = p.id !== 'sw-' + t; }); if (t === 'build') renderGuide(); if (t === 'look') renderStarts(); }
+function showTab(t) { S.startTab = t; document.querySelectorAll('.sw-tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.startTab === t))); document.querySelectorAll('.sw-panel').forEach(p => { p.hidden = p.id !== 'sw-' + t; }); if (t === 'build') { renderGuide(); setTimeout(() => $$('#sw-build video.mv').forEach(v => { if (!v.src) v.src = v.dataset.src; const p = v.play(); if (p && p.catch) p.catch(() => {}); }), 60); /* a clip observed while its panel was hidden needs a nudge */ } if (t === 'look') renderStarts(); }
 const CHEATS = [
   { key: 'shots', title: 'Camera shots and angles', groups: () => [['Shots and angles', BY_SUIT.camera.filter(c => c.kind === 'angle')], ['Lenses', BY_SUIT.camera.filter(c => c.kind === 'lens')]] },
   { key: 'moves', title: 'Camera moves', groups: () => [['Moves', BY_SUIT.camera.filter(c => c.kind === 'move')], ['Frame rate and capture', BY_SUIT.camera.filter(c => c.kind === 'capture')]] },
@@ -3276,6 +3279,7 @@ const CHEATS = [
   { key: 'music', title: 'Music styles', groups: () => Object.entries(SUIT.score.kinds || {}).map(([k, label]) => [label, BY_SUIT.score.filter(c => c.kind === k)]).filter(g => g[1].length) },
 ];
 function cheatThumb(c) {
+  if (c.example && c.motion && !REDUCED) return `<video class="mv" muted loop playsinline preload="none" poster="${esc(c.example.img)}" data-src="${esc(c.motion.vid)}" aria-label="${esc(c.name)}: the move"></video>`; /* camera moves move on the sheet too (Matt, 2026-10-09) */
   if (c.example) return `<img src="${esc(c.example.img)}" alt="" loading="lazy">`;
   if (c.colors && c.colors.length) return `<i class="cs-sw" style="background:linear-gradient(90deg,${c.colors.map((k, i, a) => `${k.hex} ${i / a.length * 100}% ${(i + 1) / a.length * 100}%`).join(',')})"></i>`;
   if (c.suit === 'type') return `<span class="cs-type" style="${typeStyle(c)}">${esc(c.sample || 'Aa')}</span>`;
@@ -3287,7 +3291,8 @@ function renderCheatTiles() {
   const row = $('#cheat-row'); if (!row) return;
   const PREF = { photo: ['shots', 'light', 'film', 'palettes', 'poses'], video: ['moves', 'shots', 'poses', 'music', 'light', 'film'], site: ['web', 'fonts', 'palettes', 'art'], game: ['art', 'palettes', 'fonts', 'music'] }[S.job] || []; const order = CHEATS.slice().sort((a, b) => ((PREF.indexOf(a.key) + 1) || 99) - ((PREF.indexOf(b.key) + 1) || 99));
   row.innerHTML = order.map(ch => { const items = [...new Set(ch.groups().flatMap(g => g[1]))]; const pics = items.filter(c => c.example).slice(0, 4);
-    const face = pics.length >= 4 ? `<span class="ct-mosaic">${pics.map(c => `<img src="${esc(c.example.img)}" alt="" loading="lazy">`).join('')}</span>` : `<span class="ct-face">${cheatThumb(items[0] || {})}</span>`;
+    const mv = ch.key === 'moves' && !REDUCED ? items.find(c => c.motion && c.example && c.id === 'camera-orbit') || items.find(c => c.motion && c.example) : null;
+    const face = mv ? `<span class="ct-face">${cheatThumb(mv)}</span>` : pics.length >= 4 ? `<span class="ct-mosaic">${pics.map(c => `<img src="${esc(c.example.img)}" alt="" loading="lazy">`).join('')}</span>` : `<span class="ct-face">${cheatThumb(items[0] || {})}</span>`;
     return `<button class="cheat-tile" type="button" data-cheat="${ch.key}">${face}<span class="ct-name">${esc(ch.title)}</span><span class="ct-n">${items.length} on one page</span></button>`; }).join('');
 }
 function openCheat(key, guided) {
