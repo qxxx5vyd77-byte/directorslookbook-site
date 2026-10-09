@@ -3384,7 +3384,9 @@ if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port ===
 (() => {
   if (!/(^|\.)directorslookbook\.app$/.test(location.hostname)) return;
   const URL_ = 'https://lookbook-events.riverroadlabs.workers.dev/e?n=';
-  const ev = n => { try { navigator.sendBeacon(URL_ + n); } catch (e) { try { fetch(URL_ + n, { method: 'POST', mode: 'no-cors', keepalive: true }); } catch (e2) {} } };
+  /* ?me=1 once marks this browser as ours: it never counts in the usage stats again (Matt, 2026-10-09); ?me=0 clears it */
+  let ME = false; try { const q = new URLSearchParams(location.search); if (q.get('me') === '1') localStorage.setItem('dd.me', '1'); if (q.get('me') === '0') localStorage.removeItem('dd.me'); ME = localStorage.getItem('dd.me') === '1'; } catch (e) {}
+  const ev = n => { if (ME) return; try { navigator.sendBeacon(URL_ + n); } catch (e) { try { fetch(URL_ + n, { method: 'POST', mode: 'no-cors', keepalive: true }); } catch (e2) {} } };
   const once = n => { const d = new Date().toISOString().slice(0, 10); try { if (localStorage.getItem('dd.' + n) === d) return; localStorage.setItem('dd.' + n, d); } catch (e) {} ev(n); };
   const getter = () => once('getter');
   document.addEventListener('play', e => { if (e.target && e.target.closest && e.target.closest('#howto')) once('tutorial_play'); }, true);
