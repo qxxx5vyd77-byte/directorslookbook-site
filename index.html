@@ -625,6 +625,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 .cs-web>*{transform:scale(.9);transform-origin:top left}
 .cs-web>*{transform:scale(.42);transform-origin:top left;width:238%;height:238%}
 
+.howto{width:100%}
+.hw-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;align-items:start}
+.hw-v{margin:0}.hw-v video{width:100%;display:block;border:1px solid var(--rule);background:#000}
+.hw-v figcaption{font:500 13px/1.3 var(--f-body);margin-top:4px}
+@media (max-width:759px){.hw-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:70%;overflow-x:auto;scroll-snap-type:x mandatory}.hw-v{scroll-snap-align:start}.hw-v:first-child{grid-row:span 1}.hw-v:first-child video{aspect-ratio:9/16;width:100%}}
+.hw-v video{aspect-ratio:16/9;height:auto}
+@media (max-width:759px){.hw-v:first-child video{aspect-ratio:9/16}.hw-row{align-items:start}}
+
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
 .stage{--sg-sky-t:#E4E8EB;--sg-sky-b:#F6F6F2;--sg-sun:#FFFFFF;--sg-sunl:#B3BAC0;--sg-far:#CAD0D3;--sg-mid:#A9B0B5;--sg-tree:#959DA3;--sg-subj:#262A2E;--sg-fg:#6E767C;--sg-win:#F2D48A;--sg-hand:#8A7A6E;--sg-ground:#CBD0C9;--sg-road:#9AA09D;--sg-zebra:#F6F6F2;--sg-door:#8C4E46;--sg-pic:#EADCC5;--vfc:rgba(30,34,38,.35);
@@ -3150,7 +3158,9 @@ function closeCheat() { $('#cheat').hidden = true; document.body.classList.remov
 renderCheatTiles(); { const ch = $('#cheat'); if (ch && ch.parentElement !== document.body) document.body.appendChild(ch); } /* outside .page so printing shows it (round 9: blank PDF) */
 renderStarts();
 /* the 30 s how-it-works video sits beside the start row on the live site (the file ships with the public build only) */
-if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port === '8766') { const h = $('#howto'); if (h) { const ph = window.matchMedia('(max-width: 759px)').matches ? '-9x16' : ''; /* phones get the vertical phone recording (IG playtest) */ h.innerHTML = '<p class="lbl">How it works, under 30 s</p><video controls playsinline preload="none" poster="media/how-it-works' + ph + '.jpg" aria-label="How Director\'s Lookbook works, under 30 seconds"><source src="media/how-it-works' + ph + '.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="media/how-it-works.vtt"></video>' + (D.tutorial_tx ? `<details class="howto-tx"><summary>Transcript</summary><p>${esc(D.tutorial_tx)}</p></details>` : ''); h.hidden = false; } }
+if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port === '8766') { const h = $('#howto'); if (h) { const ph = window.matchMedia('(max-width: 759px)').matches ? '-9x16' : ''; /* phones get the vertical tutorial (IG playtest) */
+  const vid = (f, title, label, poster) => `<figure class="hw-v"><video controls playsinline preload="none" poster="media/${poster || f}.jpg" aria-label="${esc(label)}"><source src="media/${f}.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="media/${(f || '').replace('-9x16', '')}.vtt"></video><figcaption>${esc(title)}</figcaption></figure>`;
+  h.innerHTML = `<p class="lbl">How it works, and three examples</p><div class="hw-row">${vid('how-it-works' + ph, 'How it works, under a minute', 'How Director\'s Lookbook works, under a minute')}${vid('ex-music', 'A multi-shot music video', 'Example: a multi-shot music video prompt')}${vid('ex-product', 'A product photo in 15 seconds', 'Example: a product photo prompt')}${vid('ex-browse', 'Browse the cheat sheets', 'Example: browsing the cheat sheets')}</div>` + (D.tutorial_tx ? `<details class="howto-tx"><summary>Tutorial transcript</summary><p>${esc(D.tutorial_tx)}</p></details>` : ''); h.hidden = false; } }
 
 /* usage counts for the live site only: one anonymous ping per action to the RRL counter (no cookies, no ids; the feeling text goes only to the AI reader above, cached 60 days, never counted).
    "copier" is sent at most once a day per browser, so the daily count of people who copied a prompt is readable. */
