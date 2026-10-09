@@ -534,6 +534,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 @media (max-width:759px){.start-row{grid-auto-columns:72%}.starts-head{flex-direction:column;align-items:flex-start}.howto video{width:100%}}
 
 .start-hero{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
+.howto .lbl{margin:0 0 6px}
+.starts-head{align-items:flex-end}
+.starts-head{flex-direction:column-reverse;align-items:flex-start;gap:16px}
+.howto video{width:min(420px,100%)}
 
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
@@ -2897,6 +2901,8 @@ try { if (HOT && HOT.snapshot) HOT.snapshot(() => ({ hand: S.hand, holds: S.hold
 if (HOT && HOT.ready) HOT.ready(boot); else boot((HOT && HOT.data) || null);
 
 renderStarts();
+/* the 30 s how-it-works video sits beside the start row on the live site (the file ships with the public build only) */
+if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port === '8766') { const h = $('#howto'); if (h) { h.innerHTML = '<p class="lbl">How it works, 30 s</p><video controls playsinline preload="none" poster="media/how-it-works.jpg" src="media/how-it-works.mp4" aria-label="How Director\'s Lookbook works, 30 seconds"></video>'; h.hidden = false; } }
 
 /* usage counts for the live site only: one anonymous ping per action to the RRL counter (no cookies, no ids; the feeling text goes only to the AI reader above, cached 60 days, never counted).
    "copier" is sent at most once a day per browser, so the daily count of people who copied a prompt is readable. */
@@ -2906,6 +2912,7 @@ renderStarts();
   const ev = n => { try { navigator.sendBeacon(URL_ + n); } catch (e) { try { fetch(URL_ + n, { method: 'POST', mode: 'no-cors', keepalive: true }); } catch (e2) {} } };
   const once = n => { const d = new Date().toISOString().slice(0, 10); try { if (localStorage.getItem('dd.' + n) === d) return; localStorage.setItem('dd.' + n, d); } catch (e) {} ev(n); };
   const getter = () => once('getter');
+  document.addEventListener('play', e => { if (e.target && e.target.closest && e.target.closest('#howto')) once('tutorial_play'); }, true);
   once('visitor'); /* one per browser per day: unique visitors without an id */
   { const q = new URLSearchParams(location.search).get('from'); const r = (document.referrer || '').toLowerCase();
     const src = q && /^(ig|tt|x|yt|fb)$/.test(q) ? q : !r ? 'direct' : /instagram/.test(r) ? 'ig' : /tiktok/.test(r) ? 'tt' : /(^|\/\/)(t\.co|x\.com|twitter)/.test(r) ? 'x' : /youtube|youtu\.be/.test(r) ? 'yt' : /facebook|fb\.com/.test(r) ? 'fb' : /google|bing|duckduckgo|yahoo|ecosia/.test(r) ? 'search' : /directorslookbook/.test(r) ? '' : 'other';
