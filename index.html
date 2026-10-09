@@ -2521,6 +2521,7 @@ function dealCore(slots, f, chipMoods, js, force) {
     let c = null;
     /* a named genre pins the music before any scoring, and never re-deals the card already there */
     if (s === 'score' && genreIds.length) { const pinned = genreIds.filter(id => id !== S.hand[s]); c = BY_ID.get(pinned[0] || genreIds[0]) || null; }
+    if (!c && OPTIONAL.has(s) && !force) c = (BY_SUIT[s] || []).find(x => namedIn(x, f.norm)) || null; /* an optional slot named in the feeling gets that card, not a scored neighbour (round 10: 'anamorphic flare' dealt Classic Lens Flare) */
     if (!c) c = pickFor(s, f, chipMoods, S.hand[s], S.hand);
     if (c) S.hand[s] = c.id;
     if (genre && s === 'score' && c && !f.moods.size) (c.moods || []).forEach(m => f.moods.add(m)); /* genre moods fill in only when the typed words carried no mood of their own */
