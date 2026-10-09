@@ -605,6 +605,19 @@ button,input,select,textarea{font:inherit;color:inherit}
 .cheat-bar{position:sticky;bottom:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px;padding:10px 0;background:var(--well);border-top:1px solid var(--rule)}
 .cheat-bar #cheat-n{font:600 13px/1 var(--f-body);margin-right:auto}
 @media print{.cheat-hint,.cheat-bar{display:none!important}.cs-item.sel{box-shadow:none}.cs-item.sel::after{display:none}}
+/* cheat sheets: big pictures for quick visual reference (Matt, 2026-10-09) */
+.cs-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.cs-item{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:6px}
+.cs-item img,.cs-item .cs-sw,.cs-item .cs-type,.cs-item .cs-mus{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;font-size:18px}
+.cs-item .cs-sw{display:block}
+.cs-t{padding:0 2px}.cs-t b{font-size:14px}
+.cs-copy{position:absolute;top:10px;right:10px;background:var(--table);opacity:.92}
+.cs-item.sel::after{top:10px;left:10px;width:22px;height:22px;line-height:22px;font-size:14px}
+.cs-fonts{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.cs-fonts .cs-item{display:grid}
+.cs-fonts .cs-copy{position:static}
+@media (max-width:759px){.cs-grid{grid-template-columns:repeat(2,1fr)}.cs-fonts{grid-template-columns:1fr}}
+@media print{.cs-grid{grid-template-columns:repeat(4,1fr)}.cs-item{display:flex}}
 
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
