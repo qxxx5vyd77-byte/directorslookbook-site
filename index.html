@@ -1713,7 +1713,7 @@ const JOB_SUITS = { photo: ['camera', 'light', 'film', 'color', 'direction'], vi
 const SLOTS = ['type', 'camera', 'light', 'film', 'color', 'score', 'web', 'direction'];
 const OPTIONAL = new Set(['direction']);
 /* Video can skip its typeface and its music: a skipped slot stays empty on re-deals and its prompt block is dropped (Matt via COS, 2026-10-09) */
-function skippable(s) { return OPTIONAL.has(s) || (S.job === 'video' && (s === 'type' || s === 'score')); }
+function skippable(s) { return OPTIONAL.has(s) || (S.job === 'video' && (s === 'type' || s === 'score')) || (s === 'light' && JOB_SUITS[S.job].includes('light')); } /* lighting is optional too (Matt, 2026-10-09) */
 function skipped(s) { return !!(S.skip && S.skip[s]) && skippable(s); }
 const ACTING_RE = /\b(acting|performance|direction|actor|reaction|listening)\b/;
 /* Game job (marketing-manager + game-developer playtest): no camera; the film pool leans on drawn, 3D and craft looks */
@@ -2062,7 +2062,7 @@ function pickFor(suit, f, chipMoods, avoid, hand) {
   cands = widen(cands, scored);
   return pick(cands)[0];
 }
-function handCards(ids) { const src = ids || S.hand; const h = {}; SLOTS.forEach(s => { h[s] = BY_ID.get(src[s]) || (OPTIONAL.has(s) ? null : BY_SUIT[s][0]); }); return h; }
+function handCards(ids) { const src = ids || S.hand; const h = {}; SLOTS.forEach(s => { h[s] = BY_ID.get(src[s]) || (OPTIONAL.has(s) ? null : BY_SUIT[s][0]); if (s === 'light' && !ids && skipped('light')) h.light = null; /* a skipped light leaves the prompt */ }); return h; }
 /* coherence: how many pairs of dealt cards share a mood, plus the lint count. tight = every pair + clean lint; loose = half the pairs + clean lint; pile = the rest */
 function coherence(ids) {
   const cards = JOB_SUITS[S.job].map(s => BY_ID.get((ids || S.hand)[s])).filter(Boolean);
@@ -2406,7 +2406,7 @@ function renderHand(animate) {
     const c = BY_ID.get(S.hand[s]); const su = SUIT[s];
     const why = S.why && S.why[s] && S.dealtBy === 'claude' ? `<p class="why">${esc(S.why[s])}</p>` : '';
     const cls = animate && (animate === true || animate === s) && !S.holds[s] && !REDUCED ? ' deal-in' : ''; /* New on one card flips only that card (Matt, 2026-10-09) */
-    return `<div class="slot${OPTIONAL.has(s) ? ' optional' : ''}" data-suit="${s}" style="animation-delay:${i * 90}ms"><h4 class="slot-cat"><span class="sc-n">${i + 1}</span>${esc(slotCat(s))}${OPTIONAL.has(s) ? ' <small>optional</small>' : ''}</h4>${c ? cardHTML(c, cls) : backHTML('', OPTIONAL.has(s) ? 'Optional: a pose or performance beat' : skipped(s) ? (s === 'type' ? 'Skipped: no typeface. The prompt leaves type out.' : 'Skipped: no music. The prompt leaves music out.') : '')}${slotTools(s, c, su)}${why}</div>`;
+    return `<div class="slot${OPTIONAL.has(s) ? ' optional' : ''}" data-suit="${s}" style="animation-delay:${i * 90}ms"><h4 class="slot-cat"><span class="sc-n">${i + 1}</span>${esc(slotCat(s))}${OPTIONAL.has(s) ? ' <small>optional</small>' : ''}</h4>${c ? cardHTML(c, cls) : backHTML('', OPTIONAL.has(s) ? 'Optional: a pose or performance beat' : skipped(s) ? (s === 'type' ? 'Skipped: no typeface. The prompt leaves type out.' : s === 'light' ? 'Skipped: no lighting. The film and palette set the light.' : 'Skipped: no music. The prompt leaves music out.') : '')}${slotTools(s, c, su)}${why}</div>`;
   }).join('');
   $$('.deal-in', hand).forEach((el, i) => { el.style.animationDelay = (i * 90) + 'ms'; });
   $('#deal-note').innerHTML = dealNote();
@@ -2422,7 +2422,7 @@ function slotTools(s, c, su) {
   const hist = !!(S.slotHist && S.slotHist[s] && S.slotHist[s].length);
   const back = `<button class="btn small back" type="button" data-slot-back="${s}" aria-label="Back to the previous ${su.label} card" title="${hist ? 'Back to the previous card' : 'No earlier card yet'}"${hist ? '' : ' disabled'}>‹</button>`;
   const title = s === 'type' ? `<div class="slot-tools row3"><button class="btn small" type="button" data-title-jump="1" title="Type the words this typeface will set">Title text</button></div>` : '';
-  if (skippable(s) && !c) return `<div class="slot-tools row1"><button class="btn small add" type="button" data-swap="${s}" aria-label="Get the look a ${su.label} card">${s === 'type' ? 'Add a typeface' : s === 'score' ? 'Add music' : 'Add a pose or beat'} ${su.glyph}</button></div><div class="slot-tools row2">${browse}<span class="tool-gap"></span></div>${title}`;
+  if (skippable(s) && !c) return `<div class="slot-tools row1"><button class="btn small add" type="button" data-swap="${s}" aria-label="Get the look a ${su.label} card">${s === 'type' ? 'Add a typeface' : s === 'score' ? 'Add music' : s === 'light' ? 'Add lighting' : 'Add a pose or beat'} ${su.glyph}</button></div><div class="slot-tools row2">${browse}<span class="tool-gap"></span></div>${title}`;
   const clear = skippable(s) ? `<button class="btn small" type="button" data-clear="${s}" aria-label="${OPTIONAL.has(s) ? 'Empty' : 'Skip'} the ${su.label} slot" title="${OPTIONAL.has(s) ? '' : 'Leave this out of the look and the prompt'}">${OPTIONAL.has(s) ? 'Clear' : 'Skip'}</button>` : '<span class="tool-gap"></span>';
   return `<div class="slot-tools row1"><button class="btn small hold" type="button" data-hold="${s}" aria-pressed="${S.holds[s]}">${S.holds[s] ? 'Kept' : 'Keep'}</button>${back}<button class="btn small" type="button" data-swap="${s}" aria-label="Get the look a new ${su.label} card">New ${su.glyph}</button></div><div class="slot-tools row2">${browse}${clear}</div>${title}`;
 }
@@ -3199,7 +3199,7 @@ function boot(hot) {
   S.job = JOB_SUITS[saved.job] ? saved.job : 'photo'; /* first visit deals a photo: the smallest hand */
   SLOTS.forEach(s => { S.hand[s] = saved.hand && saved.hand[s]; });
   if (saved.holds) SLOTS.forEach(s => { S.holds[s] = !!saved.holds[s]; });
-  S.skip = saved.skip && typeof saved.skip === 'object' ? { type: !!saved.skip.type, score: !!saved.skip.score } : {};
+  S.skip = saved.skip && typeof saved.skip === 'object' ? { type: !!saved.skip.type, score: !!saved.skip.score, light: !!saved.skip.light } : {};
   S.take = Number(saved.take) || 1;
   S.moods = new Set((Array.isArray(saved.moods) ? saved.moods : []).filter(m => MOODS.includes(m)));
   S.aspectUser = !!saved.aspectUser;
