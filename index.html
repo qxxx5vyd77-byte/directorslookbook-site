@@ -1280,7 +1280,7 @@ body{background-image:none;letter-spacing:-.005em}
         <div class="rb game" data-job="video"><div class="rb-h"><span>Arrangement: lead, colour, bed</span><button class="copy icon" type="button" data-copy="r-lead" aria-label="Copy the arrangement" title="Copy the arrangement">⧉</button></div><div class="box" id="r-lead"></div></div>
       </div>
       <div class="slate-actions">
-        <button class="btn primary" type="button" id="copy-all">Copy everything</button>
+        <button class="btn" type="button" id="copy-all" title="Every block with its heading, for a person or an agent. A model should get one block only: use the copy button on that block.">Copy the whole brief</button>
       </div>
     </div>
   </section>
@@ -1736,7 +1736,7 @@ const SUIT = {
   camera: { glyph: '♣', label: 'Camera', ink: 'club', kinds: { move: 'Moves', angle: 'Shots & angles', lens: 'Lenses', capture: 'Frame rate & capture', light: 'Light', direction: 'Performance direction' } },
   film: { glyph: '♦', label: 'Film', ink: 'diamond', kinds: { medium: 'Mediums', stock: 'Film stocks', format: 'Camera formats', grade: 'Grades', lighting: 'Lighting', technique: 'Techniques', movement: 'Movements', aesthetic: 'Internet aesthetics' } },
   color: { glyph: '●', label: 'Color', ink: 'dot', kinds: { palette: 'Palettes', grade: 'Grades' } },
-  score: { glyph: '♥', label: 'Music', ink: 'heart', kinds: { folk: 'Folk', electronic: 'Electronic', cinematic: 'Cinematic', jazz: 'Jazz', ambient: 'Ambient', rock: 'Rock', world: 'World', pop: 'Pop', classical: 'Classical' } },
+  score: { glyph: '♥', label: 'Music', ink: 'heart', kinds: { pop: 'Pop', electronic: 'Electronic', cinematic: 'Cinematic', rock: 'Rock', jazz: 'Jazz', ambient: 'Ambient', folk: 'Folk', world: 'World', classical: 'Classical' } /* most used first (Matt, 2026-10-09) */ },
   web: { glyph: '★', label: 'Web', ink: 'star', kinds: { scroll: 'Scroll', motion: 'Motion', layout: 'Layout', surface: 'Surface' } }
 };
 const KIND1 = { move: 'Move', angle: 'Shot', lens: 'Lens', light: 'Light', medium: 'Medium', stock: 'Film stock', grade: 'Grade', movement: 'Movement', capture: 'Capture', direction: 'Direction', lighting: 'Lighting', technique: 'Technique', aesthetic: 'Aesthetic', scroll: 'Scroll', motion: 'Motion', layout: 'Layout', surface: 'Surface', palette: 'Palette' };
@@ -2317,7 +2317,7 @@ function handoverLines(r) {
 function wholeRecipe() {
   const r = recipeParts(), js = JOB_SUITS[S.job];
   const image = toolPrompt(r.image, 'image', r.h), video = toolPrompt(r.video, 'video', r.h);
-  const head = [`DIRECTOR'S LOOKBOOK · ${JOB_LABEL[S.job].toUpperCase()} · HAND ${Math.max(1, S.take)} · EDITION ${D.edition}`, 'Look: ' + handNames(r).map(([s, nm]) => `${SUIT[s].label}: ${nm}`).join(' · '), S.feeling ? `Feeling: ${S.feeling}` : '', S.logline ? `Logline: ${S.logline}` : '', S.campaign ? 'Campaign lock: palette and type are shared across Photo, Video and Website.' : ''];
+  const head = [`DIRECTOR'S LOOKBOOK · ${JOB_LABEL[S.job].toUpperCase()} · HAND ${Math.max(1, S.take)} · EDITION ${D.edition}`, 'THIS IS A BRIEF, NOT ONE PROMPT. Each block below goes to a different tool: paste only the block you need (the IMAGE PROMPT into an image model, the VIDEO PROMPT into a video model, the MUSIC PROMPT into a music model). Do not paste this whole page into one model.', 'Look: ' + handNames(r).map(([s, nm]) => `${SUIT[s].label}: ${nm}`).join(' · '), S.feeling ? `Feeling: ${S.feeling}` : '', S.logline ? `Logline: ${S.logline}` : '', S.campaign ? 'Campaign lock: palette and type are shared across Photo, Video and Website.' : ''];
   const body = S.tool === 'suno' ? ['', `MUSIC PROMPT:\n${musicOnly(r)}`]
     : S.job === 'photo' ? ['', `IMAGE PROMPT: ${image}`, '', `PALETTE: ${r.palette}`] : S.job === 'site' ? ['', `SITE PROMPT:\n${r.site}`, '', `PALETTE: ${r.palette}`, '', `TYPE: ${r.type}`]
     : S.job === 'game' ? ['', `PALETTE: ${r.palette}`, '', `KEY ART: ${toolPrompt(r.keyart, 'image', r.h)}`, '', `CAPSULE: ${toolPrompt(r.capsule, 'image', r.h)}`, '', `SPRITE/TILESET: ${r.sprite}`, '', `UI MOCKUP: ${toolPrompt(r.ui, 'image', r.h)}`, '', `MUSIC: ${r.gmusic}`, `MUSIC, LEAVE OUT: ${r.exclude}`, `ARRANGEMENT: ${r.lead}`, '', `TYPE: ${r.type}`]
