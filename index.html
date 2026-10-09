@@ -1253,7 +1253,7 @@ body{background-image:none;letter-spacing:-.005em}
   <div class="look" id="look" aria-label="The look at a glance"></div>
   <div class="hand-foot"><div class="hand-pos" id="hand-pos"></div><p class="cohere" id="cohere" aria-live="polite" aria-label="How well the look holds together"></p><p class="hand-mem">Your look is remembered on this device.</p></div>
   <section class="shots" id="shots" hidden aria-labelledby="shots-h">
-    <div class="shots-head"><h2 id="shots-h">Shot list</h2><p class="sub" id="shots-sub"></p><button class="btn small" type="button" id="add-shot">+ Add shot</button><button class="btn small primary" type="button" id="copy-multi" hidden title="One prompt with every shot and the cuts between them">Copy as one multi-shot prompt</button></div>
+    <div class="shots-head"><h2 id="shots-h">Shot list</h2><p class="sub" id="shots-sub"></p><button class="btn small" type="button" id="add-shot">+ Add shot</button><button class="btn small" type="button" id="coverage" title="Master, medium, close-up, insert, cutaway: the five shot jobs a scene needs to cut together">Coverage: 5 shots</button><button class="btn small primary" type="button" id="copy-multi" hidden title="One prompt with every shot and the cuts between them">Copy as one multi-shot prompt</button></div>
     <div class="shots-list" id="shots-list"></div>
     <datalist id="shot-cams"></datalist>
   </section>
@@ -2173,7 +2173,7 @@ function recipeParts(ids) {
   const parts = { subj, lightPhrase, filmAsk, colPhrase, arPhrase, fxAsk, drawn: !!(film && !film.photo && film.kind === 'medium') };
   /* one prompt for video tools that make several shots in one generation (Veo, Kling multi-shot, Sora): the look once, then the shots with hard cuts (Matt, 2026-10-09) */
   const mshots = S.job === 'video' ? S.shots.filter(x => BY_ID.get(x.cam)) : [];
-  const multi = mshots.length >= 2 ? `${subj}.${lightPhrase} ${filmAsk}.${colPhrase} The same subject, look and light in every shot.\n\n` + mshots.map((x, i) => { const cam = BY_ID.get(x.cam); const move = String(cam.ask || cam.name).split(',')[0].trim(); const beat = x.note ? x.note.replace(/[.\s]+$/, '') : ''; return `Shot ${i + 1}${x.sec ? ` (${x.sec} s)` : ''}: ${move}${beat ? `, ${beat}` : ''}.`; }).join('\nCUT TO\n') + `\n\n${mshots.length} shots, hard cuts, about ${mshots.reduce((a, x) => a + (Number(x.sec) || 4), 0)} seconds in all.${arPhrase}` : '';
+  const multi = mshots.length >= 2 ? `${subj}.${lightPhrase} ${filmAsk}.${colPhrase} The same subject, look and light in every shot; keep screen direction, props, costume and lighting consistent from shot to shot.\n\n` + mshots.map((x, i) => { const cam = BY_ID.get(x.cam); const move = String(cam.ask || cam.name).split(',')[0].trim(); const beat = x.note ? x.note.replace(/[.\s]+$/, '') : ''; return `Shot ${i + 1}${x.sec ? ` (${x.sec} s)` : ''}: ${move}${beat ? `, ${beat}` : ''}.`; }).join('\nCUT TO\n') + `\n\n${mshots.length} shots, hard cuts, about ${mshots.reduce((a, x) => a + (Number(x.sec) || 4), 0)} seconds in all.${arPhrase}` : '';
   const poseAsk = S.job === 'photo' && h.direction ? ` ${h.direction.ask}.` : ''; /* a pose card shapes the still (round 9: it used to replace the camera) */
   const image = `${subj}. ${filmAsk}.${stillCam}${fxAsk}${poseAsk}${lightPhrase}${colPhrase}${title && S.job !== 'photo' && !film.owns_type && !skipped('type') ? ` Title lettering "${title}": ${ty.ask}.` : ''}${arPhrase}`;
   const video = shots.length ? shots.map((x, i) => shotBlock(x, i + 1, dir, parts)).join('\n\n') : videoPrompt(cam, dir, parts);
@@ -3121,6 +3121,9 @@ document.addEventListener('click', e => {
   if (t.dataset && t.dataset.cheat) { openCheat(t.dataset.cheat); return; }
   if (t.id === 'cheat-close') { closeCheat(); return; }
   if (t.id === 'cheat-print') { window.print(); return; }
+  if (t.id === 'coverage') { /* standard coverage: five shot jobs, same subject and look, so the scene cuts together (Matt, 2026-10-09) */
+    snapshot(); const COV = [['camera-wide', 'master: the whole space and who is where'], ['camera-medium', 'interaction: the action between them'], ['camera-closeup', 'reaction: the face at the beat'], ['camera-insert', 'detail: the prop or the hands'], ['camera-cutaway', 'cutaway: a second reaction or the room']];
+    S.shots = COV.filter(([id]) => BY_ID.get(id)).map(([id, note]) => cleanShot({ cam: id, dir: null, sec: 3, note })); S.shotsAuto = false; S.shotsTouched = true; S.hand.camera = S.shots[0].cam; S.holds.camera = true; S.deal = { by: 'load' }; renderHand(false); persist(); toast('Five shots: master, medium, close-up, insert, cutaway. Same look in every one.'); return; }
   if (t.id === 'cheat-add') { addCheatSel(); return; }
   if (t.id === 'cheat-skip') { const nx = S.guideKey ? guideNext(S.guideKey) : null; if (nx) openCheat(nx, true); return; }
   if (t.dataset.startTab) { showTab(t.dataset.startTab); return; }
