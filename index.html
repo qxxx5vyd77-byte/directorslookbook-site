@@ -735,6 +735,12 @@ label.step-h{font:600 15px/1.2 var(--f-body)!important;text-transform:none!impor
 
 .btn.busy{position:relative;opacity:.85}.btn.busy::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:40%;background:currentColor;animation:busybar 1s ease-in-out infinite alternate}@keyframes busybar{to{left:60%}}
 
+/* touch: the Add button sits under the card, never over the picture (round 10 split tap target) */
+@media (hover:none){.card .put{position:static;transform:none;margin:6px auto 0;display:block;width:calc(100% - 16px)}}
+.cheat-top #cheat-bar{display:flex;align-items:center;gap:8px;margin:0 8px}
+@media (max-width:759px){.cheat-top{flex-wrap:wrap}.cheat-top #cheat-bar{flex-basis:100%;margin:6px 0 0}}
+.shot input[aria-invalid="false"][title]{border-style:dashed}
+
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
 .stage{--sg-sky-t:#E4E8EB;--sg-sky-b:#F6F6F2;--sg-sun:#FFFFFF;--sg-sunl:#B3BAC0;--sg-far:#CAD0D3;--sg-mid:#A9B0B5;--sg-tree:#959DA3;--sg-subj:#262A2E;--sg-fg:#6E767C;--sg-win:#F2D48A;--sg-hand:#8A7A6E;--sg-ground:#CBD0C9;--sg-road:#9AA09D;--sg-zebra:#F6F6F2;--sg-door:#8C4E46;--sg-pic:#EADCC5;--vfc:rgba(30,34,38,.35);
@@ -1298,7 +1304,7 @@ body{background-image:none;letter-spacing:-.005em}
 
   <section class="deck" aria-labelledby="deck-h">
     <div class="deck-top">
-      <h2 id="deck-h" class="sec-h">The library</h2>
+      <a class="skip" href="#howto-sec">Skip the library</a><h2 id="deck-h" class="sec-h">The library</h2>
       <p class="deck-stat"><span class="seen-l" id="seen-l"></span><span class="here" id="here" hidden></span></p>
     </div>
     <div class="deck-bar">
@@ -1968,12 +1974,12 @@ function stampHTML(c, grid) {
   return '<span></span>'; /* studio lanes and locks stay in the data: visitors never see internal projects on the front */
 }
 /* opts.grid: a deck-spread card (In hand stamp + Put in hand button); opts.all: a search result across suits (suit named in the kind line) */
-function starHTML(c) { const on = S.shelf.has(c.id); return `<button class="star" type="button" data-star="${esc(c.id)}" aria-pressed="${on}" aria-label="${on ? 'Remove from shelf' : 'Add to shelf'}: ${esc(c.name)}" title="${on ? 'On your shelf' : 'Add to shelf'}">${on ? '★' : '☆'}</button>`; }
+function starHTML(c) { const on = S.shelf.has(c.id); return `<button class="star" type="button" tabindex="-1" data-star="${esc(c.id)}" aria-pressed="${on}" aria-label="${on ? 'Remove from shelf' : 'Add to shelf'}: ${esc(c.name)}" title="${on ? 'On your shelf' : 'Add to shelf'}">${on ? '★' : '☆'}</button>`; }
 function isSeen(c) { const s = S.seen[c.suit]; return !!(s && s.has(c.id)); }
 function cardHTML(c, extra = '', opts = {}) {
   const su = SUIT[c.suit], no = String(c.no).padStart(2, '0');
   const kind = (opts.all ? `${su.glyph} ${su.label} · ` : '') + kind1(c);
-  const put = opts.grid && !inHand(c) ? `<button class="btn small put" type="button" data-put="${esc(c.id)}" data-quiet="1" aria-label="Put ${esc(c.name)} in look">Add to look</button>` : '';
+  const put = opts.grid && !inHand(c) ? `<button class="btn small put" type="button" tabindex="-1" data-put="${esc(c.id)}" data-quiet="1" aria-label="Put ${esc(c.name)} in look">Add to look</button>` : '';
   const seen = opts.grid && isSeen(c);
   const cmp = opts.grid && S.cmp.includes(c.id) ? ' cmp-on' : '';
   return `<div class="card s-${c.suit}${extra}${seen ? ' seen' : ''}${cmp}" data-id="${esc(c.id)}" tabindex="0" role="button" aria-label="${esc(c.name)}, ${su.label} card ${c.no}${seen ? ', seen' : ''}"><div class="crow"><span class="idx"><b>${no}</b><i>${su.glyph}</i></span><span class="kind">${seen ? '<i class="tick" title="Seen">✓</i>' : ''}${esc(kind)}</span></div><div class="pv">${preview(c)}${put}</div><div class="nm">${esc(c.name)}</div><div class="fl">${(c.feels || []).slice(0, 3).map(esc).join(' · ')}</div><div class="crow bot">${stampHTML(c, opts.grid)}${starHTML(c)}<span class="idx flip"><b>${no}</b><i>${su.glyph}</i></span></div></div>`;
@@ -2139,7 +2145,7 @@ function videoPrompt(cam, dir, p) { const camAsk = cam.kind === 'direction' ? ca
   if (p.drawn) return `${p.subj}. ${p.filmAsk}. ${camAsk}.${keep}${fx}${dirPhrase}${p.lightPhrase}${p.colPhrase}${p.arPhrase}`; /* a drawn medium leads, so its outline survives a rich scene (Hand 237c) */
   return `${p.subj}. ${camAsk}.${keep}${fx}${dirPhrase}${p.lightPhrase} ${p.filmAsk}.${p.colPhrase}${p.arPhrase}`; }
 /* the shot list as one block per shot, like the CLI's SHOT n of N; the note goes after the subject as what happens in the shot */
-function shotBlock(x, n, dir, p) { const cam = BY_ID.get(x.cam); const sd = x.dir ? BY_ID.get(x.dir) : dir; const beat = x.note ? x.note.replace(/[.\s]+$/, '') : ''; const subj = beat ? (S.shotsAuto || p.subj.toLowerCase().includes(beat.toLowerCase().slice(0, 24)) ? beat : `${p.subj}. ${beat}`) : p.subj; /* a beat built from the feeling is that shot's subject (filmmaker playtest) */ return `SHOT ${n}${x.sec ? ` (${x.sec} s)` : ''}: ${videoPrompt(cam, sd, { ...p, subj })}`; }
+function shotBlock(x, n, dir, p) { const cam = x.custom ? { ask: x.custom, kind: 'move', name: x.custom, keep: '' } : BY_ID.get(x.cam); /* a typed camera the deck has no card for is used verbatim (round 10: 'Macro' rendered as wide shot) */ const sd = x.dir ? BY_ID.get(x.dir) : dir; const beat = x.note ? x.note.replace(/[.\s]+$/, '') : ''; const subj = beat ? (S.shotsAuto || p.subj.toLowerCase().includes(beat.toLowerCase().slice(0, 24)) ? beat : `${p.subj}. ${beat}`) : p.subj; /* a beat built from the feeling is that shot's subject (filmmaker playtest) */ return `SHOT ${n}${x.sec ? ` (${x.sec} s)` : ''}: ${videoPrompt(cam, sd, { ...p, subj })}`; }
 /* a film stock's own colour words would fight the palette that sets the colour: keep the stock's grain and tone, drop its hues */
 /* a Color card owns the colour: any film card's baked-in palette clause drops, and "black outline" words bend to a palette that bans black (Hand 237 re-test, 2026-10-09) */
 const HUE_RE = /\b(greens?|blues?|reds?|teal|orange|magenta|pastel|amber|cyan|purple|yellow|pink|violet|mustard|brick|ochre|lime|lemon|ultramarine|crimson|vermilion|indigo|sepia|gold|golden|copper|prussian|cream|off-white|beige|turquoise|coral|maroon|navy|olive|mauve|lilac|lavender|peach|rust|sienna|umber|scarlet|cobalt|emerald|jade|saffron|tangerine)\b/gi;
@@ -2481,7 +2487,7 @@ function addShot() { S.shotsAuto = false; S.shotsTouched = true; S.shots.push(ne
 function removeShot(i) { S.shots.splice(i, 1); renderShots(); renderRecipe(); persist(); }
 function moveShot(i, d) { const j = i + d; if (j < 0 || j >= S.shots.length) return; [S.shots[i], S.shots[j]] = [S.shots[j], S.shots[i]]; renderShots(); renderRecipe(); persist(); }
 /* a typed camera name resolves against the Camera suit (minus light); an unknown name marks the field until it matches */
-function setShotCam(i, name) { const c = CAM_BY_NAME.get(String(name).trim().toLowerCase()); const el = $(`#shot-${i}-cam`); if (el) el.setAttribute('aria-invalid', String(!c)); if (!c || !S.shots[i]) return; S.shots[i].cam = c.id; renderRecipe(); persist(); }
+function setShotCam(i, name) { const q = String(name).trim().toLowerCase(); let c = CAM_BY_NAME.get(q); if (!c && q.length >= 3) c = SHOT_CAMS.find(x => namedIn(x, ' ' + q + ' ')) || SHOT_CAMS.find(x => x.name.toLowerCase().startsWith(q)) || null; /* 'dolly out', 'macro': aka or prefix match before giving up */ const el = $(`#shot-${i}-cam`); if (!S.shots[i]) return; if (c) { S.shots[i].cam = c.id; S.shots[i].custom = null; if (el) el.setAttribute('aria-invalid', 'false'); } else { S.shots[i].custom = q ? String(name).trim() : null; if (el) el.setAttribute('aria-invalid', 'false'); if (el) el.title = q ? 'Not a deck card: used as typed' : ''; } renderRecipe(); persist(); }
 function setShotField(i, k, v) { const x = S.shots[i]; if (!x) return; x[k] = k === 'sec' ? (Number(v) > 0 ? Number(v) : null) : k === 'dir' ? (BY_ID.get(v) ? v : null) : String(v).slice(0, 200); renderRecipe(); persist(); }
 function showThinking(on) {
   if (!on) return;
@@ -2781,6 +2787,7 @@ function toggleCmp(id) {
 
 /* sheet */
 let lastFocus = null;
+function refocus() { if (lastFocus && document.contains(lastFocus) && lastFocus.focus) { lastFocus.focus(); return; } const h = $('#look-h'); if (h) { h.setAttribute('tabindex', '-1'); h.focus(); } } /* the opener may have been re-rendered: land on Your look, never on body (round 10) */
 function openSheet(id, list, fromHand) {
   const c = BY_ID.get(id); if (!c) return;
   S.sheetList = (list && list.length ? list : BY_SUIT[c.suit].map(x => x.id)); S.sheetIdx = Math.max(0, S.sheetList.indexOf(id)); S.sheetFromHand = !!fromHand; S.sheetEnd = false; S.sheetLabel = list && list.length ? listLabel() : `the ${SUIT[c.suit].label} suit`;
@@ -2793,7 +2800,7 @@ function closeSheet() {
   const sb = $('#sheet-body'); unobserve(sb); sb.innerHTML = ''; $('#sheet').hidden = true; document.body.classList.remove('noscroll'); const pg = $('.page'); if (pg) pg.inert = false;
   /* you are here: the position stays in the toolbar until the next scroll */
   if (S.sheetList && !S.sheetFromHand) { S.hereTab = S.tab; S.here = S.sheetEnd ? `you were at the end of ${S.sheetLabel}` : `you are here: ${S.sheetIdx + 1} / ${S.sheetList.length}`; renderHere(); S.hereAt = Date.now(); }
-  if (lastFocus && lastFocus.focus) lastFocus.focus();
+  refocus();
 }
 function renderHere() { const el = $('#here'); if (el) { el.textContent = S.here; el.hidden = !S.here; } }
 /* no wrap: past the last card the sheet shows an end state with a way back to the start */
@@ -3381,7 +3388,8 @@ function addCheatSel() {
   $('#hand').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
   toast(`Added ${cards.length} card${cards.length === 1 ? '' : 's'} to your look${cams.length >= 2 ? `, with ${cams.length} shots` : ''}. They are kept; Get the look fills the rest.`);
 }
-function closeCheat() { $('#cheat').hidden = true; document.body.classList.remove('cheat-open', 'noscroll'); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+function closeCheat() { $('#cheat').hidden = true; document.body.classList.remove('cheat-open', 'noscroll'); refocus(); }
+{ const bar = $('#cheat-bar'), top = $('#cheat .cheat-top'); if (bar && top) top.appendChild(bar); } /* the Add bar sits in the sheet header: three Tabs in, not 114 (round 10) */
 renderCheatTiles(); renderGuide(); { const h = $('#hand'); if (h) new MutationObserver(() => { if (!$('#sw-build').hidden) renderGuide(); }).observe(h, { childList: true, subtree: true }); } { const ch = $('#cheat'); if (ch && ch.parentElement !== document.body) document.body.appendChild(ch); } /* outside .page so printing shows it (round 9: blank PDF) */
 renderStarts();
 /* the 30 s how-it-works video sits beside the start row on the live site (the file ships with the public build only) */
