@@ -633,6 +633,15 @@ button,input,select,textarea{font:inherit;color:inherit}
 .hw-v video{aspect-ratio:16/9;height:auto}
 @media (max-width:759px){.hw-v:first-child video{aspect-ratio:9/16}.hw-row{align-items:start}}
 
+/* two numbered steps (Matt, 2026-10-09) */
+.step-h{display:flex;align-items:center;gap:10px;margin:0 0 10px;font:600 15px/1.2 var(--f-body);letter-spacing:.01em;text-transform:none;color:var(--text)}
+.step-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--text);color:var(--table);font:700 13px/1 var(--f-body)}
+.jobrow.step{display:block;margin:6px 0 22px}
+.jobrow.step .jobs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.jobrow.step .jobs .chip{min-height:54px;font-size:17px;justify-content:center}
+@media (max-width:759px){.jobrow.step .jobs{grid-template-columns:repeat(2,1fr)}}
+label.step-h{font:600 15px/1.2 var(--f-body)!important;text-transform:none!important;color:var(--text)!important;letter-spacing:.01em!important}
+
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
 .stage{--sg-sky-t:#E4E8EB;--sg-sky-b:#F6F6F2;--sg-sun:#FFFFFF;--sg-sunl:#B3BAC0;--sg-far:#CAD0D3;--sg-mid:#A9B0B5;--sg-tree:#959DA3;--sg-subj:#262A2E;--sg-fg:#6E767C;--sg-win:#F2D48A;--sg-hand:#8A7A6E;--sg-ground:#CBD0C9;--sg-road:#9AA09D;--sg-zebra:#F6F6F2;--sg-door:#8C4E46;--sg-pic:#EADCC5;--vfc:rgba(30,34,38,.35);
@@ -1123,8 +1132,9 @@ body{background-image:none;letter-spacing:-.005em}
 
   <section class="deal" aria-labelledby="deal-h">
     <h2 id="deal-h" class="sr-only">Get a look</h2>
+    <div class="jobrow step"><h3 class="step-h"><span class="step-n">1</span> What are you making?</h3><div class="jobs" id="jobs" role="group" aria-label="What you are making"></div></div>
     <form id="feel-form" autocomplete="off">
-      <label for="feel" class="lbl">What should it feel like?</label>
+      <label for="feel" class="lbl step-h"><span class="step-n">2</span> What should it feel like?</label>
       <div class="feel-row">
         <input id="feel" name="feel" type="text" placeholder="cozy bakery morning, or y2k mall at night">
         <button type="submit" class="btn primary" id="deal-btn">Get the look</button>
@@ -1136,7 +1146,6 @@ body{background-image:none;letter-spacing:-.005em}
     <a class="skip" href="#jobs">Skip the examples</a><section class="starts" id="starts" aria-labelledby="starts-h"><div class="starts-head"><h2 id="starts-h" class="lbl">Or start from a look</h2><div class="howto" id="howto" hidden></div></div><div class="start-row" id="start-row"></div></section>
     <section class="cheats" id="cheats" aria-labelledby="cheats-h"><h2 id="cheats-h" class="lbl">Cheat sheets</h2><div class="cheat-row" id="cheat-row"></div></section>
     <div class="cheat" id="cheat" hidden role="dialog" aria-modal="true" aria-labelledby="cheat-title"><div class="cheat-in"><div class="cheat-top"><h2 id="cheat-title"></h2><div class="cheat-act"><button class="btn small" type="button" id="cheat-print">Print or save PDF</button><button class="btn small" type="button" id="cheat-close" aria-label="Close the cheat sheet">Close</button></div></div><p class="cheat-hint">Tap cards to select them, then add them to your look.</p><div id="cheat-body"></div><div class="cheat-bar" id="cheat-bar" hidden><span id="cheat-n"></span><button class="btn small primary" type="button" id="cheat-add">Add to my look</button><button class="btn small" type="button" id="cheat-copysel">Copy their words</button><button class="btn small" type="button" id="cheat-clear">Clear</button></div><p class="cheat-foot">directorslookbook.app · say the feeling, get the look</p></div></div>
-    <div class="jobrow"><span class="lbl">Making</span><div class="jobs" id="jobs" role="group" aria-label="What you are making"></div></div>
     <p class="job-note" id="job-note"></p>
     <div class="moods" id="moods" role="group" aria-label="Moods"></div>
     <div class="dealtools"><span class="lbl" id="spice-l">Get the look</span><div class="seg" id="spice" role="group" aria-labelledby="spice-l" title="Safer stays near the look's moods; Wilder leans away from the obvious pick"></div><button type="button" class="btn small" id="shake" disabled title="Keep a card first">Remix (keeps 0)</button><button type="button" class="btn small" id="pin-hand" title="Pin this look as A, then get another look to compare">Pin this look</button></div>
@@ -2859,7 +2868,7 @@ function startOrder() {
 }
 function renderStarts() {
   const row = $('#start-row'); if (!row) return; const ex = D.examples || []; if (!ex.length) { $('#starts').hidden = true; return; }
-  const ord = startOrder(), n = ex.length, show = ord; /* all 32 in the day's order: the first ones change daily, the row scrolls through the rest (Matt, 2026-10-09) */
+  const ord = startOrder(), mine = ord.filter(i => (ex[i].job || 'photo') === S.job), show = mine.length >= 4 ? mine : ord, n = show.length; /* the looks for what you are making (Matt, 2026-10-09) */ /* all 32 in the day's order: the first ones change daily, the row scrolls through the rest (Matt, 2026-10-09) */
   row.innerHTML = show.map(i => {
     const x = ex[i];
     const imgs = Object.values(x.cards).map(id => BY_ID.get(id)).filter(Boolean).map(c => c.example ? `<img src="${esc(c.example.img)}" alt="" loading="lazy">` : `<i class="sw-tile" style="background:linear-gradient(90deg,${(c.colors || []).map(k => k.hex).join(',')})"></i>`).join('');
@@ -2921,7 +2930,7 @@ document.addEventListener('click', e => {
   if (d.keepHand) { keepHand(d.keepHand); return; }
   if (d.cmpDel) { toggleCmp(d.cmpDel); return; }
   if (d.clearSeen) { clearSeen(d.clearSeen); renderSheet(); return; }
-  if (d.job) { if (JOB_SUITS[d.job]) { S.job = d.job; if (!S.aspectUser) setAspect(ASPECT_DEF[d.job]); repairHand(); campaignHold(); renderHand(false); persist(); } return; }
+  if (d.job) { if (JOB_SUITS[d.job]) { S.job = d.job; if (!S.aspectUser) setAspect(ASPECT_DEF[d.job]); repairHand(); campaignHold(); renderHand(false); persist(); renderStarts(); renderCheatTiles(); } return; }
   if (d.tool) { if (TOOLS.includes(d.tool)) { S.tool = d.tool; renderRecipe(); persist(); } return; }
   if (d.palette) { const p = downloadPalette(d.palette); toast(`${p.rows.length} colours saved as .${d.palette} (${p.name})`); return; }
   if (d.mood) { S.moods.has(d.mood) ? S.moods.delete(d.mood) : S.moods.add(d.mood); t.setAttribute('aria-pressed', String(S.moods.has(d.mood))); dealLocal(); return; } /* one tap = a result */
@@ -3129,7 +3138,8 @@ function cheatThumb(c) {
 }
 function renderCheatTiles() {
   const row = $('#cheat-row'); if (!row) return;
-  row.innerHTML = CHEATS.map(ch => { const items = [...new Set(ch.groups().flatMap(g => g[1]))]; const pics = items.filter(c => c.example).slice(0, 4);
+  const PREF = { photo: ['shots', 'light', 'film', 'palettes', 'poses'], video: ['moves', 'shots', 'poses', 'music', 'light', 'film'], site: ['web', 'fonts', 'palettes', 'art'], game: ['art', 'palettes', 'fonts', 'music'] }[S.job] || []; const order = CHEATS.slice().sort((a, b) => ((PREF.indexOf(a.key) + 1) || 99) - ((PREF.indexOf(b.key) + 1) || 99));
+  row.innerHTML = order.map(ch => { const items = [...new Set(ch.groups().flatMap(g => g[1]))]; const pics = items.filter(c => c.example).slice(0, 4);
     const face = pics.length >= 4 ? `<span class="ct-mosaic">${pics.map(c => `<img src="${esc(c.example.img)}" alt="" loading="lazy">`).join('')}</span>` : `<span class="ct-face">${cheatThumb(items[0] || {})}</span>`;
     return `<button class="cheat-tile" type="button" data-cheat="${ch.key}">${face}<span class="ct-name">${esc(ch.title)}</span><span class="ct-n">${items.length} on one page</span></button>`; }).join('');
 }
