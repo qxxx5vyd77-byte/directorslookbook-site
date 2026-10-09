@@ -561,6 +561,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 @media (max-width:759px){.deck-m select{font-size:12px;padding:0 4px}}
 @media (max-width:759px){.howto video{width:min(300px,100%);aspect-ratio:9/16}}
 @media (hover:none){.card .put{position:static;transform:none;display:block;margin:8px auto 0;box-shadow:none}}
+@media (max-width:759px){.deck-m .m-count{display:none}.deck-m{gap:4px}}
 
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
@@ -1844,7 +1845,7 @@ function pickFor(suit, f, chipMoods, avoid, hand) {
   if (suit === 'color' && film && (film.kind === 'stock' || film.kind === 'grade')) pool = pool.filter(c => c.kind === 'palette');
   if (suit === 'camera' && S.job === 'photo') pool = pool.filter(c => c.kind !== 'move' && c.kind !== 'capture'); /* a still has no camera move */
   if (suit === 'camera' && (JOB_SUITS[S.job].includes('direction') || !ACTING_RE.test(f.norm || ''))) pool = pool.filter(c => c.kind !== 'direction'); /* direction cards are added on purpose, never dealt over the framing; Video has a slot of their own */
-  if (suit === 'film' && S.job === 'photo' && !/\b(drawn|drawing|illustration|illustrated|painting|painted|cartoon|anime|comic|sketch|watercolou?r|gouache|ink|pixel|poster|collage|render|3d|pixel|pixel-art|8-bit|voxel|low-poly)\b/.test(f.norm || '')) { const ph = pool.filter(c => c.photo); if (ph.length) pool = ph; } /* Photo means photo unless the feeling asks for drawn */
+  if (suit === 'film' && S.job === 'photo' && !/\b(drawn|drawing|illustration|illustrated|painting|painted|cartoon|anime|comic|sketch|watercolou?r|gouache|ink|pixel|poster|collage|render|3d|pixel|pixel-art|8-bit|voxel|low-poly|print|prints|woodblock|woodcut|ukiyo-e|ukiyoe|linocut|engraving|etching|lithograph|screenprint|silkscreen|risograph)\b/.test(f.norm || '') && !pool.some(c => !c.photo && namedIn(c, f.norm))) { const ph = pool.filter(c => c.photo); if (ph.length) pool = ph; } /* Photo means photo unless the feeling asks for drawn */
   /* Game: the ten game looks first, then the drawn, 3D and craft tags; a look outside that pool only when the feeling names it (a phrase or card-name hit) */
   if (suit === 'film' && S.job === 'game') {
     const asked = active && pool.some(c => !gameFilm(c) && scoreCard(c, f, chipMoods) >= 10);
@@ -1919,6 +1920,11 @@ function fitAsk(ask, subj) {
 function videoPrompt(cam, dir, p) { const camAsk = cam.kind === 'direction' ? cam.ask : fitAsk(cam.ask, p.subj); const dirPhrase = dir ? ` ${dir.ask}.` : ''; return `${p.subj}. ${camAsk}.${dirPhrase}${p.lightPhrase} ${p.filmAsk}.${p.colPhrase}${p.arPhrase}`; }
 /* the shot list as one block per shot, like the CLI's SHOT n of N; the note goes after the subject as what happens in the shot */
 function shotBlock(x, n, dir, p) { const cam = BY_ID.get(x.cam); const sd = x.dir ? BY_ID.get(x.dir) : dir; const subj = x.note ? `${p.subj}. ${x.note.replace(/[.\s]+$/, '')}` : p.subj; return `SHOT ${n}${x.sec ? ` (${x.sec} s)` : ''}: ${videoPrompt(cam, sd, { ...p, subj })}`; }
+function personless(t) {
+  return t.replace(/full body of the subject head to toe with generous space around them/g, 'the whole subject with generous space around it')
+    .replace(/tiny lone figure in a vast landscape, the person occupying less than a tenth of the frame/g, 'the subject small in a vast landscape, less than a tenth of the frame')
+    .replace(/framing the subject from the waist up/g, 'framing the subject close enough to read its detail').replace(/face and hands both readable/g, 'its details readable');
+}
 function recipeParts(ids) {
   const h = handCards(ids);
   const subj = (S.subject || '').trim() || '[your subject]';
@@ -1956,7 +1962,8 @@ function recipeParts(ids) {
     : `Sprites and tiles in the same look as the key art: ${gameAsk}. Same palette hexes (${hexes}), same brush and line weight, flat lighting from top-left, each sprite on a transparent background at 256 px, consistent outline treatment across the sheet.`;
   const ui = `Game UI mockup: one dialog panel and three buttons (Play, Options, Quit) in the ${col ? col.name : film.name} palette (${hexes}). Panel and button surfaces in the ${film.name} look. Labels set in ${f.family}${f.italic ? ' italic' : ''}, ${caseWord}, tracking ${Number(ty.tracking) || 0}em. Show normal, hover and pressed states. Aspect ratio 16:9.`;
   const gmusic = `${String(sc.ask || '').replace(/[.\s]+$/, '')}. Seamless loop, 60 to 90 s, no intro or outro.\nVariants: a day, a night and a rain version of the same theme at ${sc.bpm} BPM in ${sc.key}; only the instrumentation and the weather sounds change.`;
-  return { h, image, video, shots, style: sc.ask || '', exclude: sc.exclude || '', type, lead, site, palette, keyart, capsule, sprite, ui, gmusic };
+  const np = subj !== '[your subject]' && !PERSON_RE.test(subj) ? personless : (t => t); /* framing words written for people, reworded for a product or a place (persona round 3) */
+  return { h, image: np(image), video: np(video), shots, style: sc.ask || '', exclude: sc.exclude || '', type, lead, site, palette, keyart: np(keyart), capsule: np(capsule), sprite, ui, gmusic };
 }
 /* the lint for the hand, then once per shot with that shot's camera in the camera slot */
 function recipeLint(r) {
@@ -2064,7 +2071,7 @@ function handLint(h, aspect) {
   { const L = h.light, P = col; if (L && P && P.kind === 'palette') { const day = /\b(sun|golden hour|midday|noon|daylight)\b/.test(txt(L)) && !/\b(blue hour|after sunset|twilight|dusk)\b/.test(txt(L)), night = /\b(blue hour|night|neon|moon)\b/.test((P.name || '').toLowerCase()); const warm = /\b(golden|sunset|warm)\b/.test((P.name || '').toLowerCase()), dark = /\b(night|moon|blue hour|neon|led|sodium)\b/.test((L.name || '').toLowerCase()); if (day && night) out.push(`${L.name} is daylight; ${P.name} is a night palette.`); else if (dark && warm && !/\bsunset\b/.test(txt(L))) out.push(`${L.name} is night light; ${P.name} is a golden-hour palette.`); } }
   const lightC = h.light; if (lightC && film && /\b(night|nocturnal|midnight|streetlamp|sodium)\b/.test(txt(film)) && /\b(sun|golden hour|midday|noon|daylight)\b/.test(txt(lightC)) && !/\b(blue hour|after sunset|twilight|dusk)\b/.test(txt(lightC))) out.push(`${film.name} is a night look; ${lightC.name} is sunlight.`);
   { const subj = (S.subject || '').trim(); if (subj && !PERSON_RE.test(subj)) { const r = recipeTextFor(h); const hits = [...new Set((r.match(/\b(skin tones?|warm skin|people seen as shapes|portrait|faces?|figures?|over-the-shoulder|athletes?|crowds?|couple)\b/gi) || []).map(x => x.toLowerCase()))]; if (hits.length) out.push(`The prompt mentions ${hits.join(', ')} but the subject (${subj}) names no person.`); } }
-  if (bw && col && col.kind === 'palette' && !/\bmonochrome\b|greyscale|grayscale|ink black, charcoal/.test(txt(col))) out.push(`${film.name} is black and white; ${col.name} is a colour palette.`);
+  if (bw && col && col.kind === 'palette' && !(/greyscale|grayscale|black and white|ink black, charcoal/.test(txt(col)) || /monochrome|grey|gray|\bink\b/.test(col.name.toLowerCase()))) out.push(`${film.name} is black and white; ${col.name} is a colour palette.`);
   if (film && film.aspect && aspect && film.aspect !== aspect) out.push(`${film.name} is a ${film.aspect} look; the shape is ${aspect}.`);
   if (col && /no hue at all|greyscale/.test(txt(col)) && film && film.kind === 'grade' && /teal|orange|magenta|cyan/.test(txt(film))) out.push(`${col.name} drains colour that ${film.name} adds.`);
   if (bw && col && col.kind === 'grade' && /magenta|cyan|teal|orange|amber|saturated/.test(txt(col))) out.push(`${film.name} is black and white; ${col.name} is a colour grade.`);
@@ -2239,7 +2246,9 @@ function dealCore(slots, f, chipMoods, js, force) {
   const genre = js.includes('score') && [...(f.lex || new Map()).keys()].some(id => id.startsWith('score-'));
   const order = genre ? ['score', ...js.filter(s => s !== 'score')] : js;
   S.lastNeutral = 0;
-  const genreIds = [...(f.lex || new Map()).entries()].filter(([id, v]) => id.startsWith('score-') && v >= 12).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+  let genreIds = [...(f.lex || new Map()).entries()].filter(([id, v]) => id.startsWith('score-') && v >= 12).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+  if (f.ai && f.ai.score) genreIds = genreIds.filter(id => { const c = BY_ID.get(id); return c && namedIn(c, f.norm); }); /* a genre only overrides the AI when the visitor named it */
+  if (S.job === 'game' && !/\b(vocals?|singer|sung|lyrics?|song)\b/.test(f.norm || '')) genreIds = genreIds.filter(id => { const c = BY_ID.get(id); return c && (!/\bvocals?\b/i.test((c.ask || '') + ' ' + (c.what || '')) || /\binstrumental\b/i.test(c.ask || '')); });
   order.forEach(s => {
     if (!slots.includes(s)) return;
     /* the direction slot fills only when asked for by name (New ♣) or when the feeling has acting words; otherwise a deal leaves it empty */
@@ -2255,6 +2264,8 @@ function dealCore(slots, f, chipMoods, js, force) {
 }
 /* opts: text (overrides the feel box), chipMoods (overrides the mood chips), by + mood + kept (the note), keepSeed (replay), noSnapshot, silent (no render) */
 function afterDealScroll() { if (!window.matchMedia('(max-width: 759px)').matches) return; const q = $('#quick') || $('#hand'); if (q) q.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); }
+/* "for instagram", "from my feed", "for a printmaking history lesson": what the picture is FOR is not what is IN it (persona round 3) */
+function cleanSubject(t) { const c = String(t).replace(/\s*,?\s*\b(?:for|from|on)\s+(?:my|our|an?|the)?\s*(?:[\w-]+\s+){0,3}?(?:instagram|insta|feed|tiktok|reels?|posts?|stor(?:y|ies)|youtube|website|landing page|capsule|lesson|class|campaign|ads?|thumbnail|banner)\b[^,]*/gi, '').trim(); return c || t; }
 function dealLocal(onlySuit, opts = {}) {
   const text = opts.text != null ? opts.text : $('#feel').value.trim(); const f = parseFeeling(text); if (opts.ai && !onlySuit) { f.ai = opts.ai; f.aiFirst = !!opts.aiFirst; } S.aiSlots = null; /* the AI reader's picks (first Get of a new feeling only) */
   const js = JOB_SUITS[S.job];
@@ -2265,14 +2276,17 @@ function dealLocal(onlySuit, opts = {}) {
   if (!opts.noSnapshot) snapshot();
   if (!opts.keepSeed) seedRng(newSeed());
   const chip = opts.chipMoods || S.moods;
-  if (text && (!(S.subject || '').trim() || S.subjectAuto)) setSubject(text, true); /* an auto-filled subject follows the feeling; a typed one sticks */
+  if (text && (!(S.subject || '').trim() || S.subjectAuto)) setSubject(cleanSubject(text), true); /* an auto-filled subject follows the feeling; a typed one sticks */
   /* Safer and Wilder must pass the lint: up to two re-rolls on the same seed stream */
   const tries = 3; /* every deal re-rolls away from a heads-up (a scope lens in 4:5 on the first look) */ let neutral = 0;
-  for (let i = 0; i < tries; i++) { if (f.ai && i > 0) { f.ai = { ...f.ai }; delete f.ai.light; if (i > 1) delete f.ai.color; } /* an AI hand that trips the lint lets the matcher redo the light, then the palette; the rest stays the AI's */ neutral = dealCore(f.ai && i > 0 ? slots.filter(s => s === 'light' || (i > 1 && s === 'color')) : slots, f, chip, js, !!onlySuit); /* an AI hand re-deals only the slots it hands back */ const lint = handLint(handCards(), S.aspect || '').filter(m => !(f.ai && /names no person/.test(m))); if (!lint.length) break; } /* a subject wording note is not the AI hand's fault */
+  for (let i = 0; i < tries; i++) { if (f.ai && i > 0) { f.ai = { ...f.ai }; const drop = s => { const cur = BY_ID.get(S.hand[s]); const rest = [].concat(f.ai[s] || []).filter(n => !cur || n.toLowerCase() !== cur.name.toLowerCase()); if (rest.length) f.ai[s] = rest; else delete f.ai[s]; }; drop('light'); if (i > 1) drop('color'); } /* an AI hand that trips the lint lets the matcher redo the light, then the palette; the rest stays the AI's */ neutral = dealCore(f.ai && i > 0 ? slots.filter(s => s === 'light' || (i > 1 && s === 'color')) : slots, f, chip, js, !!onlySuit); /* an AI hand re-deals only the slots it hands back */ const lint = handLint(handCards(), S.aspect || '').filter(m => !(f.ai && /names no person/.test(m))); if (!lint.length) break; } /* a subject wording note is not the AI hand's fault */
   /* a plain deal should not open on a pile (bakery playtest): two more rolls on the same stream, keep the best-held hand */
+  if (!onlySuit && f.ai && coherence().label === 'pile') { const rank = c => (c.label === 'tight' ? 2 : c.label === 'loose' ? 1 : 0) * 100 + c.shared; let bestR = rank(coherence());
+    for (const s of slots) { const alts = [].concat(opts.ai[s] || []).map(n => (BY_SUIT[s] || []).find(c => c.name.toLowerCase() === String(n).toLowerCase())).filter(Boolean); const keep = S.hand[s];
+      for (const c of alts) { if (c.id === keep) continue; S.hand[s] = c.id; const r = rank(coherence()); if (r > bestR && !handLint(handCards(), S.aspect || '').length) { bestR = r; } else S.hand[s] = keep; if (S.hand[s] !== keep) break; } } } /* still the AI's own choices, the combination that holds together best */
   if (!onlySuit && !opts.chipMoods && !f.ai) { const rank = c => (c.label === 'tight' ? 2 : c.label === 'loose' ? 1 : 0) * 100 + c.shared; let best = { hand: { ...S.hand }, co: coherence(), neutral }; for (let i = 0; i < 2 && best.co.label === 'pile'; i++) { const n2 = dealCore(slots, f, chip, js, false); const co = coherence(); if (rank(co) > rank(best.co)) best = { hand: { ...S.hand }, co, neutral: n2 }; } S.hand = best.hand; neutral = best.neutral; }
   if (S.shots.length && S.hand.camera && slots.includes('camera')) S.shots[0].cam = S.hand.camera; /* shot 1 follows a new look (filmmaker playtest) */
-  if (opts.ai && !onlySuit) { const want = s => [].concat(opts.ai[s] || []).map(x => String(x).toLowerCase()); const js2 = JOB_SUITS[S.job].filter(s => opts.ai[s]); S.aiSlots = { asked: js2.length, kept: js2.filter(s => { const c = BY_ID.get(S.hand[s]); return c && want(s).includes(c.name.toLowerCase()); }).length }; }
+  if (opts.ai && !onlySuit) { const want = s => [].concat(opts.ai[s] || []).map(x => String(x).toLowerCase()); const js2 = JOB_SUITS[S.job].filter(s => opts.ai[s]); const keptS = js2.filter(s => { const c = BY_ID.get(S.hand[s]); return c && want(s).includes(c.name.toLowerCase()); }); S.aiSlots = { asked: js2.length, kept: keptS.length, swapped: js2.filter(s => !keptS.includes(s)).map(s => ({ color: 'palette', score: 'music', web: 'layout' })[s] || s) }; }
   S.take++; S.feeling = [text, [...chip].join(', ')].filter(Boolean).join(' · ');
   if (!onlySuit) { S.dealtBy = 'match'; S.logline = ''; S.why = null; S.missing = []; }
   const q = text || [...chip].join(', ');
@@ -2861,7 +2875,7 @@ $('#feel-form').addEventListener('submit', async e => {
   let ai = null, first = false; aiTimedOut = false;
   if (AI_ON && text && !aiResting) { if (AI_CACHE.has(k)) ai = AI_CACHE.get(k); else { b.disabled = true; const lbl = b.textContent; b.textContent = 'Reading…'; { const sr = $('#sr-count'); if (sr) sr.textContent = 'Reading your feeling…'; } ai = await aiPick(text); b.textContent = lbl; b.disabled = false; if (ai) { AI_CACHE.set(k, ai); first = true; } } } /* repeat Gets deal another of the AI's top picks, no new read */
   dealLocal(undefined, ai ? { ai, aiFirst: first } : {});
-  const note = $('#deal-note'); if (note && text) { const sl = S.aiSlots; const tail = ai ? (sl && sl.kept < sl.asked ? ` Read by the AI reader: ${sl.kept} of ${sl.asked} cards are its picks; the rest were swapped to avoid a clash or to match a card you named.` : ' Read by the AI reader.') : aiTimedOut ? ' The AI reader was slow, so this look is matched by keywords. Get the look again to retry.' : aiResting ? ' The AI reader has hit its free daily limit, so this look is matched by keywords; it is back tomorrow.' : ''; if (tail) note.insertAdjacentHTML('beforeend', `<span class="ai-note">${tail}</span>`); }
+  const note = $('#deal-note'); if (note && text) { const sl = S.aiSlots; const tail = ai ? (sl && sl.kept < sl.asked ? ` Read by the AI reader: ${sl.kept} of ${sl.asked} cards are its picks; swapped: ${(sl.swapped || []).join(', ')} (a clash, or a card you named).` : ' Read by the AI reader.') : aiTimedOut ? ' The AI reader was slow, so this look is matched by keywords. Get the look again to retry.' : aiResting ? ' The AI reader has hit its free daily limit, so this look is matched by keywords; it is back tomorrow.' : ''; if (tail) note.insertAdjacentHTML('beforeend', `<span class="ai-note">${tail}</span>`); }
 });
 let findT = null; ['#find', '#m-findin'].forEach(sel => { const el = $(sel); if (el) el.addEventListener('input', e => { clearTimeout(findT); findT = setTimeout(() => { setFind(e.target.value); saveView(); renderSpread(); }, 160); }); });
 $('#sort').addEventListener('change', e => { S.sort = e.target.value; saveView(); renderSpread(); });
