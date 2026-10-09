@@ -1829,12 +1829,14 @@ function pickFor(suit, f, chipMoods, avoid, hand) {
     if (spice === 'safer') { const neutral = new Set(NEUTRAL[suit] || []); const safe = pool.filter(c => neutral.has(c.id) || (c.moods || []).some(m => hm.has(m))); if (safe.length) pool = safe; }
     else if (hm.size) { const wild = pool.filter(c => !(c.moods || []).some(m => hm.has(m))); if (wild.length) pool = wild; }
   }
+  if (f.collect) { f.collect[suit] = (suit === 'color' && JOB_SUITS[S.job].includes('film') ? pool.filter(c => c.kind === 'palette') : pool).map(c => c.name); return null; } /* palettes only: most film picks are stocks, which take a palette, never a second grade */ /* candidates for the AI reader: the same filtered pool the matcher deals from */
+  if (f.ai && f.ai[suit]) { const want = String(f.ai[suit]).toLowerCase(); const c = pool.find(x => x.name.toLowerCase() === want); if (c) return c; } /* the AI's pick, only if it is in this pool */
   if (!active) return pick(pool) || list[0];
   const scored = pool.map(c => [c, scoreCard(c, f, chipMoods)]);
   const max = Math.max(...scored.map(x => x[1]));
   /* below the floor, deal a neutral card instead of the 1-point winner (phone-creator playtest: Art Deco on a golden-hour ask) */
   const floor = (chipMoods.size || f.moods.size) ? 3 : 6; /* a mood match is a real match */
-  if (max < floor && NEUTRAL[suit]) { S.lastNeutral = (S.lastNeutral || 0) + 1; let n = (suit === 'film' && S.job === 'game' ? GAME_FILM_IDS : NEUTRAL[suit]).map(id => BY_ID.get(id)).filter(c => c && c.id !== avoid); /* a Game hand's plain card is still a game look; night words want a night light */ if (suit === 'light' && /\b(night|midnight|2am|after dark|neon|club)\b/.test(f.norm || '')) n = ['camera-practicals', 'camera-bluehour', 'camera-ledtube'].map(id => BY_ID.get(id)).filter(Boolean); if (n.length) return pick(n); }
+  if (max < floor && NEUTRAL[suit]) { S.lastNeutral = (S.lastNeutral || 0) + 1; let n = (suit === 'film' && S.job === 'game' ? GAME_FILM_IDS : NEUTRAL[suit]).map(id => BY_ID.get(id)).filter(c => c && c.id !== avoid && (S.job !== 'photo' || c.kind !== 'move')); /* a still never gets a camera move; a Game hand's plain card is still a game look; night words want a night light */ if (suit === 'light' && /\b(night|midnight|2am|after dark|neon|club)\b/.test(f.norm || '')) n = ['camera-practicals', 'camera-bluehour', 'camera-ledtube'].map(id => BY_ID.get(id)).filter(Boolean); if (n.length) return pick(n); }
   /* Wilder: the lowest-scoring cards that still clear the floor, so the hand leans away from the obvious pick */
   if (spice === 'wilder') { const above = scored.filter(x => x[1] >= floor).sort((a, b) => a[1] - b[1]); if (above.length) return pick(above.slice(0, Math.max(2, Math.ceil(above.length * 0.3))))[0]; }
   /* strong hits (phrase or card name) stay within 60% of the leader; weak hits stay within a point; a re-deal must look different (never the card already there) */
@@ -1869,7 +1871,7 @@ function eraBand(c) {
 
 /* recipe */
 /* drop person-only clauses (skin, hair, faces) when the subject has no person in it. Mirrors deck.py fit_ask() */
-const PERSON_RE = /\b(student|students|reader|teacher|worker|traveller|traveler|tourist|driver|rider|skater|surfer|runner|player|musician|artist|bride|groom|guest|guests|teen|teens|teenager|teenagers|boxer|potter|farmer|nurse|doctor|soldier|actor|actress|fan|fans|customer|customers|shopper|shoppers|person|people|man|men|woman|women|girl|boy|kid|kids|child|children|baby|face|faces|portrait|couple|friend|friends|family|dancer|singer|he|she|they|her|him|crowd|model|chef|baker|athlete|hero|commuter|figure|someone)\b/i;
+const PERSON_RE = /\b(astronaut|astronauts|cowboy|cowboys|cowgirl|gunslinger|outlaw|sheriff|clown|clowns|pirate|pirates|knight|wizard|witch|detective|spy|robot|alien|grandma|grandpa|grandmother|grandfather|mom|dad|mother|father|nun|monk|priest|queen|king|prince|princess|ballerina|chef|student|students|reader|teacher|worker|traveller|traveler|tourist|driver|rider|skater|surfer|runner|player|musician|artist|bride|groom|guest|guests|teen|teens|teenager|teenagers|boxer|potter|farmer|nurse|doctor|soldier|actor|actress|fan|fans|customer|customers|shopper|shoppers|person|people|man|men|woman|women|girl|boy|kid|kids|child|children|baby|face|faces|portrait|couple|friend|friends|family|dancer|singer|he|she|they|her|him|crowd|model|chef|baker|athlete|hero|commuter|figure|someone)\b/i;
 const BODY_RE = /\b(skin|hair|face|faces|eyes|lips|cheek|cheeks|freckles|complexion|people|figures|crowd|waist|torso|shoulders|portrait)\b/i;
 /* when the hand holds a light card, it owns the light: drop the film/colour card's own light words */
 const LIGHT_RE = /\b(midday|noon|overcast|window light|hard sun|harsh sun|daylight|flat light|sunlit|backlight|golden hour|blue hour|moonlight|flash|deep blue sk(?:y|ies)|night scene|at night)\b/i;
@@ -2212,7 +2214,7 @@ function dealCore(slots, f, chipMoods, js, force) {
 /* opts: text (overrides the feel box), chipMoods (overrides the mood chips), by + mood + kept (the note), keepSeed (replay), noSnapshot, silent (no render) */
 function afterDealScroll() { if (!window.matchMedia('(max-width: 759px)').matches) return; const q = $('#quick') || $('#hand'); if (q) q.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); }
 function dealLocal(onlySuit, opts = {}) {
-  const text = opts.text != null ? opts.text : $('#feel').value.trim(); const f = parseFeeling(text);
+  const text = opts.text != null ? opts.text : $('#feel').value.trim(); const f = parseFeeling(text); if (opts.ai && !onlySuit) f.ai = opts.ai; /* the AI reader's picks (first Get of a new feeling only) */
   const js = JOB_SUITS[S.job];
   const slots = js.filter(s => onlySuit ? s === onlySuit : !S.holds[s]);
   /* an empty optional slot that this deal would leave empty is not a slot to deal */
@@ -2224,9 +2226,9 @@ function dealLocal(onlySuit, opts = {}) {
   if (text && (!(S.subject || '').trim() || S.subjectAuto)) setSubject(text, true); /* an auto-filled subject follows the feeling; a typed one sticks */
   /* Safer and Wilder must pass the lint: up to two re-rolls on the same seed stream */
   const tries = 3; /* every deal re-rolls away from a heads-up (a scope lens in 4:5 on the first look) */ let neutral = 0;
-  for (let i = 0; i < tries; i++) { neutral = dealCore(slots, f, chip, js, !!onlySuit); if (!handLint(handCards(), S.aspect || '').length) break; }
+  for (let i = 0; i < tries; i++) { if (f.ai && i > 0) { f.ai = { ...f.ai }; delete f.ai.light; if (i > 1) delete f.ai.color; } /* an AI hand that trips the lint lets the matcher redo the light, then the palette; the rest stays the AI's */ neutral = dealCore(slots, f, chip, js, !!onlySuit); const lint = handLint(handCards(), S.aspect || '').filter(m => !(f.ai && /names no person/.test(m))); if (!lint.length) break; } /* a subject wording note is not the AI hand's fault */
   /* a plain deal should not open on a pile (bakery playtest): two more rolls on the same stream, keep the best-held hand */
-  if (!onlySuit && !opts.chipMoods) { const rank = c => (c.label === 'tight' ? 2 : c.label === 'loose' ? 1 : 0) * 100 + c.shared; let best = { hand: { ...S.hand }, co: coherence(), neutral }; for (let i = 0; i < 2 && best.co.label === 'pile'; i++) { const n2 = dealCore(slots, f, chip, js, false); const co = coherence(); if (rank(co) > rank(best.co)) best = { hand: { ...S.hand }, co, neutral: n2 }; } S.hand = best.hand; neutral = best.neutral; }
+  if (!onlySuit && !opts.chipMoods && !f.ai) { const rank = c => (c.label === 'tight' ? 2 : c.label === 'loose' ? 1 : 0) * 100 + c.shared; let best = { hand: { ...S.hand }, co: coherence(), neutral }; for (let i = 0; i < 2 && best.co.label === 'pile'; i++) { const n2 = dealCore(slots, f, chip, js, false); const co = coherence(); if (rank(co) > rank(best.co)) best = { hand: { ...S.hand }, co, neutral: n2 }; } S.hand = best.hand; neutral = best.neutral; }
   S.take++; S.feeling = [text, [...chip].join(', ')].filter(Boolean).join(' · ');
   if (!onlySuit) { S.dealtBy = 'match'; S.logline = ''; S.why = null; S.missing = []; }
   const q = text || [...chip].join(', ');
@@ -2774,7 +2776,24 @@ document.addEventListener('keydown', e => {
   if (card && e.target === card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (S.cmpOn && card.closest('#spread')) { toggleCmp(card.dataset.id); return; } const list = card.closest('#spread') ? spreadList().map(c => c.id) : null; openSheet(card.dataset.id, list, !!card.closest('#hand')); }
 });
 (() => { let x0 = null, y0 = null; const p = $('#panel'); p.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; }); p.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 60 && Math.abs(dy) < 50 && !e.target.closest('.box')) moveSheet(dx < 0 ? 1 : -1); }); })();
-$('#feel-form').addEventListener('submit', e => { e.preventDefault(); dealLocal(); });
+/* AI feeling reader: the counter worker's model (Workers AI, free daily limit) picks one card per slot from the same pools the matcher deals from.
+   Used on the first Get of a new feeling; Get again on the same words deals fresh by the matcher. Any failure, cap or answer slower than 4 s falls back to the matcher. */
+const AI_ON = /^https:\/\/(www\.)?directorslookbook\.app$|^http:\/\/127\.0\.0\.1:8766$/.test(location.origin);
+let aiLast = '';
+async function aiPick(text) {
+  const f = parseFeeling(text); f.collect = {};
+  JOB_SUITS[S.job].filter(s => !OPTIONAL.has(s) && !S.holds[s]).forEach(s => pickFor(s, f, new Set(), null, S.hand));
+  if (!Object.keys(f.collect).length) return null;
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 4000);
+  try { const r = await fetch('https://lookbook-events.riverroadlabs.workers.dev/pick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ feeling: text, job: S.job, slots: f.collect }), signal: ctl.signal }); const j = await r.json(); return j.pick && Object.keys(j.pick).length ? j.pick : null; }
+  catch (e) { return null; } finally { clearTimeout(t); }
+}
+$('#feel-form').addEventListener('submit', async e => {
+  e.preventDefault(); const b = $('#deal-btn'), text = $('#feel').value.trim(), k = S.job + '|' + text.toLowerCase();
+  let ai = null;
+  if (AI_ON && text && k !== aiLast) { b.disabled = true; const lbl = b.textContent; b.textContent = 'Reading…'; ai = await aiPick(text); b.textContent = lbl; b.disabled = false; aiLast = k; }
+  dealLocal(undefined, ai ? { ai } : {});
+});
 let findT = null; ['#find', '#m-findin'].forEach(sel => { const el = $(sel); if (el) el.addEventListener('input', e => { clearTimeout(findT); findT = setTimeout(() => { setFind(e.target.value); saveView(); renderSpread(); }, 160); }); });
 $('#sort').addEventListener('change', e => { S.sort = e.target.value; saveView(); renderSpread(); });
 $('#m-sort') && $('#m-sort').addEventListener('change', e => { S.sort = e.target.value; saveView(); renderSpread(); });
@@ -2879,15 +2898,21 @@ if (HOT && HOT.ready) HOT.ready(boot); else boot((HOT && HOT.data) || null);
 
 renderStarts();
 
-/* usage counts for the live site only: one anonymous ping per action to the RRL counter (no cookies, no ids, no text you type).
+/* usage counts for the live site only: one anonymous ping per action to the RRL counter (no cookies, no ids; the feeling text goes only to the AI reader above, cached 60 days, never counted).
    "copier" is sent at most once a day per browser, so the daily count of people who copied a prompt is readable. */
 (() => {
   if (!/(^|\.)directorslookbook\.app$/.test(location.hostname)) return;
   const URL_ = 'https://lookbook-events.riverroadlabs.workers.dev/e?n=';
   const ev = n => { try { navigator.sendBeacon(URL_ + n); } catch (e) { try { fetch(URL_ + n, { method: 'POST', mode: 'no-cors', keepalive: true }); } catch (e2) {} } };
+  const once = n => { const d = new Date().toISOString().slice(0, 10); try { if (localStorage.getItem('dd.' + n) === d) return; localStorage.setItem('dd.' + n, d); } catch (e) {} ev(n); };
+  const getter = () => once('getter');
+  once('visitor'); /* one per browser per day: unique visitors without an id */
+  { const q = new URLSearchParams(location.search).get('from'); const r = (document.referrer || '').toLowerCase();
+    const src = q && /^(ig|tt|x|yt|fb)$/.test(q) ? q : !r ? 'direct' : /instagram/.test(r) ? 'ig' : /tiktok/.test(r) ? 'tt' : /(^|\/\/)(t\.co|x\.com|twitter)/.test(r) ? 'x' : /youtube|youtu\.be/.test(r) ? 'yt' : /facebook|fb\.com/.test(r) ? 'fb' : /google|bing|duckduckgo|yahoo|ecosia/.test(r) ? 'search' : /directorslookbook/.test(r) ? '' : 'other';
+    if (src) once('src_' + src); }
   const copier = () => { const d = new Date().toISOString().slice(0, 10); try { if (localStorage.getItem('dd.copier') === d) return; localStorage.setItem('dd.copier', d); } catch (e) {} ev('copier'); };
   ev('visit');
-  document.addEventListener('submit', e => { if (e.target && e.target.id === 'feel-form') ev('get'); }, true);
+  document.addEventListener('submit', e => { if (e.target && e.target.id === 'feel-form') { ev('get'); getter(); } }, true);
   document.addEventListener('click', e => {
     const t = e.target.closest('button, a, [data-job], [data-palette], [data-start], [data-start-copy]'); if (!t) return;
     if (t.id === 'deal-btn') return; /* the form's submit already counts it */
