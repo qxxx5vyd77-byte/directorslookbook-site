@@ -733,6 +733,8 @@ label.step-h{font:600 15px/1.2 var(--f-body)!important;text-transform:none!impor
 
 .cs-pic{position:relative;display:block;width:100%}.cs-pic img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;display:block}
 
+.btn.busy{position:relative;opacity:.85}.btn.busy::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:40%;background:currentColor;animation:busybar 1s ease-in-out infinite alternate}@keyframes busybar{to{left:60%}}
+
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
 .stage{--sg-sky-t:#E4E8EB;--sg-sky-b:#F6F6F2;--sg-sun:#FFFFFF;--sg-sunl:#B3BAC0;--sg-far:#CAD0D3;--sg-mid:#A9B0B5;--sg-tree:#959DA3;--sg-subj:#262A2E;--sg-fg:#6E767C;--sg-win:#F2D48A;--sg-hand:#8A7A6E;--sg-ground:#CBD0C9;--sg-road:#9AA09D;--sg-zebra:#F6F6F2;--sg-door:#8C4E46;--sg-pic:#EADCC5;--vfc:rgba(30,34,38,.35);
@@ -2221,11 +2223,12 @@ function toolPrompt(text, kind, h) {
   if (tool === 'midjourney') {
     const m = String(text).match(/Aspect ratio ([^.]+)\./), ar = mjAspect(m ? m[1] : S.aspect);
     const film = h && h.film;
-    return stripAspect(text).trim() + (ar ? ` --ar ${ar}` : '') + ' --style raw' + (film && film.example ? `\n(use the card's example as --sref)` : '');
+    return stripAspect(text).trim() + (ar ? ` --ar ${ar}` : '') + ' --style raw'; /* the --sref hint lives in the UI note, never inside the copied prompt (round 10) */
   }
   if (tool === 'runway') {
     const cam = h && h.camera, hasCam = cam && JOB_SUITS[S.job].includes('camera');
     const body = stripAspect(text).trim();
+    const first = hasCam ? String(cam.ask).split(',')[0].trim().toLowerCase() : ''; if (hasCam && first && body.toLowerCase().includes(first)) return body; /* the body already carries the camera sentence: no second header (round 10) */
     return hasCam ? `Camera: ${cam.ask.replace(/\.\s*$/, '')}.\n${body}` : body;
   }
   return text;
@@ -2785,7 +2788,7 @@ function openSheet(id, list, fromHand) {
   setTimeout(() => { const b = $('#sheet [data-close].iconbtn'); if (b) b.focus(); }, 30);
 }
 function closeSheet() {
-  if (S.backToCheat) { const k = S.backToCheat; S.backToCheat = null; setTimeout(() => openCheat(k), 0); }
+  if (S.backToCheat) { const k = S.backToCheat, g = !!S.guideKey; S.backToCheat = null; setTimeout(() => openCheat(k, g), 0); } /* back to the sheet in the same mode, stepper included (round 10) */
   const sb = $('#sheet-body'); unobserve(sb); sb.innerHTML = ''; $('#sheet').hidden = true; document.body.classList.remove('noscroll'); const pg = $('.page'); if (pg) pg.inert = false;
   /* you are here: the position stays in the toolbar until the next scroll */
   if (S.sheetList && !S.sheetFromHand) { S.hereTab = S.tab; S.here = S.sheetEnd ? `you were at the end of ${S.sheetLabel}` : `you are here: ${S.sheetIdx + 1} / ${S.sheetList.length}`; renderHere(); S.hereAt = Date.now(); }
@@ -2871,7 +2874,7 @@ function flash(btn, label) { if (!btn) return; const old = btn.dataset.label || 
 
 /* groove UI */
 AE.onStep = (id, i) => { const g = $$(`.groove[data-g="${CSS.escape(id)}"]`); g.forEach(el => { $$('.now', el).forEach(x => x.classList.remove('now')); $$('.gr', el).forEach(r => { const cell = r.querySelectorAll('i')[i]; if (cell) cell.classList.add('now'); }); }); };
-AE.onStop = id => { $$(`.groove[data-g="${CSS.escape(id)}"]`).forEach(el => $$('.now', el).forEach(x => x.classList.remove('now'))); $$(`[data-play="${CSS.escape(id)}"]`).forEach(b => { b.classList.remove('on'); b.innerHTML = PLAY_SVG; }); };
+AE.onStop = id => { $$(`.groove[data-g="${CSS.escape(id)}"]`).forEach(el => $$('.now', el).forEach(x => x.classList.remove('now'))); $$(`[data-play="${CSS.escape(id)}"]`).forEach(b => { b.classList.remove('on'); b.innerHTML = PLAY_SVG; b.setAttribute('aria-pressed', 'false'); const n = b.dataset.name; if (n) b.setAttribute('aria-label', `Play ${n}`); }); };
 
 /* ---- Shared store (saved hands, card inbox), Claude deal, events, boot ---- */
 const X = { db: null, user: null, canWrite: null, uid: null, hands: [], inbox: [], sample: null, ctl: null };
@@ -2953,7 +2956,7 @@ async function askClaude() {
     const pick = {}; js.forEach(s => { const id = res && res[s]; const c = BY_ID.get(id); const fits = c && (s === 'light' || s === 'direction' ? c.suit === 'camera' && c.kind === s : c.suit === s); pick[s] = fits ? c.id : null; });
     const f = parseFeeling(feel);
     snapshot(); seedRng(newSeed());
-    js.forEach(s => { if (S.holds[s] || skipped(s)) return; S.hand[s] = pick[s] || (OPTIONAL.has(s) ? null : (pickFor(s, f, S.moods, S.hand[s], S.hand) || {}).id || S.hand[s]); }); /* an optional slot Claude left out stays empty */
+    js.forEach(s => { if (S.holds[s] || skipped(s)) return; const nm = OPTIONAL.has(s) ? (BY_SUIT[s] || []).find(c => namedIn(c, f.norm)) : null; S.hand[s] = pick[s] || (nm ? nm.id : OPTIONAL.has(s) ? null : (pickFor(s, f, S.moods, S.hand[s], S.hand) || {}).id || S.hand[s]); }); /* an optional slot Claude left out stays empty, unless the visitor named a card for it (round 10: 'anamorphic flare') */
     if (!(S.subject || '').trim() || S.subjectAuto) setSubject(feel, true);
     S.take++; S.dealtBy = 'claude'; S.feeling = feel; S.logline = (res && typeof res.logline === 'string') ? res.logline : '';
     S.why = (res && res.why && typeof res.why === 'object') ? res.why : null;
@@ -2981,6 +2984,7 @@ function putCard(c, opts = {}) {
   const old = BY_ID.get(S.hand[slot]), wasKept = !!S.holds[slot];
   if (old && old.id === c.id) { if (!opts.quiet) closeSheet(); toast(`${c.name} is already in your look`); return; }
   snapshot();
+  if (slot === 'camera' && S.job === 'video' && S.guideKey && S.holds.camera && S.hand.camera !== c.id) { const have = S.shotsTouched && S.shots && S.shots.length ? S.shots.map(x => x.cam) : [S.hand.camera]; const list = [...have, c.id]; S.shots = list.map(id => cleanShot({ cam: id, dir: null, sec: 4, note: '' })); S.shotsAuto = false; S.shotsTouched = true; } /* guided video: a second camera card is a second shot (round 10) */
   S.hand[slot] = c.id; S.holds[slot] = true; S.take++; S.dealtBy = 'pick'; S.why = null; S.deal = { by: 'pick', name: c.name };
   persist(); renderHand(false);
   if (!opts.quiet) closeSheet();
@@ -3055,9 +3059,10 @@ function renderStarts() {
 function startLook(i) {
   const x = (D.examples || [])[i]; if (!x) return; const cards = {}; for (const [k, v] of Object.entries(x.cards)) { const c = BY_ID.get(v); if (c) cards[c.kind === 'light' ? 'light' : c.kind === 'fx' ? 'fx' : c.suit] = v; }
   JOB_SUITS[x.job].forEach(s => { S.holds[s] = false; }); /* a starting point, not a lock: the next feeling re-deals it (persona playtest 10-09) */
-  loadSaved({ cards, job: x.job, feeling: x.title.toLowerCase(), subject: x.subject, aspect: x.aspect });
+  const typed = (S.subject || '').trim() && !S.subjectAuto; /* a typed subject stays through a ready look (round 10) */
+  loadSaved({ cards, job: x.job, feeling: x.title.toLowerCase(), subject: typed ? S.subject : x.subject, aspect: x.aspect });
   S.startHand = JSON.stringify(S.hand); renderHand(false);
-  S.subjectAuto = true; /* the example's subject is a placeholder: the visitor's next feeling replaces it (IG playtest) */
+  S.subjectAuto = !typed; /* the example's subject is a placeholder: the visitor's next feeling replaces it (IG playtest) */
 }
 function startPrompt(i) {
   const x = (D.examples || [])[i]; if (!x) return '';
@@ -3069,7 +3074,7 @@ function startPrompt(i) {
 /* a printable lesson sheet: the cards in view, oldest first, with when, where, what and the "not this" line (teacher playtest) */
 function printSheet() {
   const list = spreadList().slice(0, 60).sort((a, b) => ((a.era && a.era.from) ?? 1e9) - ((b.era && b.era.from) ?? 1e9));
-  const row = c => `<section><h2>${esc(c.name)}</h2><p class="m">${c.era && c.era.from != null ? esc(fmtYear(c.era.from)) + (c.era.to ? ' to ' + esc(fmtYear(c.era.to)) : ' onward') : 'Date not set'}${c.era && c.era.where ? ' · ' + esc(c.era.where) : ''}</p>${c.example ? `<img src="${new URL(c.example.img, location.href).href}" alt="">` : ''}<p>${esc(c.what || '')}</p>${c.not ? `<p class="n"><b>Not this:</b> ${esc(c.not)}</p>` : ''}</section>`;
+  const row = c => `<section><h2>${esc(c.name)}</h2><p class="m">${c.era && c.era.from != null ? esc(fmtYear(c.era.from)) + (c.era.to ? ' to ' + esc(fmtYear(c.era.to)) : ' onward') : ''}${c.era && c.era.where ? ' · ' + esc(c.era.where) : ''}</p>${c.example ? `<img src="${new URL(c.example.img, location.href).href}" alt="">` : ''}<p>${esc(c.what || '')}</p>${c.not ? `<p class="n"><b>Not this:</b> ${esc(c.not)}</p>` : ''}</section>`;
   const w = window.open('', '_blank'); if (!w) { toast('Allow pop-ups to print the sheet.'); return; }
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Lesson sheet: ${list.length} looks</title><style>body{font:14px/1.5 Georgia,serif;margin:32px;color:#111}h1{font-size:22px}section{break-inside:avoid;border-top:1px solid #ccc;padding:12px 0;overflow:hidden}h2{font-size:17px;margin:0}.m{color:#555;margin:2px 0 6px}img{float:right;width:180px;margin:0 0 8px 12px}.n{color:#444}</style></head><body><h1>Director's Lookbook: ${list.length} looks, oldest first</h1>${list.map(row).join('')}<p style="color:#777">directorslookbook.app</p></body></html>`);
   w.document.close(); setTimeout(() => { try { w.focus(); w.print(); } catch (e) {} }, 600);
@@ -3083,7 +3088,7 @@ document.addEventListener('click', e => {
   { const t0 = e.target.closest('[data-start],[data-start-copy]'); if (t0) { if (t0.dataset.start != null) startLook(+t0.dataset.start); else { const t = startPrompt(+t0.dataset.startCopy); try { navigator.clipboard.writeText(t); } catch (err) {} toast('Prompt copied. Use this look to open it and change it.'); } return; } }
   const t = e.target.closest('button, .card, [data-close]'); if (!t) return;
   const d = t.dataset;
-  if (d.play) { e.stopPropagation(); const c = BY_ID.get(d.play); if (!c) return; const r = playGroove(c); if (r === null) { toast('This browser cannot play audio.'); return; } $$(`[data-play="${CSS.escape(c.id)}"]`).forEach(b => { b.classList.toggle('on', !!r); b.innerHTML = r ? STOP_SVG : PLAY_SVG; }); return; }
+  if (d.play) { e.stopPropagation(); const c = BY_ID.get(d.play); if (!c) return; const r = playGroove(c); if (r === null) { toast('This browser cannot play audio.'); return; } $$(`[data-play="${CSS.escape(c.id)}"]`).forEach(b => { b.classList.toggle('on', !!r); b.innerHTML = r ? STOP_SVG : PLAY_SVG; b.dataset.name = c.name; b.setAttribute('aria-pressed', String(!!r)); b.setAttribute('aria-label', r ? `Stop ${c.name}` : `Play ${c.name}`); }); return; }
   if (d.hold) { S.holds[d.hold] = !S.holds[d.hold]; renderHand(false); persist(); const nb = $(`#hand [data-hold="${d.hold}"]`); if (nb) nb.focus(); return; }
   if (d.slotBack) { const st = (S.slotHist || {})[d.slotBack] || []; const prev = st.pop(); if (prev && BY_ID.get(prev)) { S.hand[d.slotBack] = prev; S.deal = { by: 'swap', slot: d.slotBack }; renderHand(d.slotBack); persist(); const nb = $(`#hand [data-slot-back="${d.slotBack}"]`) || $(`#hand [data-swap="${d.slotBack}"]`); if (nb) nb.focus(); } return; } /* step back through this card's earlier picks (Matt, 2026-10-09) */
   if (d.swap) { if (S.skip && S.skip[d.swap]) { S.skip[d.swap] = false; } S.slotHist = S.slotHist || {}; if (S.hand[d.swap]) { const h = (S.slotHist[d.swap] = S.slotHist[d.swap] || []); h.push(S.hand[d.swap]); if (h.length > 20) h.shift(); } dealLocal(d.swap); const nb = $(`#hand [data-swap="${d.swap}"]`); if (nb) nb.focus(); return; }
@@ -3125,7 +3130,7 @@ document.addEventListener('click', e => {
     snapshot(); const COV = [['camera-wide', 'master: the whole space and who is where'], ['camera-medium', 'interaction: the action between them'], ['camera-closeup', 'reaction: the face at the beat'], ['camera-insert', 'detail: the prop or the hands'], ['camera-cutaway', 'cutaway: a second reaction or the room']];
     S.shots = COV.filter(([id]) => BY_ID.get(id)).map(([id, note]) => cleanShot({ cam: id, dir: null, sec: 3, note })); S.shotsAuto = false; S.shotsTouched = true; S.hand.camera = S.shots[0].cam; S.holds.camera = true; S.deal = { by: 'load' }; renderHand(false); persist(); toast('Five shots: master, medium, close-up, insert, cutaway. Same look in every one.'); return; }
   if (t.id === 'cheat-add') { addCheatSel(); return; }
-  if (t.id === 'cheat-skip') { const nx = S.guideKey ? guideNext(S.guideKey) : null; if (nx) openCheat(nx, true); return; }
+  if (t.id === 'cheat-skip') { const nx = S.guideKey ? guideNext(S.guideKey) : null; if (nx) openCheat(nx, true); else { closeCheat(); $('#look-h').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); } return; }
   if (t.dataset.startTab) { showTab(t.dataset.startTab); return; }
   if (t.dataset.guide) { openCheat(t.dataset.guide, true); return; }
   if (t.dataset.browse) { const k = sheetFor(t.dataset.browse); if (k) { S.cheatSel = new Set(); openCheat(k); const hint = $('#cheat .cheat-hint'); if (hint) hint.textContent = `Pick the ${slotCat(t.dataset.browse).toLowerCase()} you want, then Add to my look. It replaces the card in that slot and is kept.`; } return; }
@@ -3187,8 +3192,9 @@ async function aiPick(text) {
 $('#feel-form').addEventListener('submit', async e => {
   e.preventDefault(); const b = $('#deal-btn'), text = $('#feel').value.trim(), k = S.job + '|' + text.toLowerCase();
   let ai = null, first = false; aiTimedOut = false;
-  if (AI_ON && text && !aiResting) { if (AI_CACHE.has(k)) ai = AI_CACHE.get(k); else { b.disabled = true; const lbl = b.textContent; b.textContent = 'Reading…'; { const sr = $('#sr-count'); if (sr) sr.textContent = 'Reading your feeling…'; } ai = await aiPick(text); b.textContent = lbl; b.disabled = false; if (ai) { AI_CACHE.set(k, ai); first = true; } } } /* repeat Gets deal another of the AI's top picks, no new read */
+  if (AI_ON && text && !aiResting) { if (AI_CACHE.has(k)) ai = AI_CACHE.get(k); else { b.disabled = true; b.classList.add('busy'); const lbl = b.textContent; b.textContent = 'Reading…'; { const sr = $('#sr-count'); if (sr) sr.textContent = 'Reading your feeling…'; } ai = await aiPick(text); b.textContent = lbl; b.disabled = false; b.classList.remove('busy'); if (ai) { AI_CACHE.set(k, ai); first = true; } } } /* repeat Gets deal another of the AI's top picks, no new read */
   dealLocal(undefined, ai ? { ai, aiFirst: first } : {});
+  { const h = $('#look-h'); if (h) { const r = h.getBoundingClientRect(); if (r.top > window.innerHeight * 0.6 || r.top < 0) h.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); } } /* the new look lands in view (round 10: it sat 1,300 px below the fold) */
   const note = $('#deal-note'); if (note && text) { const sl = S.aiSlots; const tail = ai && S.aiAnother && sl && sl.kept === sl.asked ? ' Another take from the AI reader\'s top choices.' : ai ? (sl && sl.kept < sl.asked ? ` Read by the AI reader: ${sl.kept} of ${sl.asked} cards are its picks; swapped: ${(sl.swapped || []).join(', ')}.` : ' Read by the AI reader.') : aiTimedOut ? ' The AI reader was slow, so this look is matched by keywords. Get the look again to retry.' : aiResting ? ' The AI reader has hit its free daily limit, so this look is matched by keywords; it is back tomorrow.' : ''; if (ai) note.innerHTML = note.innerHTML.replace(/\s*Matched “[^”]*” on \d+ slots?(, \d+ had no match and got a plain card)?\.?/, '').replace(/\s*Nothing in the library matches “[^”]*” yet\.[^.]*\.[^.]*\./, ''); if (tail) note.insertAdjacentHTML('beforeend', `<span class="ai-note">${tail}</span>`); } /* an AI deal is described once, by the AI line */
 });
 let findT = null; ['#find', '#m-findin'].forEach(sel => { const el = $(sel); if (el) el.addEventListener('input', e => { clearTimeout(findT); findT = setTimeout(() => { setFind(e.target.value); saveView(); renderSpread(); }, 160); }); });
@@ -3260,7 +3266,7 @@ function boot(hot) {
   if (linked) {
     const q = new URLSearchParams(hash0); S.linkFeel = q.get('feel') || ''; const ids = (q.get('hand') || '').split(',').filter(Boolean); const job = q.get('job'); if (JOB_SUITS[job]) S.job = job;
     ids.forEach(id => { const c = BY_ID.get(id); if (c) { S.hand[slotFor(c)] = id; S.holds[slotFor(c)] = true; } });
-    if (ids.length) S.deal = { by: 'link' };
+    if (ids.length) { S.deal = { by: 'link' }; setTimeout(() => { const h = $('#look-h'); if (h) h.scrollIntoView({ behavior: 'auto' }); }, 400); } /* a shared look opens on the look, not the header (round 10) */
     if (q.get('campaign') === '1') S.campaign = true;
     if (q.get('shelf')) shelfIds = q.get('shelf').split(',').filter(id => BY_ID.get(id));
     if (ids.length || q.get('seed')) shared = { subject: q.get('subject'), aspect: q.get('aspect'), title: q.get('title') };
@@ -3350,7 +3356,7 @@ function openCheat(key, guided) {
   $('#cheat-title').textContent = ch.title;
   { const steps = guideSteps(), i = steps.indexOf(key), nx = guided ? guideNext(key) : null; const hint = $('#cheat .cheat-hint'), skip = $('#cheat-skip'), add = $('#cheat-add');
     if (hint) hint.textContent = guided ? `Step ${i + 1} of ${steps.length}: pick one ${SHEET_SHORT[key].toLowerCase()} for your ${JOB_LABEL[S.job].toLowerCase()}. Tap a card, then ${nx ? 'Add and next' : 'Add to my look'}.` : 'Tap cards to select them, then add them to your look.';
-    if (skip) { skip.hidden = !guided || !nx; skip.textContent = nx ? `Skip to ${SHEET_SHORT[nx].toLowerCase()}` : 'Skip'; }
+    if (skip) { skip.hidden = !guided; skip.textContent = nx ? `Skip to ${SHEET_SHORT[nx].toLowerCase()}` : 'Finish'; }
     if (add) add.textContent = guided && nx ? `Add and next: ${SHEET_SHORT[nx].toLowerCase()}` : 'Add to my look'; }
   S.cheatSel = S.cheatSel || new Set(); const fontSheet = key === 'fonts';
   $('#cheat-body').innerHTML = ch.groups().filter(g => g[1].length).map(([label, list]) => `<section class="cs-g"><h3>${esc(label)} <small>${list.length}</small></h3><div class="cs-grid${fontSheet ? ' cs-fonts' : ''}">${list.map(c => `<div class="cs-item${S.cheatSel.has(c.id) ? ' sel' : ''}" data-cheat-sel="${esc(c.id)}" role="checkbox" tabindex="0" aria-checked="${S.cheatSel.has(c.id)}">${fontSheet ? `<span class="cs-fontline" style="${typeStyle(c)}">${esc(c.sample || c.name)}</span>` : cheatThumb(c)}<div class="cs-t"><b><button class="cs-open" type="button" data-cheat-open="${esc(c.id)}">${esc(c.name)}</button></b><span>${esc((c.feels || []).slice(0, 3).join(' · '))}</span></div><button class="cs-copy" type="button" data-cheat-copy="${esc(c.id)}" aria-label="Copy the words for ${esc(c.name)}" title="Copy the words for this look">⧉</button></div>`).join('')}</div></section>`).join('');
