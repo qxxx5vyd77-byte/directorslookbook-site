@@ -619,6 +619,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 @media (max-width:759px){.cs-grid{grid-template-columns:repeat(2,1fr)}.cs-fonts{grid-template-columns:1fr}}
 @media print{.cs-grid{grid-template-columns:repeat(4,1fr)}.cs-item{display:flex}}
 
+.cheat-top{position:sticky;top:-24px;z-index:2;background:var(--well);padding-top:6px}
+@media (max-width:759px){.cheat-top{top:0}.cheat-row{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:42%;overflow-x:auto;scroll-snap-type:x mandatory}.cheat-tile{scroll-snap-align:start}}
+.cs-web{display:block;width:100%;aspect-ratio:4/3;overflow:hidden;position:relative;pointer-events:none}
+.cs-web>*{transform:scale(.9);transform-origin:top left}
+.cs-web>*{transform:scale(.42);transform-origin:top left;width:238%;height:238%}
+
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
 .stage{--sg-sky-t:#E4E8EB;--sg-sky-b:#F6F6F2;--sg-sun:#FFFFFF;--sg-sunl:#B3BAC0;--sg-far:#CAD0D3;--sg-mid:#A9B0B5;--sg-tree:#959DA3;--sg-subj:#262A2E;--sg-fg:#6E767C;--sg-win:#F2D48A;--sg-hand:#8A7A6E;--sg-ground:#CBD0C9;--sg-road:#9AA09D;--sg-zebra:#F6F6F2;--sg-door:#8C4E46;--sg-pic:#EADCC5;--vfc:rgba(30,34,38,.35);
@@ -1595,7 +1601,7 @@ const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 const SUITS = ['type', 'camera', 'film', 'color', 'score', 'web'];
-const JOB_SUITS = { photo: ['camera', 'light', 'film', 'color'], video: ['type', 'camera', 'light', 'film', 'color', 'score', 'direction'], site: ['type', 'film', 'color', 'web'] };
+const JOB_SUITS = { photo: ['camera', 'light', 'film', 'color', 'direction'], video: ['type', 'camera', 'light', 'film', 'color', 'score', 'direction'], site: ['type', 'film', 'color', 'web'] };
 /* 'light' is a hand slot, not a suit: it deals from the Camera suit's light cards (director playtest round 2) */
 /* 'direction' is the Video hand's optional 7th slot: a Camera card of kind direction, empty unless placed on purpose or the feeling asks for acting */
 const SLOTS = ['type', 'camera', 'light', 'film', 'color', 'score', 'web', 'direction'];
@@ -1969,7 +1975,7 @@ function eraBand(c) {
 
 /* recipe */
 /* drop person-only clauses (skin, hair, faces) when the subject has no person in it. Mirrors deck.py fit_ask() */
-const PERSON_RE = /\b(portraits|portrait|strangers|stranger|fight|fighters|chase|runners|teenagers|kids|newlyweds|guests|crew|crowd|crowds|shoppers|dancers|explorers|hiker|hikers|climber|surfer|surfers|skateboarder|skateboarders|gardener|saxophonist|player|bride|groom|astronaut|astronauts|cowboy|cowboys|cowgirl|gunslinger|outlaw|sheriff|clown|clowns|pirate|pirates|knight|wizard|witch|detective|spy|robot|alien|grandma|grandpa|grandmother|grandfather|mom|dad|mother|father|nun|monk|priest|queen|king|prince|princess|ballerina|chef|student|students|reader|teacher|worker|traveller|traveler|tourist|driver|rider|skater|surfer|runner|player|musician|artist|bride|groom|guest|guests|teen|teens|teenager|teenagers|boxer|potter|farmer|nurse|doctor|soldier|actor|actress|fan|fans|customer|customers|shopper|shoppers|person|people|man|men|woman|women|girl|boy|kid|kids|child|children|baby|face|faces|portrait|couple|friend|friends|family|dancer|singer|he|she|they|her|him|crowd|model|chef|baker|athlete|hero|commuter|figure|someone)\b/i;
+const PERSON_RE = /\b(his|hers|fisherman|fishermen|sailor|sailors|farmer|farmers|cyclist|cyclists|swimmer|swimmers|baker|bakers|portraits|portrait|strangers|stranger|fight|fighters|chase|runners|teenagers|kids|newlyweds|guests|crew|crowd|crowds|shoppers|dancers|explorers|hiker|hikers|climber|surfer|surfers|skateboarder|skateboarders|gardener|saxophonist|player|bride|groom|astronaut|astronauts|cowboy|cowboys|cowgirl|gunslinger|outlaw|sheriff|clown|clowns|pirate|pirates|knight|wizard|witch|detective|spy|robot|alien|grandma|grandpa|grandmother|grandfather|mom|dad|mother|father|nun|monk|priest|queen|king|prince|princess|ballerina|chef|student|students|reader|teacher|worker|traveller|traveler|tourist|driver|rider|skater|surfer|runner|player|musician|artist|bride|groom|guest|guests|teen|teens|teenager|teenagers|boxer|potter|farmer|nurse|doctor|soldier|actor|actress|fan|fans|customer|customers|shopper|shoppers|person|people|man|men|woman|women|girl|boy|kid|kids|child|children|baby|face|faces|portrait|couple|friend|friends|family|dancer|singer|he|she|they|her|him|crowd|model|chef|baker|athlete|hero|commuter|figure|someone)\b/i;
 const BODY_RE = /\b(skin|hair|face|faces|eyes|lips|cheek|cheeks|freckles|complexion|people|figures|crowd|waist|torso|shoulders|portrait)\b/i;
 /* when the hand holds a light card, it owns the light: drop the film/colour card's own light words */
 const LIGHT_RE = /\b(midday|noon|overcast|window light|hard sun|harsh sun|daylight|flat light|sunlit|backlight|golden hour|blue hour|moonlight|flash|deep blue sk(?:y|ies)|night scene|at night)\b/i;
@@ -2011,7 +2017,8 @@ function recipeParts(ids) {
   /* one prompt for video tools that make several shots in one generation (Veo, Kling multi-shot, Sora): the look once, then the shots with hard cuts (Matt, 2026-10-09) */
   const mshots = S.job === 'video' ? S.shots.filter(x => BY_ID.get(x.cam)) : [];
   const multi = mshots.length >= 2 ? `${subj}.${lightPhrase} ${filmAsk}.${colPhrase} The same subject, look and light in every shot.\n\n` + mshots.map((x, i) => { const cam = BY_ID.get(x.cam); const move = String(cam.ask || cam.name).split(',')[0].trim(); const beat = x.note ? x.note.replace(/[.\s]+$/, '') : ''; return `Shot ${i + 1}${x.sec ? ` (${x.sec} s)` : ''}: ${move}${beat ? `, ${beat}` : ''}.`; }).join('\nCUT TO\n') + `\n\n${mshots.length} shots, hard cuts, about ${mshots.reduce((a, x) => a + (Number(x.sec) || 4), 0)} seconds in all.${arPhrase}` : '';
-  const image = `${subj}. ${filmAsk}.${stillCam}${lightPhrase}${colPhrase}${title && S.job !== 'photo' && !film.owns_type ? ` Title lettering "${title}": ${ty.ask}.` : ''}${arPhrase}`;
+  const poseAsk = S.job === 'photo' && h.direction ? ` ${h.direction.ask}.` : ''; /* a pose card shapes the still (round 9: it used to replace the camera) */
+  const image = `${subj}. ${filmAsk}.${stillCam}${poseAsk}${lightPhrase}${colPhrase}${title && S.job !== 'photo' && !film.owns_type ? ` Title lettering "${title}": ${ty.ask}.` : ''}${arPhrase}`;
   const video = shots.length ? shots.map((x, i) => shotBlock(x, i + 1, dir, parts)).join('\n\n') : videoPrompt(cam, dir, parts);
   const f = ty.font || {};
   const caseWord = { upper: 'all caps', lower: 'lowercase', title: 'title case', sentence: 'sentence case' }[ty.case] || '';
@@ -2266,7 +2273,7 @@ function renderHand(animate) {
     const c = BY_ID.get(S.hand[s]); const su = SUIT[s];
     const why = S.why && S.why[s] && S.dealtBy === 'claude' ? `<p class="why">${esc(S.why[s])}</p>` : '';
     const cls = animate && (animate === true || animate === s) && !S.holds[s] && !REDUCED ? ' deal-in' : ''; /* New on one card flips only that card (Matt, 2026-10-09) */
-    return `<div class="slot${OPTIONAL.has(s) ? ' optional' : ''}" data-suit="${s}" style="animation-delay:${i * 90}ms">${c ? cardHTML(c, cls) : backHTML('', OPTIONAL.has(s) ? 'Optional: a performance beat' : '')}${slotTools(s, c, su)}${why}</div>`;
+    return `<div class="slot${OPTIONAL.has(s) ? ' optional' : ''}" data-suit="${s}" style="animation-delay:${i * 90}ms">${c ? cardHTML(c, cls) : backHTML('', OPTIONAL.has(s) ? 'Optional: a pose or performance beat' : '')}${slotTools(s, c, su)}${why}</div>`;
   }).join('');
   $$('.deal-in', hand).forEach((el, i) => { el.style.animationDelay = (i * 90) + 'ms'; });
   $('#deal-note').innerHTML = dealNote();
@@ -2275,9 +2282,9 @@ function renderHand(animate) {
 }
 /* Keep + New for a dealt slot; an empty optional slot offers a deal, a filled one can also be cleared */
 function slotTools(s, c, su) {
-  if (OPTIONAL.has(s) && !c) return `<div class="slot-tools"><button class="btn small" type="button" data-swap="${s}" aria-label="Get the look a ${su.label} card">Add a beat ${su.glyph}</button></div>`;
+  if (OPTIONAL.has(s) && !c) return `<div class="slot-tools"><button class="btn small" type="button" data-swap="${s}" aria-label="Get the look a ${su.label} card">Add a pose or beat ${su.glyph}</button></div>`;
   const clear = OPTIONAL.has(s) ? `<button class="btn small" type="button" data-clear="${s}" aria-label="Empty the ${su.label} slot">Clear</button>` : '';
-  return `<div class="slot-tools"><button class="btn small hold" type="button" data-hold="${s}" aria-pressed="${S.holds[s]}">${S.holds[s] ? 'Kept' : 'Keep'}</button><button class="btn small" type="button" data-swap="${s}" aria-label="Get the look a new ${su.label} card">New ${su.glyph}</button>${clear}</div>`;
+  return `<div class="slot-tools"><button class="btn small hold" type="button" data-hold="${s}" aria-pressed="${S.holds[s]}">${S.holds[s] ? 'Kept' : 'Keep'}</button>${(S.slotHist && S.slotHist[s] && S.slotHist[s].length) ? `<button class="btn small" type="button" data-slot-back="${s}" aria-label="Back to the previous ${su.label} card" title="Back to the previous card">‹</button>` : ''}<button class="btn small" type="button" data-swap="${s}" aria-label="Get the look a new ${su.label} card">New ${su.glyph}</button>${clear}</div>`;
 }
 function clearSlot(s) { if (!OPTIONAL.has(s) || !S.hand[s]) return; snapshot(); S.hand[s] = null; S.holds[s] = false; S.take++; S.deal = { by: 'clear', slot: s }; renderHand(false); persist(); }
 /* shot list panel (Video job): one row per shot under the hand */
@@ -2333,7 +2340,7 @@ function dealCore(slots, f, chipMoods, js, force) {
   order.forEach(s => {
     if (!slots.includes(s)) return;
     /* the direction slot fills only when asked for by name (New ♣) or when the feeling has acting words; otherwise a deal leaves it empty */
-    if (OPTIONAL.has(s) && !force && !ACTING_RE.test(f.norm || '')) { S.hand[s] = null; return; }
+    if (OPTIONAL.has(s) && !force && !ACTING_RE.test(f.norm || '') && !(BY_SUIT[s] || []).some(c => namedIn(c, f.norm))) { S.hand[s] = null; return; }
     let c = null;
     /* a named genre pins the music before any scoring, and never re-deals the card already there */
     if (s === 'score' && genreIds.length) { const pinned = genreIds.filter(id => id !== S.hand[s]); c = BY_ID.get(pinned[0] || genreIds[0]) || null; }
@@ -2352,7 +2359,7 @@ function dealLocal(onlySuit, opts = {}) {
   const js = JOB_SUITS[S.job];
   const slots = js.filter(s => onlySuit ? s === onlySuit : !S.holds[s]);
   /* an empty optional slot that this deal would leave empty is not a slot to deal */
-  const live = slots.filter(s => !OPTIONAL.has(s) || onlySuit || S.hand[s] || ACTING_RE.test(f.norm || ''));
+  const live = slots.filter(s => !OPTIONAL.has(s) || onlySuit || S.hand[s] || ACTING_RE.test(f.norm || '') || (BY_SUIT[s] || []).some(c => namedIn(c, f.norm)));
   if (!live.length) { S.deal = { allKept: true }; $('#deal-note').innerHTML = dealNote(); return false; }
   if (!opts.noSnapshot) snapshot();
   if (!opts.keepSeed) seedRng(newSeed());
@@ -2371,7 +2378,7 @@ function dealLocal(onlySuit, opts = {}) {
     if (beats.length >= 2 && (!S.shots.length || (S.shotsAuto && !S.shotsTouched))) { /* "a slow quiet opening, then a sudden handheld fight": one shot per beat, each with the camera its words ask for (filmmaker playtest) */
       const RULES = [[/\bslow[- ]?mo(tion)?\b|\bslows? down\b/, 'camera-overcrank'], [/\bhandheld|shaky|panic|scramble|brawl|fight\b/, 'camera-handheld'], [/\bwhip|snap cut\b/, 'camera-whip'], [/\bcrash zoom|sudden zoom\b/, 'camera-crashzoom'], [/\bpush(es)? in|creep|closer and closer|quiet opening|slow opening\b/, 'camera-push'], [/\bcranes?|crane up|rises? up\b/, 'camera-crane'], [/\breveal|pull(s)? back|pull out\b/, 'camera-pull'], [/\bdrone|aerial|from above|bird'?s[- ]eye\b/, 'camera-aerial'], [/\bdive\b/, 'camera-fpv'], [/\borbit|circl/, 'camera-orbit'], [/\bchase|follow|runs?\b|running/, 'camera-follow'], [/\brises?|crane|lift(s)? up\b/, 'camera-crane'], [/\btime[- ]?lapse|hours pass|day turns\b/, 'camera-timelapse'], [/\bglides?|float/, 'camera-steadicam'], [/\beyes?|tear|face|close[- ]up\b/, 'camera-closeup'], [/\bempty|establish|wide|landscape|whole room\b/, 'camera-wide'], [/\bpan(s)? across|scan/, 'camera-pan']];
       const used = new Set(); const bs = beats.slice(0, 6); const asked = bs.map(b => { const hit = RULES.find(([re, id]) => re.test(b.toLowerCase()) && BY_ID.get(id) && !used.has(id)); if (hit) used.add(hit[1]); return hit ? hit[1] : null; }); /* beats that name a move get it first */
-      S.shots = bs.map((b, i) => { let cam = asked[i]; if (!cam) { cam = !used.has(S.hand.camera) ? S.hand.camera : (SHOT_ROTATION.find(id => BY_ID.get(id) && !used.has(id)) || S.hand.camera); used.add(cam); } return cleanShot({ cam, dir: null, sec: 4, note: b }); }); if (!S.holds.camera && S.shots[0] && S.shots[0].cam) S.hand.camera = S.shots[0].cam; /* the look's camera is shot 1's */ S.shotsAuto = true; }
+      S.shots = bs.map((b, i) => { let cam = asked[i]; if (!cam) { cam = !used.has(S.hand.camera) ? S.hand.camera : (SHOT_ROTATION.find(id => BY_ID.get(id) && !used.has(id)) || S.hand.camera); used.add(cam); } const dirC = (BY_SUIT.direction || []).find(c => namedIn(c, ' ' + b.toLowerCase().replace(/[^a-z0-9&'\s-]/g, ' ') + ' ')); return cleanShot({ cam, dir: dirC ? dirC.id : null, sec: 4, note: b }); }); if (!S.holds.camera && S.shots[0] && S.shots[0].cam) S.hand.camera = S.shots[0].cam; /* the look's camera is shot 1's */ S.shotsAuto = true; }
     else if (S.shots.length && S.hand.camera && slots.includes('camera') && !S.shotsTouched) S.shots[0].cam = S.hand.camera; } /* otherwise shot 1 follows a new look */
   if (opts.ai && !onlySuit) { const js2 = JOB_SUITS[S.job].filter(s => opts.ai[s]); const first = s => String([].concat(opts.ai[s])[0] || '').toLowerCase();
     const inTop = s => { const c = BY_ID.get(S.hand[s]); return c && [].concat(opts.ai[s]).map(x => String(x).toLowerCase()).includes(c.name.toLowerCase()); };
@@ -2587,6 +2594,7 @@ function openSheet(id, list, fromHand) {
   setTimeout(() => { const b = $('#sheet [data-close].iconbtn'); if (b) b.focus(); }, 30);
 }
 function closeSheet() {
+  if (S.backToCheat) { const k = S.backToCheat; S.backToCheat = null; setTimeout(() => openCheat(k), 0); }
   const sb = $('#sheet-body'); unobserve(sb); sb.innerHTML = ''; $('#sheet').hidden = true; document.body.classList.remove('noscroll'); const pg = $('.page'); if (pg) pg.inert = false;
   /* you are here: the position stays in the toolbar until the next scroll */
   if (S.sheetList && !S.sheetFromHand) { S.hereTab = S.tab; S.here = S.sheetEnd ? `you were at the end of ${S.sheetLabel}` : `you are here: ${S.sheetIdx + 1} / ${S.sheetList.length}`; renderHere(); S.hereAt = Date.now(); }
@@ -2843,14 +2851,14 @@ function startOrder() {
 }
 function renderStarts() {
   const row = $('#start-row'); if (!row) return; const ex = D.examples || []; if (!ex.length) { $('#starts').hidden = true; return; }
-  const ord = startOrder(), n = Math.min(8, ex.length), show = Array.from({ length: n }, (_, k) => ord[(startOff + k) % ord.length]);
+  const ord = startOrder(), n = ex.length, show = ord; /* all 32 in the day's order: the first ones change daily, the row scrolls through the rest (Matt, 2026-10-09) */
   row.innerHTML = show.map(i => {
     const x = ex[i];
     const imgs = Object.values(x.cards).map(id => BY_ID.get(id)).filter(Boolean).map(c => c.example ? `<img src="${esc(c.example.img)}" alt="" loading="lazy">` : `<i class="sw-tile" style="background:linear-gradient(90deg,${(c.colors || []).map(k => k.hex).join(',')})"></i>`).join('');
     const names = Object.values(x.cards).map(id => (BY_ID.get(id) || {}).name).filter(Boolean).join(' · ');
     const top = x.img ? `<img class="start-hero" src="${esc(x.img)}" alt="${esc(x.title)}: ${esc(x.subject)}" loading="lazy">` : `<div class="start-mosaic">${imgs}</div>`;
     return `<article class="start">${top}<h3>${esc(x.title)}</h3><p class="start-names">${esc(names)}</p><div class="start-act"><button class="btn small primary" type="button" data-start="${i}">Use this look</button><button class="btn small" type="button" data-start-copy="${i}">Copy prompt</button></div></article>`;
-  }).join('') + (ex.length > n ? `<button class="start start-more" type="button" id="start-more"><span>More looks</span><small>${ex.length} in all · new 8 every day</small></button>` : '');
+  }).join('') ;
 }
 
 function startLook(i) {
@@ -2886,7 +2894,8 @@ document.addEventListener('click', e => {
   const d = t.dataset;
   if (d.play) { e.stopPropagation(); const c = BY_ID.get(d.play); if (!c) return; const r = playGroove(c); if (r === null) { toast('This browser cannot play audio.'); return; } $$(`[data-play="${CSS.escape(c.id)}"]`).forEach(b => { b.classList.toggle('on', !!r); b.innerHTML = r ? STOP_SVG : PLAY_SVG; }); return; }
   if (d.hold) { S.holds[d.hold] = !S.holds[d.hold]; renderHand(false); persist(); const nb = $(`#hand [data-hold="${d.hold}"]`); if (nb) nb.focus(); return; }
-  if (d.swap) { dealLocal(d.swap); const nb = $(`#hand [data-swap="${d.swap}"]`); if (nb) nb.focus(); return; }
+  if (d.slotBack) { const st = (S.slotHist || {})[d.slotBack] || []; const prev = st.pop(); if (prev && BY_ID.get(prev)) { S.hand[d.slotBack] = prev; S.deal = { by: 'swap', slot: d.slotBack }; renderHand(d.slotBack); persist(); const nb = $(`#hand [data-slot-back="${d.slotBack}"]`) || $(`#hand [data-swap="${d.slotBack}"]`); if (nb) nb.focus(); } return; } /* step back through this card's earlier picks (Matt, 2026-10-09) */
+  if (d.swap) { S.slotHist = S.slotHist || {}; if (S.hand[d.swap]) { const h = (S.slotHist[d.swap] = S.slotHist[d.swap] || []); h.push(S.hand[d.swap]); if (h.length > 20) h.shift(); } dealLocal(d.swap); const nb = $(`#hand [data-swap="${d.swap}"]`); if (nb) nb.focus(); return; }
   if (d.clear) { clearSlot(d.clear); const nb = $(`#hand [data-swap="${d.clear}"]`); if (nb) nb.focus(); return; }
   if (t.id === 'add-shot') { addShot(); return; }
   if (d.shotDel) { removeShot(+d.shotDel); return; }
@@ -2924,7 +2933,7 @@ document.addEventListener('click', e => {
   if (t.id === 'cheat-add') { addCheatSel(); return; }
   if (t.id === 'cheat-clear') { S.cheatSel = new Set(); $$('#cheat .cs-item.sel').forEach(x => { x.classList.remove('sel'); x.setAttribute('aria-checked', 'false'); }); renderCheatBar(); return; }
   if (t.id === 'cheat-copysel') { const txt = [...(S.cheatSel || [])].map(id => BY_ID.get(id)).filter(Boolean).map(c => c.ask || c.name).join(', '); copyText(txt, t).then(() => toast('Copied the words for the selected cards.')); return; }
-  if (t.dataset && t.dataset.cheatOpen) { const id = t.dataset.cheatOpen, ch = CHEATS.find(x => x.key === S.cheatKey); closeCheat(); const list = ch ? [...new Set(ch.groups().flatMap(g => g[1]))].map(c => c.id) : null; openSheet(id, list, false); return; } /* browse: the sheet opens the card, and the card's arrows walk the sheet */
+  if (t.dataset && t.dataset.cheatOpen) { const id = t.dataset.cheatOpen, ch = CHEATS.find(x => x.key === S.cheatKey); closeCheat(); const list = ch ? [...new Set(ch.groups().flatMap(g => g[1]))].map(c => c.id) : null; S.backToCheat = S.cheatKey; openSheet(id, list, false); return; } /* browse: the sheet opens the card, and the card's arrows walk the sheet */
   if (t.dataset && t.dataset.cheatCopy) { const c = BY_ID.get(t.dataset.cheatCopy); if (c) copyText(c.ask || c.name, t).then(() => toast(`Copied the words for ${c.name}.`)); return; }
   if (t.id === 'copy-multi') { const r = recipeParts(); copyText(toolPrompt(r.multi, 'video', r.h), t).then(() => toast(`Copied one prompt with ${S.shots.length} shots and the cuts between them.`)); return; }
   if (t.id === 'seq-toggle') { S.seqOn = !S.seqOn; if (S.seqOn) { S.cmpOn = false; S.cmp = []; if (S.tab !== 'camera') { const ct = $('#tabs [data-tab="camera"]'); if (ct) ct.click(); } toast('Tap camera cards in the order you want them. Each one becomes the next shot.'); } t.setAttribute('aria-pressed', String(!!S.seqOn)); renderSpread(); return; }
@@ -2959,6 +2968,7 @@ document.addEventListener('keydown', e => {
   if (!$('#sheet').hidden) { if (e.key === 'Escape') closeSheet(); else if (e.key === 'ArrowLeft') moveSheet(-1); else if (e.key === 'ArrowRight') moveSheet(1); return; }
   if ((e.key === 'z' || e.key === 'Z') && !e.metaKey && !e.ctrlKey && !e.altKey && !inField(e.target)) { e.preventDefault(); undoDeal(); return; }
   const card = e.target.closest && e.target.closest('.card[data-id]');
+  if (card && e.target === card && (e.key === 'Enter' || e.key === ' ') && S.seqOn && card.closest('#spread')) { e.preventDefault(); card.click(); return; }
   if (card && e.target === card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (S.cmpOn && card.closest('#spread')) { toggleCmp(card.dataset.id); return; } const list = card.closest('#spread') ? spreadList().map(c => c.id) : null; openSheet(card.dataset.id, list, !!card.closest('#hand')); }
 });
 (() => { let x0 = null, y0 = null; const p = $('#panel'); p.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; }); p.addEventListener('pointerup', e => { if (x0 == null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 60 && Math.abs(dy) < 50 && !e.target.closest('.box')) moveSheet(dx < 0 ? 1 : -1); }); })();
@@ -3094,7 +3104,7 @@ const CHEATS = [
   { key: 'light', title: 'Lighting', groups: () => { const L = BY_SUIT.camera.filter(c => c.kind === 'light'); return [['Natural light', L.filter(c => LIGHT_NATURAL.test(c.name))], ['Studio and practical light', L.filter(c => !LIGHT_NATURAL.test(c.name))]]; } },
   { key: 'poses', title: 'Poses and acting beats', groups: () => [['Poses', BY_SUIT.camera.filter(c => c.kind === 'direction' && (c.tags || []).includes('pose'))], ['Acting beats', BY_SUIT.camera.filter(c => c.kind === 'direction' && !(c.tags || []).includes('pose'))]] },
   { key: 'film', title: 'Film stocks and grades', groups: () => [['Film stocks', BY_SUIT.film.filter(c => c.kind === 'stock')], ['Grades', BY_SUIT.film.filter(c => c.kind === 'grade').concat(BY_SUIT.color.filter(c => c.kind === 'grade'))]] },
-  { key: 'art', title: 'Art styles', groups: () => Object.entries(D.tags || {}).map(([k, label]) => [label, BY_SUIT.film.filter(c => (c.kind === 'medium' || c.kind === 'technique') && (c.tags || []).includes(k))]).filter(g => g[1].length) },
+  { key: 'art', title: 'Art styles', groups: () => { const seen = new Set(); return Object.entries(D.tags || {}).map(([k, label]) => [label, BY_SUIT.film.filter(c => (c.kind === 'medium' || c.kind === 'technique') && (c.tags || []).includes(k) && !seen.has(c.id) && seen.add(c.id))]).filter(g => g[1].length); } },
   { key: 'movements', title: 'Art movements', groups: () => [['Oldest to newest', BY_SUIT.film.filter(c => c.kind === 'movement').slice().sort((a, b) => ((a.era && a.era.from) ?? 9999) - ((b.era && b.era.from) ?? 9999))]] },
   { key: 'palettes', title: 'Colour palettes', groups: () => { const P = BY_SUIT.color.filter(c => c.kind === 'palette'); const by = re => P.filter(c => re.test((c.name + ' ' + (c.feels || []).join(' ') + ' ' + (c.ask || '')).toLowerCase())); const mono = by(/monochrome|\bink\b|greyscale|sepia|black and white/), neon = by(/neon|acid|electric|vapor|candy|hot /).filter(c => !mono.includes(c)), pastel = by(/pastel|blush|soft|airy|powder/).filter(c => !mono.includes(c) && !neon.includes(c)), warm = by(/warm|golden|sunset|terracotta|ochre|amber|desert|earth|sienna/).filter(c => ![...mono, ...neon, ...pastel].includes(c)); const cool = P.filter(c => ![...mono, ...neon, ...pastel, ...warm].includes(c)); return [['Warm', warm], ['Cool and natural', cool], ['Pastel', pastel], ['Neon and bold', neon], ['Monochrome', mono]]; } },
   { key: 'fonts', title: 'Fonts', groups: () => Object.entries(SUIT.type.kinds).map(([k, label]) => [label, BY_SUIT.type.filter(c => c.kind === k)]) },
@@ -3105,6 +3115,7 @@ function cheatThumb(c) {
   if (c.example) return `<img src="${esc(c.example.img)}" alt="" loading="lazy">`;
   if (c.colors && c.colors.length) return `<i class="cs-sw" style="background:linear-gradient(90deg,${c.colors.map((k, i, a) => `${k.hex} ${i / a.length * 100}% ${(i + 1) / a.length * 100}%`).join(',')})"></i>`;
   if (c.suit === 'type') return `<span class="cs-type" style="${typeStyle(c)}">${esc(c.sample || 'Aa')}</span>`;
+  if (c.suit === 'web') return `<span class="cs-web">${preview(c)}</span>`;
   if (c.suit === 'score') return `<span class="cs-mus">${c.bpm ? esc(c.bpm) + ' bpm' : '♪'}${c.key ? '<br>' + esc(c.key) : ''}</span>`;
   return '<span class="cs-mus">·</span>';
 }
@@ -3136,7 +3147,7 @@ function addCheatSel() {
   toast(`Added ${cards.length} card${cards.length === 1 ? '' : 's'} to your look${cams.length >= 2 ? `, with ${cams.length} shots` : ''}. They are kept; Get the look fills the rest.`);
 }
 function closeCheat() { $('#cheat').hidden = true; document.body.classList.remove('cheat-open', 'noscroll'); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
-renderCheatTiles();
+renderCheatTiles(); { const ch = $('#cheat'); if (ch && ch.parentElement !== document.body) document.body.appendChild(ch); } /* outside .page so printing shows it (round 9: blank PDF) */
 renderStarts();
 /* the 30 s how-it-works video sits beside the start row on the live site (the file ships with the public build only) */
 if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port === '8766') { const h = $('#howto'); if (h) { const ph = window.matchMedia('(max-width: 759px)').matches ? '-9x16' : ''; /* phones get the vertical phone recording (IG playtest) */ h.innerHTML = '<p class="lbl">How it works, under 30 s</p><video controls playsinline preload="none" poster="media/how-it-works' + ph + '.jpg" aria-label="How Director\'s Lookbook works, under 30 seconds"><source src="media/how-it-works' + ph + '.mp4" type="video/mp4"><track kind="captions" srclang="en" label="English" src="media/how-it-works.vtt"></video>' + (D.tutorial_tx ? `<details class="howto-tx"><summary>Transcript</summary><p>${esc(D.tutorial_tx)}</p></details>` : ''); h.hidden = false; } }
