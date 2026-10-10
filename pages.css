@@ -13,3 +13,4 @@ dl.spec{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:8px 0}dl
 .cta{display:inline-block;padding:12px 18px;border-radius:10px;background:var(--text);color:var(--bg);text-decoration:none;font-weight:600}
 .hub{list-style:none;padding:0;margin:24px 0;display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}.hub a{text-decoration:none;display:block}.hub img{display:block;width:100%;height:auto;border-radius:8px}.hub b{display:block;margin-top:8px}.hub span{display:block;font-size:14px;color:var(--muted);line-height:1.45}
 .pf{margin-top:48px;border-top:1px solid var(--rule);padding-top:16px;font-size:14px}.pf p{color:var(--muted)}
+.listen{margin:12px 0 4px}.listen-label{font-size:14px;font-weight:600;margin:0 0 6px}.listen audio{display:block;width:100%;max-width:100%;height:40px}.hub .listen{margin:8px 0 0}.hub .listen-label{font-size:13px;color:var(--muted);font-weight:500}
