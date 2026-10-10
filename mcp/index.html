@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lookbook MCP | Director's Lookbook</title>
+<meta name="description" content="A free, read-only MCP server: 649 named looks for image, video, music, site and game prompts, inside Claude and other AI clients.">
+<link rel="stylesheet" href="/pages.css">
+</head>
+<body>
+<main>
+<nav><a href="/">Director's Lookbook</a> · <a href="/privacy/">Privacy</a></nav>
+<h1>Lookbook MCP</h1>
+<p>Director's Lookbook as an MCP server. Describe a feeling and your AI client deals a matched look from 649 named cards (shots, camera moves, light, film stocks, grades, palettes, type and music), then turns it into prompts you can paste into image, video and music tools.</p>
+<p class="muted">Free. Read-only. No account or key needed.</p>
+
+<h2>Server URL</h2>
+<pre>https://lookbook-mcp.riverroadlabs.workers.dev/mcp</pre>
+<p>Streamable HTTP. No authentication.</p>
+
+<h2>Add it to Claude</h2>
+<ol>
+<li>Open Settings, then Connectors.</li>
+<li>Choose Add custom connector.</li>
+<li>Paste the server URL above and save.</li>
+</ol>
+<p>Then ask, for example: <em>"Use the Lookbook to give me a look for a rainy cafe at night, then write the image and video prompts."</em></p>
+
+<h2>Add it to Cursor or another client</h2>
+<pre>{
+  "mcpServers": {
+    "directors-lookbook": {
+      "url": "https://lookbook-mcp.riverroadlabs.workers.dev/mcp"
+    }
+  }
+}</pre>
+
+<h2>Tools</h2>
+<p>All six tools are read-only.</p>
+<table>
+<tr><th>Tool</th><th>What it does</th></tr>
+<tr><td><code>deal_hand</code></td><td>Start here. Deals one matched card per slot for a job (photo, video, site, game, song, cover) from a plain-language feeling. You can hold cards, set a subject, aspect ratio and shot count.</td></tr>
+<tr><td><code>brief</code></td><td>Turns card ids into paste-ready prompt blocks: image prompt, video prompt, palette hexes, type, Suno style and exclude lines, shot lists. Can format for Midjourney, Runway or Suno.</td></tr>
+<tr><td><code>find_styles</code></td><td>Searches the cards by feeling, mood, era, technique or style name.</td></tr>
+<tr><td><code>show_card</code></td><td>One card in full: the prompt wording, what to avoid, moods, pairings, and links to its example image, clip or music sample.</td></tr>
+<tr><td><code>lint_hand</code></td><td>Checks cards you combined yourself for clashes, such as black-and-white film with a colour grade.</td></tr>
+<tr><td><code>list_suits</code></td><td>Card counts per suit and kind, to see what the library covers.</td></tr>
+</table>
+
+<h2>Prompts</h2>
+<p>Ready-made prompts your client can offer: <code>look_for_a_scene</code>, <code>name_this_look</code>, <code>music_for_a_track</code>, <code>cover_art</code>, <code>game_key_art</code>, <code>product_reel</code>.</p>
+
+<h2>Limits</h2>
+<p>About 60 requests a minute per connection, text inputs up to 300 characters, up to 12 card ids per call.</p>
+
+<h2>Privacy</h2>
+<p>The server writes nothing to storage and does not log request content. See the <a href="/privacy/">privacy policy</a>.</p>
+
+<h2>Support</h2>
+<p>River Road Labs: <a href="mailto:hello@riverroadlabs.app">hello@riverroadlabs.app</a></p>
+</main>
+</body>
+</html>
