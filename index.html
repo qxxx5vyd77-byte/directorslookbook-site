@@ -1774,7 +1774,7 @@ const DELIVERABLES = {
   photo: 'Hero 16:9 (3840x2160), Social 4:5 (1080x1350), Square 1:1',
   video: 'Reel 9:16 15 s, Landscape 16:9 30 s, 3 s loop for the site',
   site: 'Hero, 3 sections, footer; mobile first',
-  game: 'Key art 16:9, Capsule 2:3, Sprite sheet 32 px, UI panel + 3 buttons'
+  game: 'Key art 16:9 (crops to the Steam main capsule 1232x706 and header 920x430), library capsule 2:3 (600x900), sprite sheet 32 px, UI panel + 3 buttons'
 };
 const SUIT = {
   type: { glyph: '♠', label: 'Type', ink: 'spade', kinds: { serif: 'Serif', sans: 'Sans', display: 'Display', script: 'Script', mono: 'Mono', pixel: 'Pixel', jp: 'Japanese' } },
@@ -2017,8 +2017,79 @@ function drainSwatches(root) {
 }
 function unobserve(root) { if (io) $$('.stage, .wb, canvas.sw', root).forEach(el => io.unobserve(el)); }
 
+/* search, feeling extras and deal filters. Mirrors find_cards(), near_cards(), era_words(), MOOD_EXTRA, NEAR_HINTS, GENRE_NEAR, WILD_CAPTURE, time_ok() in deck.py (ported 2026-10-10 from the MCP hill climb; the MCP worker runs the same code, proven by its parity test) */
+const SEARCH = {"aliases":{"romance":["romantic","love","tender","intimate"],"romantic":["love","tender","intimate"],"love":["romantic","tender"],"salsa":["latin","cumbia","tango","bossa","flamenco","mambo","cuban","dance"],"mambo":["latin","cumbia","bossa","cuban","dance"],"cuban":["latin","cumbia","bossa","dance"],"merengue":["latin","cumbia","reggaeton","dance"],"bachata":["latin","cumbia","reggaeton","romantic"],"latin":["cumbia","reggaeton","tango","bossa","flamenco","mariachi"],"samba":["bossa","latin","carnival"],"90s":["1990s","vhs","camcorder","grunge"],"1990s":["90s","vhs","camcorder"],"nineties":["90s","1990s","vhs","camcorder"],"80s":["1980s","synthwave","vhs","neon"],"1980s":["80s","synthwave","vhs"],"70s":["1970s","super","kodachrome"],"y2k":["2000s","digicam","webcam"],"2000s":["y2k","digicam","minidv"],"kodak":["gold","portra","ektar","kodachrome","ektachrome","vision3","tri-x"],"fuji":["superia","velvia","eterna","400h"],"fujifilm":["superia","velvia","eterna","400h"],"ilford":["hp5"],"polaroid":["instant"],"dance":["dancing","groove","club"],"dancing":["dance","groove"],"ballet":["ballerina","graceful","classical"],"wedding":["romantic","airy","400h"],"product":["packshot","tabletop","macro","studio"],"ad":["commercial","product"],"commercial":["product","glossy"],"beats":["hip","hop","lofi"],"lofi":["lo-fi","chillhop"],"chill":["calm","lofi","chillhop"],"scary":["horror","eerie","dread"],"spooky":["horror","eerie","haunted"],"sad":["melancholy","lonely","grief"],"happy":["joyful","sunny","playful"],"funny":["playful","comic"],"luxury":["elegant","premium","glossy"],"minimal":["minimalist","clean","sparse"],"clean":["minimal","crisp"],"cinematic":["anamorphic","film","widescreen"]},"phrases":{"dance studio":["dance","rehearsal","mirror","window"],"music video":["performance","kinetic"],"film noir":["noir"],"kodak gold":["gold","200"]},"tails":["s","es","ed","d","ing","er","ers","ic","al","y","ly"],"brands":["kodak","fuji","fujifilm","ilford","agfa","lomography"],"genre_near":{"salsa":["score-cumbia","score-argentine-tango","score-big-band-swing"],"mambo":["score-big-band-swing","score-cumbia"],"merengue":["score-cumbia","score-reggaeton"],"bachata":["score-reggaeton","score-cumbia"],"samba":["score-bossa-nova","score-afrobeats"],"j-pop":["score-idol-pop","score-city-pop"],"punk":["score-grunge","score-ska"],"opera":["score-gregorian-chant","score-baroque-harpsichord"],"rnb":["score-detroit-soul","score-uk-garage"],"r&b":["score-detroit-soul","score-uk-garage"]},"near_hints":{"product":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"products":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"packshot":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"skincare":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"serum":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"perfume":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"fragrance":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"cosmetics":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"cosmetic":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"lipstick":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"sneaker":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"sneakers":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"gadget":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"headphones":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"packaging":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"],"unboxing":["film-glass-product","camera-orbit","camera-studio-softbox","camera-ring-macro"]},"mood_extra":{"melancholy":["grief","grieving","funeral","mourning","loss","sorrow","bereavement","widow","goodbye","moody","gloomy","bleak","rainy"],"epic":["stormy","storm","storms","tempest"],"tense":["argument","quarrel","confrontation","standoff","interrogation"]},"wild_capture":{"camera-thermal":"\\b(thermal|heat ?map|heat vision|infrared)\\b","camera-xray":"\\b(x-?ray|xray|radiograph|skeleton|bones)\\b","camera-cctv":"\\b(cctv|security cam(era)?|surveillance|found footage|caught on camera)\\b","camera-night-vision":"\\b(night vision|night-vision|military|covert|stakeout)\\b","camera-daguerreotype":"\\b(daguerreotype|tintype|victorian|1800s|19th century|antique photo)\\b","camera-action-cam":"\\b(action cam(era)?|helmet cam|chest cam|pov|first person|extreme sports?)\\b"}};
+const SR_TAILS = new Set(SEARCH.tails), SR_BRANDS = new Set(SEARCH.brands);
+const srToks = s => new Set(String(s || '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean));
+const srNorm = s => String(s || '').toLowerCase().replace(/[^a-z0-9&'\s-]/g, ' ').replace(/\s+/g, ' ').trim();
+const srEsc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function eraWords(text) {
+  let t = String(text || '').replace(/\b19([5-9]0)s\b/gi, '$1s').replace(/'([5-9]0)s\b/g, '$1s').replace(/\b([5-9]0)'s\b/g, '$1s');
+  for (const [w, d] of [['fifties', '50s'], ['sixties', '60s'], ['seventies', '70s'], ['eighties', '80s'], ['nineties', '90s']]) t = t.replace(new RegExp('\\b' + w + '\\b', 'gi'), d);
+  return t;
+}
+function srInflect(w, ts) { for (const t of ts) { const [a, b] = w.length <= t.length ? [w, t] : [t, w]; if (a.length >= 3 && /^[a-z]+$/.test(a) && b.startsWith(a) && SR_TAILS.has(b.slice(a.length))) return true; } return false; }
+function srTier(w, fields, weights) { for (let i = 0; i < fields.length; i++) if (fields[i].has(w)) return weights[i]; for (let i = 0; i < fields.length; i++) if (srInflect(w, fields[i])) return Math.max(1, weights[i] - 2); return 0; }
+/* rank cards for a search: whole words over substrings, names over feels over body text, a small alias layer; returns [[card, score]] and info */
+function findCards(text, list) {
+  const q = srNorm(text);
+  let said = ' ' + q + ' ';
+  for (const [ph, ws] of Object.entries(SEARCH.phrases)) said = said.split(' ' + ph + ' ').join(' ' + ws.join(' ') + ' ');
+  const f = parseFeeling(said);
+  let base = [];
+  for (const w of f.pos) for (const t of w.split(/[^a-z0-9]+/)) if (t.length >= 2 && !base.includes(t)) base.push(t);
+  const rel = base.filter(w => SR_BRANDS.has(w)); base = base.filter(w => !SR_BRANDS.has(w));
+  for (const w of base.concat(rel)) for (const x of (Object.prototype.hasOwnProperty.call(SEARCH.aliases, w) ? SEARCH.aliases[w] : [])) for (const t of x.split(/[^a-z0-9]+/)) if (t && !base.includes(t) && !rel.includes(t)) rel.push(t);
+  const phrase = q.length >= 3 ? new RegExp('(?<![a-z0-9])' + srEsc(q) + '(?![a-z0-9])') : null;
+  let ranked = []; let direct = false; const seen = new Set();
+  for (const c of list) {
+    const nameTxt = [c.name].concat(c.aka || []).join(' ').toLowerCase(), feelTxt = (c.feels || []).join(' ').toLowerCase(), bodyTxt = [c.what || '', c.ask || ''].join(' ').toLowerCase();
+    const fields = [srToks(nameTxt), srToks(feelTxt), srToks(bodyTxt)];
+    let s = 0, hit = false;
+    if (phrase) { if (phrase.test(srNorm(nameTxt))) s += 20; else if (phrase.test(srNorm(feelTxt))) s += 10; else if (phrase.test(srNorm(bodyTxt))) s += 6; hit = s > 0; }
+    for (const w of base) { const v = srTier(w, fields, [6, 3, 1]); if (v >= 3) hit = true; if (v) seen.add(w); s += v; }
+    let rs = 0; for (const w of rel) { if (fields[0].has(w)) rs += 4; else if (fields[1].has(w)) rs += 2; else if (fields[2].has(w)) rs += 1; } s += Math.min(rs, 4);
+    for (const m of c.moods || []) { if (f.moods.has(m)) s += 3; if (f.negMoods.has(m)) s -= 4; }
+    for (const w of f.neg) if (srTier(w, fields, [3, 3, 3])) s -= 3;
+    const lx = f.lex.get(c.id) || 0; s += lx; if (lx && !f.near.has(c.id)) hit = true;
+    if ([...c.name].length > 5 && f.norm.includes(' ' + c.name.toLowerCase() + ' ')) { s += 12; hit = true; }
+    if (s > 0) { ranked.push([s, lx, c]); direct = direct || hit; }
+  }
+  ranked.sort((a, b) => (b[0] - a[0]) || (b[1] - a[1]));
+  if (ranked.length) { const top = ranked[0][0]; ranked = ranked.filter(x => x[0] * 10 >= top * 3); }
+  const missing = base.filter(w => !seen.has(w) && w.length >= 4 && /^[a-z]+$/.test(w));
+  return [ranked.map(([v, , c]) => [c, v]), { direct, related: rel, missing }];
+}
+/* did-you-mean by shared letter trigrams. Mirrors near_cards() in deck.py */
+const srGrams = s => { const t = ' ' + String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() + ' '; const g = new Set(); for (let i = 0; i + 3 <= t.length; i++) g.add(t.slice(i, i + 3)); return g; };
+function nearCards(text, list, key = 'name', n = 5) {
+  const SUITP = /^(type|camera|film|color|score|web)-/;
+  const g = key === 'id' ? srGrams(String(text || '').toLowerCase().replace(SUITP, '')) : srGrams(text);
+  if (!g.size) return [];
+  const sim = h => { let k = 0; for (const x of g) if (h.has(x)) k++; return k ? Math.floor(k * 1000 / g.size) + Math.floor(k * 1000 / (g.size + h.size - k)) : 0; };
+  const out = [];
+  for (const c of list) { let v = sim(srGrams([c.name].concat(c.aka || []).join(' '))); if (key === 'id') { v = Math.max(v, sim(srGrams(c.id.replace(SUITP, '')))); if (v && String(text || '').toLowerCase().startsWith(c.suit + '-')) v += 250; } if (v) out.push([v, c]); }
+  out.sort((a, b) => b[0] - a[0]);
+  return out.slice(0, n).filter(([v]) => v >= 500).map(x => x[1]);
+}
+/* capture cards that take over the image (x-ray, thermal, CCTV...) deal only when named; lights, film looks and colours keep the time of day the words name */
+const WILD_RE = Object.fromEntries(Object.entries(SEARCH.wild_capture).map(([k, v]) => [k, new RegExp(v)]));
+const wildOk = (c, norm) => !WILD_RE[c.id] || WILD_RE[c.id].test(norm || '');
+const DAY_W = '\\b(dawn|sunrise|morning|noon|midday|daytime|afternoon|daylight|sunny|sunlit)\\b', EVE_W = '\\b(evening|dusk|sunset|golden hour|twilight)\\b', NIGHT_W = '\\b(night|nighttime|midnight|after dark|2am|3am)\\b';
+function timeOk(c, norm) {
+  if (!['camera', 'film', 'color'].includes(c.suit) || (c.suit === 'camera' && c.kind !== 'light')) return true;
+  norm = norm || ''; const t = ((c.name || '') + ' ' + (c.ask || '')).toLowerCase();
+  const night = /\b(night|after sunset|blue hour|moonlight|moonlit|neon|midnight|after dark)\b/.test(t), day = /\b(sun|sunlight|golden hour|midday|noon|daylight|morning)\b/.test(t) && !night;
+  const dayW = new RegExp(DAY_W).test(norm), eveW = new RegExp(EVE_W).test(norm), nightW = new RegExp(NIGHT_W).test(norm);
+  if (dayW && !nightW && night) return false;
+  if (eveW && !nightW && /\b(night|midnight|moonlight|moonlit|after dark)\b/.test(t)) return false;
+  if (nightW && !new RegExp(DAY_W + '|' + EVE_W).test(norm) && day) return false;
+  return true;
+}
+
 /* feeling matcher */
 function parseFeeling(text) {
+  text = eraWords(text); /* 1990s, '90s, nineties all read as 90s (deck.py era_words) */
   const raw = String(text || '').toLowerCase().replace(/[^a-z0-9\s'-]/g, ' ').split(/\s+/).filter(Boolean);
   const pos = [], neg = []; let negLeft = 0;
   for (const w of raw) {
@@ -2026,13 +2097,16 @@ function parseFeeling(text) {
     if (STOP.has(w) || w.length < 2) { continue; }
     if (negLeft > 0) { neg.push(w); negLeft--; } else pos.push(w);
   }
-  const moodsOf = ws => { const m = new Set(); ws.forEach(w => { if (MOODS.includes(w)) m.add(w); for (const k in SYN) if (SYN[k].includes(w)) m.add(k); }); return m; };
+  const moodsOf = ws => { const m = new Set(); ws.forEach(w => { if (MOODS.includes(w)) m.add(w); for (const k in SYN) if (SYN[k].includes(w)) m.add(k); for (const k in SEARCH.mood_extra) if (SEARCH.mood_extra[k].includes(w) && MOODS.includes(k)) m.add(k); }); return m; };
   const moods = moodsOf(pos), negMoods = moodsOf(neg);
   moods.forEach(m => negMoods.delete(m)); /* "gritty, but not grimy" keeps gritty and only steers off the literal word */
   /* phrase dictionary: aesthetics, everyday nouns, occasions -> cards (meta.json lex). Mirrors deck.py */
-  const lex = new Map(), norm = ' ' + String(text || '').toLowerCase().replace(/[^a-z0-9&'\s-]/g, ' ').replace(/\s+/g, ' ') + ' ';
-  for (const k in LEX) if (norm.includes(' ' + k + ' ')) LEX[k].forEach((id, j) => lex.set(id, (lex.get(id) || 0) + 12 + (j === 0 ? 1 : 0)));
-  return { pos, neg, moods, negMoods, lex, norm };
+  const lex = new Map(), keys = new Map(), near = new Map(), norm = ' ' + String(text || '').toLowerCase().replace(/[^a-z0-9&'\s-]/g, ' ').replace(/\s+/g, ' ') + ' ';
+  const normH = norm.split('-').join(' '), said = k => norm.includes(' ' + k + ' ') || normH.includes(' ' + k + ' '); /* "pixel-art" also says "pixel art" */
+  for (const k in LEX) if (said(k)) LEX[k].forEach((id, j) => { lex.set(id, (lex.get(id) || 0) + 12 + (j === 0 ? 1 : 0)); if (!keys.has(id)) keys.set(id, []); keys.get(id).push(k); });
+  for (const [k, ids] of Object.entries(SEARCH.near_hints)) if (said(k) && !Object.prototype.hasOwnProperty.call(LEX, k)) ids.forEach((id, j) => lex.set(id, (lex.get(id) || 0) + 12 + (j === 0 ? 1 : 0))); /* product words weigh the product cards */
+  for (const [k, ids] of Object.entries(SEARCH.genre_near)) if (said(k) && !Object.prototype.hasOwnProperty.call(LEX, k)) ids.forEach((id, j) => { lex.set(id, (lex.get(id) || 0) + 12 + (j === 0 ? 1 : 0)); if (!near.has(id)) near.set(id, k); }); /* a genre with no card yet ("salsa") weighs its nearest cards */
+  return { pos, neg, moods, negMoods, lex, norm, near, keys };
 }
 function scoreCard(c, f, chipMoods) {
   let s = 0;
@@ -2085,6 +2159,8 @@ function pickFor(suit, f, chipMoods, avoid, hand) {
   if (suit === 'score' && S.job === 'game' && !/\b(vocals?|singer|sung|lyrics?|song)\b/.test(f.norm || '')) { const ok = pool.filter(c => !/\bvocals?\b/i.test((c.ask || '') + ' ' + (c.what || '')) || /\binstrumental\b/i.test(c.ask || '')); if (ok.length) pool = ok; } /* a game loop is instrumental unless the feeling asks for a voice (game dev playtest) */
   { const subj = ((S.subject || '') + ' ' + (f.norm || '')).trim(); if ((suit === 'camera' || suit === 'film') && subj && !PERSON_RE.test(subj)) { const ok = pool.filter(c => namedIn(c, f.norm) || !/\b(over-the-shoulder|athletes?|two people|couple|portraits?|faces?|figures?|crowds?|two-shot|singles|dancers?)\b/i.test(c.name + ' ' + (c.ask || ''))); if (ok.length) pool = ok; } } /* a product or a place never gets a person framing (bakery playtest) */
   { const tall = ['9:16', '4:5', '1:1'].includes(S.aspect || ''); const fits = c => (!c.aspect || !S.aspect || c.aspect === S.aspect) && !(tall && /anamorphic/i.test(c.name + ' ' + (c.ask || ''))); const ok = pool.filter(fits); if (ok.length) pool = ok; } /* looks with a fixed shape (VHS 4:3, a scope lens) only deal when the frame fits them */
+  if (suit === 'camera' || suit === 'light') { const ok = pool.filter(c => wildOk(c, f.norm) || namedIn(c, f.norm)); if (ok.length) pool = ok; } /* x-ray, thermal, CCTV and the like only when named (deck.py WILD_CAPTURE) */
+  if (suit === 'light' || suit === 'film' || suit === 'color') { const ok = pool.filter(c => timeOk(c, f.norm)); if (ok.length) pool = ok; } /* the time of day the words name (deck.py time_ok) */
   /* spice: Safer deals from the neutral cards plus anything sharing a mood with the hand; Wilder skips cards whose moods the hand already has */
   const spice = S.spice || 'normal';
   if (spice !== 'normal' && hand) {
@@ -2141,8 +2217,8 @@ function eraBand(c) {
 
 /* recipe */
 /* drop person-only clauses (skin, hair, faces) when the subject has no person in it. Mirrors deck.py fit_ask() */
-const PERSON_RE = /\b(his|hers|fisherman|fishermen|sailor|sailors|farmer|farmers|cyclist|cyclists|swimmer|swimmers|baker|bakers|portraits|portrait|strangers|stranger|fight|fighters|chase|runners|teenagers|kids|newlyweds|guests|crew|crowd|crowds|shoppers|dancers|explorers|hiker|hikers|climber|surfer|surfers|skateboarder|skateboarders|gardener|saxophonist|player|bride|groom|astronaut|astronauts|cowboy|cowboys|cowgirl|gunslinger|outlaw|sheriff|clown|clowns|pirate|pirates|knight|wizard|witch|detective|spy|robot|alien|grandma|grandpa|grandmother|grandfather|mom|dad|mother|father|nun|monk|priest|queen|king|prince|princess|ballerina|chef|student|students|reader|teacher|worker|traveller|traveler|tourist|driver|rider|skater|surfer|runner|player|musician|artist|bride|groom|guest|guests|teen|teens|teenager|teenagers|boxer|potter|farmer|nurse|doctor|soldier|actor|actress|fan|fans|customer|customers|shopper|shoppers|person|people|man|men|woman|women|girl|boy|kid|kids|child|children|baby|face|faces|portrait|couple|friend|friends|family|dancer|singer|he|she|they|her|him|crowd|model|chef|baker|athlete|hero|commuter|figure|someone)\b/i;
-const BODY_RE = /\b(skin|hair|face|faces|eyes|lips|cheek|cheeks|freckles|complexion|people|figures|crowd|waist|torso|shoulders|portrait)\b/i;
+const PERSON_RE = /\b(his|hers|fisherman|fishermen|sailor|sailors|farmer|farmers|cyclist|cyclists|swimmer|swimmers|baker|bakers|portraits|portrait|strangers|stranger|fight|fighters|chase|runners|teenagers|kids|newlyweds|guests|crew|crowd|crowds|shoppers|dancers|explorers|hiker|hikers|climber|surfer|surfers|skateboarder|skateboarders|gardener|saxophonist|player|bride|groom|astronaut|astronauts|cowboy|cowboys|cowgirl|gunslinger|outlaw|sheriff|clown|clowns|pirate|pirates|knight|wizard|witch|detective|spy|robot|alien|grandma|grandpa|grandmother|grandfather|mom|dad|mother|father|nun|monk|priest|queen|king|prince|princess|ballerina|chef|student|students|reader|teacher|worker|traveller|traveler|tourist|driver|rider|skater|surfer|runner|player|musician|artist|bride|groom|guest|guests|teen|teens|teenager|teenagers|boxer|potter|farmer|nurse|doctor|soldier|actor|actress|fan|fans|customer|customers|shopper|shoppers|person|people|man|men|woman|women|girl|boy|kid|kids|child|children|baby|face|faces|portrait|couple|friend|friends|family|dancer|singer|he|she|they|her|him|crowd|model|chef|baker|athlete|hero|commuter|figure|someone|android|cyborg|humanoid|hands|keeper|captain|pilot|officer|waiter|waitress|bartender|barista|mechanic|scientist|engineer|caretaker|hunter|warrior|samurai|ninja|lady|gentleman|elder)\b/i;
+const BODY_RE = /\b(skin|hair|face|faces|eyes|lips|cheek|cheeks|freckles|complexion|people|figures|crowd|waist|torso|shoulders|portrait|full body|head to toe|walking|walks|striding)\b/i;
 /* when the hand holds a light card, it owns the light: drop the film/colour card's own light words */
 const LIGHT_RE = /\b(midday|noon|overcast|window light|hard sun|harsh sun|daylight|flat light|sunlit|backlight|golden hour|blue hour|moonlight|flash|deep blue sk(?:y|ies)|night scene|at night)\b/i;
 function dropLight(ask) { const kept = String(ask).split(/,\s*/).filter(x => !LIGHT_RE.test(x)); return kept.length ? kept.join(', ') : ask; }
@@ -2152,11 +2228,31 @@ function fitAsk(ask, subj) {
   if (!person) a = personless(a); /* reword people-framing for a thing before anything is dropped (round 8: the face words were stripped first, so the rewrite never matched) */
   else if (/\b(hands?|fingers|paws?|feet)\b/i.test(subj) && !/\b(face|faces|portrait|portraits|eyes|smile|expression|head)\b/i.test(subj)) a = a.replace(/close-up of the subject's face filling the frame, framed from the chin to the top of the head/g, 'close-up of the hands filling the frame edge to edge');
   if (person) return a;
-  const kept = a.split(/,\s*/).filter(x => !BODY_RE.test(x));
-  return kept.length ? kept.join(', ') : a;
+  const parts = a.split(/,\s*/);
+  return [parts[0]].concat(parts.slice(1).filter(x => !BODY_RE.test(x))).join(', '); /* the first clause names the shot: it stays (deck.py fit_ask, 2026-10-10) */
+}
+/* the subject owns the scene: a card's example places, people and props drop from its wording; the first clause keeps the look and loses only its example tail; a card's own aspect token drops when the frame is another. Mirrors scene_fit() in deck.py */
+const SCENE_SRC = '\\b(streets?|asphalt|sidewalks?|alleys?|corridors?|offices?|wallpaper|carpet|desks?|rooms?|kitchens?|bedrooms?|city|cities|towns?|villages?|forests?|woods|beach|beaches|coast|sea|ocean|lakes?|rivers?|mountains?|landscapes?|sky|skies|meadows?|castles?|ruins|temples?|cathedrals?|palaces?|gardens?|parks?|markets?|plazas?|bars?|cafes?|café|diners?|stations?|roads?|highways?|harbou?rs?|piers?|deserts?|boys?|girls?|man|men|woman|women|child|children|kids?|figures?|people|person|couples?|family|families|fish|windows?|roofs?|cypress(?:es)?|trees?|boats?|cars?|buildings?|houses?|towers?|bridges?|shops?|flowers?|birds?|horses?|dogs?|cats?|skyline|hills?|waves?|dialog(?:ue)? box|text box|high score|score counter|hud|studio|watch|mechanism|hand|walls?|brick)\\b';
+function sceneFit(ask, subj, aspect) {
+  const parts = String(ask).split(/,\s*/), real = subj && subj !== '[your subject]', low = String(subj || '').toLowerCase();
+  const scenic = x => !!real && [...x.matchAll(new RegExp(SCENE_SRC, 'gi'))].map(m => m[0].toLowerCase()).some(w => !new RegExp('\\b' + srEsc(w.length > 4 && w.endsWith('s') ? w.slice(0, -1) : w)).test(low));
+  let first = parts[0];
+  if (scenic(first)) { const m = new RegExp(SCENE_SRC, 'i').exec(first); const cut = Math.max(...[' inside ', ' in ', ' on ', ' at ', ' across ', ' against ', ' of ', ' with ', ' through '].map(p => first.lastIndexOf(p, m.index - p.length))); first = cut > 0 ? first.slice(0, cut).trim() : ''; }
+  const kept = first ? [first] : [];
+  for (const x of parts.slice(1)) { if (aspect && /^\d+(\.\d+)?:\d+(\.\d+)?$/.test(x.trim()) && x.trim() !== aspect) continue; if (scenic(x)) continue; kept.push(x); }
+  return kept.length ? kept.join(', ') : parts[0];
+}
+/* the lettering is the type, not its sample sheet, and a palette owns the colour. Mirrors type_ask() in deck.py */
+function typeAsk(ty, col) {
+  const p0 = String(ty.ask || '').split(/,\s*/);
+  const a = [p0[0]].concat(p0.slice(1).filter(x => !/\b(page|vignette|poster|screen|counter|sleeve|cover|sign|signage|menu|label|book|magazine|packaging|flyer|style|wall|mounted|storefront|window)\b/i.test(x))).join(', ');
+  if (!col || col.kind !== 'palette') return a;
+  const hue = new RegExp(HUE_RE.source, 'i'), parts = a.split(/,\s*/), kept = parts.filter(x => !hue.test(x));
+  if (kept.length === parts.length || !kept.length) return a;
+  return kept.join(', ') + ", in the palette's colours";
 }
 /* one video prompt: subject, camera, direction (if any), light, film, colour, aspect. Mirrors compile_blocks() in deck.py */
-function videoPrompt(cam, dir, p) { const camAsk = cam.kind === 'direction' ? cam.ask : fitAsk(cam.ask, p.subj); const dirPhrase = dir ? ` ${dir.ask}.` : ''; const keep = cam.keep && !(/\b(to|at|into) (the )?camera\b/i.test(p.subj) && /never (turns|looking|looks) (to|at) (the )?camera/i.test(cam.keep)) ? ` ${fitAsk(cam.keep, p.subj)}.` : ''; /* a subject singing to camera beats 'never turns to camera' (round 12) */ /* the subject holds its pose through the move (Hand 237c: Wan turned the frog to camera) */
+function videoPrompt(cam, dir, p) { const camAsk = cam.kind === 'direction' ? cam.ask : sceneFit(fitAsk(cam.ask, p.subj), p.subj); const dirPhrase = dir ? ` ${dir.ask}.` : ''; const keep = cam.keep && !(/\b(to|at|into) (the )?camera\b/i.test(p.subj) && /never (turns|looking|looks) (to|at) (the )?camera/i.test(cam.keep)) ? ` ${sceneFit(fitAsk(cam.keep, p.subj), p.subj)}.` : ''; /* a subject singing to camera beats 'never turns to camera' (round 12) */ /* the subject holds its pose through the move (Hand 237c: Wan turned the frog to camera) */
   const fx = p.fxAsk || '';
   if (p.drawn) return `${p.subj}. ${p.filmAsk}. ${camAsk}.${keep}${fx}${dirPhrase}${p.lightPhrase}${p.colPhrase}${p.arPhrase}`; /* a drawn medium leads, so its outline survives a rich scene (Hand 237c) */
   return `${p.subj}. ${camAsk}.${keep}${fx}${dirPhrase}${p.lightPhrase} ${p.filmAsk}.${p.colPhrase}${p.arPhrase}`; }
@@ -2170,7 +2266,8 @@ function stockAsk(film, col) {
   const ctxt = ((col.ask || '') + ' ' + col.name).toLowerCase();
   const noHue = /\b(no hue|monochrome|greyscale|grayscale|black and white)\b/.test(ctxt);
   const clauses = a.split(/,\s*/);
-  const kept = clauses.filter(x => { const hues = (x.match(HUE_RE) || []).length; if (film.kind === 'stock' || noHue) return hues === 0; return !/\bpalette\b/i.test(x) && hues < 2; });
+  const nm = (film.name || '').toLowerCase();
+  const kept = clauses.filter(x => { if (nm && x.toLowerCase().includes(nm)) return true; /* the clause naming the stock stays ("Gold 200 colour negative film") */ const hues = (x.match(HUE_RE) || []).length; if (film.kind === 'stock' || noHue) return hues === 0; return !/\bpalette\b/i.test(x) && hues < 2; });
   a = kept.length ? kept.join(', ') : a;
   if (/\bno blacks?\b/.test(ctxt)) a = a.replace(/\bblack (outlines?|ink|lines?|contours?)\b/gi, "dark $1 in the palette's deepest colour");
   return a;
@@ -2188,10 +2285,10 @@ function recipeParts(ids) {
   const cam = shots.length ? BY_ID.get(shots[0].cam) : h.camera, film = h.film, ty = h.type, sc = h.score; /* the hero image follows shot 1 */
   const dir = JOB_SUITS[S.job].includes('direction') ? h.direction : null;
   const lightCard = JOB_SUITS[S.job].includes('light') ? h.light : null, lightPhrase = lightCard ? ` ${fitAsk(lightCard.ask, subj)}.` : '';
-  const stillCam = cam.kind === 'move' ? (cam.frame ? ' ' + fitAsk(cam.frame, subj) + '.' : '') : ' ' + fitAsk(cam.ask, subj) + '.'; /* a move's start frame, so the still matches the motion (Hand 237b: FLUX framed the frog walking away, Wan could not truck) */
+  const stillCam = cam.kind === 'move' ? (cam.frame ? ' ' + sceneFit(fitAsk(cam.frame, subj), subj) + '.' : '') : ' ' + sceneFit(fitAsk(cam.ask, subj), subj) + '.'; /* a move's start frame, so the still matches the motion (Hand 237b: FLUX framed the frog walking away, Wan could not truck) */
   const col = h.color, colPhrase = col ? ` ${fitAsk(col.ask, subj)}.` : '';
   const lit = cam.kind === 'light' || !!lightCard;
-  const fAsk = stockAsk(film, h.color); const filmAsk = lit ? dropLight(fitAsk(fAsk, subj)) : fitAsk(fAsk, subj);
+  const fAsk = stockAsk(film, h.color); const fFit = sceneFit(fitAsk(fAsk, subj), subj, S.aspect || ''); const filmAsk = lit ? dropLight(fFit) : fFit; /* card example scenes drop for a real subject (deck.py scene_fit) */
   const ar = S.aspect || '', arPhrase = ar ? ` Aspect ratio ${ar}.` : '';
   const fxAsk = JOB_SUITS[S.job].includes('fx') && h.fx ? ` ${h.fx.ask}.` : ''; /* the post effect rides after the camera (Matt, 2026-10-09) */
   const parts = { subj, lightPhrase, filmAsk, colPhrase, arPhrase, fxAsk, drawn: !!(film && !film.photo && film.kind === 'medium') };
@@ -2199,7 +2296,7 @@ function recipeParts(ids) {
   const mshots = S.job === 'video' ? S.shots.filter(x => BY_ID.get(x.cam)) : [];
   const multi = mshots.length >= 2 ? `${subj}.${lightPhrase} ${filmAsk}.${colPhrase} The same subject, look and light in every shot; keep screen direction, props, costume and lighting consistent from shot to shot.\n\n` + mshots.map((x, i) => { const cam = x.custom ? { ask: x.custom, name: x.custom } : BY_ID.get(x.cam); const move = x.custom ? x.custom.trim() : String(cam.ask || cam.name).split(',')[0].trim(); const beat = x.note ? x.note.replace(/[.\s]+$/, '') : ''; return `Shot ${i + 1}${x.sec ? ` (${x.sec} s)` : ''}: ${move}${beat ? `, ${beat}` : ''}.`; }).join('\nCUT TO\n') + `\n\n${mshots.length} shots, hard cuts, about ${mshots.reduce((a, x) => a + (Number(x.sec) || 4), 0)} seconds in all.${arPhrase}` : '';
   const poseAsk = S.job === 'photo' && h.direction ? ` ${h.direction.ask}.` : ''; /* a pose card shapes the still (round 9: it used to replace the camera) */
-  const image = `${subj}. ${filmAsk}.${stillCam}${fxAsk}${poseAsk}${lightPhrase}${colPhrase}${title && S.job !== 'photo' && !film.owns_type && !skipped('type') ? ` Title lettering "${title}": ${ty.ask}.` : ''}${arPhrase}`;
+  const image = `${subj}. ${filmAsk}.${stillCam}${fxAsk}${poseAsk}${lightPhrase}${colPhrase}${title && S.job !== 'photo' && !film.owns_type && !skipped('type') ? ` Title lettering "${title}": ${typeAsk(ty, col)}.` : ''}${arPhrase}`;
   const video = shots.length ? shots.map((x, i) => shotBlock(x, i + 1, dir, parts)).join('\n\n') : videoPrompt(cam, dir, parts);
   const f = ty.font || {};
   const caseWord = { upper: 'all caps', lower: 'lowercase', title: 'title case', sentence: 'sentence case' }[ty.case] || '';
@@ -2212,15 +2309,15 @@ function recipeParts(ids) {
   const site = `Build a one-page website for ${siteSubj}.\nLook: ${stockAsk(film, h.color)}.\nPalette: ${palette}.\nType: headings in ${f.family} (${(f.weights || []).join('/')}${f.italic ? ' italic' : ''}), ${caseWord}, letter-spacing ${Number(ty.tracking) || 0}em, loaded from Google Fonts.${ty.caption_ok ? '' : ' Set body text in a plain sans.'}\nMotion: ${web.ask}.\nReduced motion: ${web.a11y}`;
   /* Game: key art, capsule, sprite note, UI mockup, looping music. Mirrors game_blocks() in deck.py */
   const gameSubj = (S.subject || '').trim() || '[your game]';
-  const gameAsk = fitAsk(stockAsk(film, h.color), subj).replace(/,?\s*[^,]*dialog box[^,]*/gi, ''); /* key art is not a UI screenshot (game dev playtest) */
+  const gameAsk = sceneFit(fitAsk(stockAsk(film, h.color), subj), subj, ar || '16:9').replace(/,?\s*[^,]*dialog box[^,]*/gi, ''); /* key art is not a UI screenshot (game dev playtest) */
   const hexes = col && col.colors ? col.colors.map(x => x.hex).join(', ') : ['paper', 'ink', 'sun', 'land', 'sky', 'extra'].filter(k => sw[k]).map(k => sw[k]).join(', ');
-  const keyTitle = title && !film.owns_type ? ` Title lettering "${title}": ${ty.ask}.` : '';
+  const keyTitle = title && !film.owns_type ? ` Title lettering "${title}": ${typeAsk(ty, col)}.` : '';
   const keyart = `Key art for ${gameSubj}. ${gameAsk}.${colPhrase} Wide composition, the hero in the centre third, clear space along the top for the title.${keyTitle} Aspect ratio ${ar || '16:9'}.`;
-  const capsule = `Store capsule for ${gameSubj}. ${gameAsk}.${colPhrase} Tall 2:3 crop, the subject fills the frame, title space in the top quarter, reads at thumbnail size.${keyTitle} Aspect ratio 2:3.`; /* the title goes on the capsule too (rounds 13-15) */
+  const capsule = `Store capsule for ${gameSubj}. ${gameAsk}.${colPhrase} Tall 2:3 crop (Steam library capsule, 600x900), the subject fills the frame, title space in the top quarter, reads at thumbnail size.${keyTitle} Aspect ratio 2:3.`; /* the title goes on the capsule too (rounds 13-15) */
   const pixel = /pixel|voxel|8-bit|16-bit/i.test(film.name + ' ' + (film.tags || []).join(' '));
   const sprite = pixel ? `Sprites and tiles in the same look as the key art: ${gameAsk}. Same palette hexes (${hexes}), same line weight, flat lighting from top-left, 32 px grid, one sheet on a transparent background, no anti-aliasing between tiles.`
     : `Sprites and tiles in the same look as the key art: ${gameAsk}. Same palette hexes (${hexes}), same brush and line weight, flat lighting from top-left, each sprite on a transparent background on a 32 px grid, consistent outline treatment across the sheet.`;
-  const ui = `Game UI mockup: one dialog panel and three buttons (Play, Options, Quit) in the ${col ? col.name : film.name} palette (${hexes}). Panel and button surfaces in the ${film.name} look. Labels set in ${f.family}${f.italic ? ' italic' : ''}, ${caseWord}, tracking ${Number(ty.tracking) || 0}em. Show normal, hover and pressed states. Aspect ratio 16:9.`;
+  const ui = `Game UI mockup: one dialog panel and three buttons (Play, Options, Quit) in the ${col ? col.name : film.name} palette (${hexes}). Panel and button surfaces in the ${film.name} look. ${ty.caption_ok ? `Labels set in ${f.family}${f.italic ? ' italic' : ''}, ${caseWord}, tracking ${Number(ty.tracking) || 0}em.` : `Labels in a plain sans; the screen title in ${f.family}${f.italic ? ' italic' : ''}, ${caseWord}.`} Show normal, hover and pressed states. Aspect ratio 16:9.`;
   const gmusic = `${String(sc.ask || '').replace(/[.\s]+$/, '')}. Seamless loop, 60 to 90 s, no intro or outro.\nVariants: a day, a night and a rain version of the same theme at ${sc.bpm} BPM in ${sc.key}; only the instrumentation and the weather sounds change.`;
   const np0 = subj !== '[your subject]' && !PERSON_RE.test(subj) ? personless : (t => t); /* the per-card rewrite lives in fitAsk; this catches whole prompts */
   const drawn = h.film && !h.film.photo && h.film.kind === 'medium'; /* a print or a painting has no lens: drop lens and studio-light words (teacher playtest) */
@@ -2236,7 +2333,8 @@ function recipeLint(r) {
   return out;
 }
 /* tool syntax. Mirrors apply_tool() in deck.py: change both together */
-function mjAspect(ar) { const p = String(ar || '').split(':'); if (p.length !== 2) return ''; let a = Number(p[0]), b = Number(p[1]); if (!a || !b) return ''; if (a % 1 || b % 1) { a = Math.round(a * 100); b = Math.round(b * 100); } return `${a}:${b}`; }
+const pyRound = x => { const f = Math.floor(x), d = x - f; return d > 0.5 ? f + 1 : d < 0.5 ? f : (f % 2 === 0 ? f : f + 1); }; /* round half to even, like Python */
+function mjAspect(ar) { const p = String(ar || '').split(':'); if (p.length !== 2) return ''; const num = x => { const t = x.trim(); return t && /^[+-]?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(t) ? Number(t) : NaN; }; let a = num(p[0]), b = num(p[1]); if (Number.isNaN(a) || Number.isNaN(b) || !a || !b) return ''; if (a % 1 || b % 1) { a = pyRound(a * 100); b = pyRound(b * 100); } return `${Math.trunc(a)}:${Math.trunc(b)}`; }
 function stripAspect(t) { return String(t).replace(/\s*Aspect ratio (?:[^.]|\.(?=\d))+\./g, ''); }
 /* kind: 'image' or 'video'. Midjourney: the aspect prose becomes --ar, plus --style raw and an --sref note when the film card has an example.
    Runway: no aspect prose; the camera ask leads on its own line. Any: as written */
@@ -2251,6 +2349,7 @@ function mjNo(h) {
 }
 function toolPrompt(text, kind, h) {
   const tool = S.tool || 'any';
+  if (tool === 'midjourney' && kind === 'video') return stripAspect(text).trim(); /* Midjourney flags belong on image prompts only (deck.py apply_tool) */
   if (tool === 'midjourney') {
     const m = String(text).match(/Aspect ratio ((?:[^.]|\.(?=\d))+)\./), ar = mjAspect(m ? m[1] : S.aspect);
     const film = h && h.film;
@@ -2365,14 +2464,17 @@ function handLint(h, aspect) {
   { const L = h.light; if (L && /hot saturated colou?r/.test(txt(L)) && !(film && !film.photo && film.kind === 'medium')) { const other = [film, col].filter(Boolean).find(c => /\b(no hue|monochrome|greyscale|soft low contrast|muted|desaturated)\b/.test(txt(c))); if (other) out.push(`${L.name} wants hot saturated colour; ${other.name} wants it muted.`); } }
   if (film && col && col.kind === 'palette' && /\bdense black shadows\b/.test(txt(film)) && /\bsoft low contrast\b/.test(txt(col))) out.push(`${film.name} wants dense black shadows; ${col.name} asks for soft low contrast.`);
   { const all = [h.light, film, col, cam].filter(Boolean).map(txt); const longS = all.some(x => /\b(long|hard|raking)( \w+)? shadows?\b/.test(x)), noS = all.some(x => /\b(almost no|no|shadowless|without) shadows?\b/.test(x)); if (longS && noS) out.push('One card asks for long shadows and another for almost none.'); }
-  { const L = h.light, P = col; if (L && P && P.kind === 'palette') { const day = /\b(sun|golden hour|midday|noon|daylight)\b/.test(txt(L)) && !/\b(blue hour|after sunset|twilight|dusk)\b/.test(txt(L)), night = /\b(blue hour|night|neon|moon)\b/.test((P.name || '').toLowerCase()); const warm = /\b(golden|sunset|warm)\b/.test((P.name || '').toLowerCase()), dark = /\b(night|moon|blue hour|neon|led|sodium)\b/.test((L.name || '').toLowerCase()); if (day && night) out.push(`${L.name} is daylight; ${P.name} is a night palette.`); else if (dark && warm && !/\bsunset\b/.test(txt(L))) out.push(`${L.name} is night light; ${P.name} is a golden-hour palette.`); } }
-  { const L = h.light, subj = (S.subject || '').toLowerCase(); const OUT = /\b(town|streets?|park|beach|fields?|forest|woods|mountains?|outdoors?|outside|garden|market|square|plaza|road|trail|hills?|lake|river|sea|coast|rooftop|alley|sidewalk|highway|desert|meadow|farm|harbou?r|pier|boardwalk|countryside|village|city)\b/; const IN = /\b(chapel|church|room|kitchen|cafe|café|studio|library|office|bar|diner|interior|indoors|hall|shop|bakery|restaurant|garage|bedroom|attic|classroom|school hallway|inside)\b/; const m = subj.match(OUT); if (L && /\binterior\b|\bindoors?\b|across the room\b/.test(txt(L)) && m && !IN.test(subj)) out.push(`${L.name} lights an interior; the subject is outdoors (${m[0]}). Pick an outdoor light, or move the subject inside.`); } /* Hand 237: the frog walked to school in a hallway */
+  { const L = h.light, P = col; if (L && P && P.kind === 'palette') { const day = /\b(sun|golden hour|midday|noon|daylight)\b/.test(txt(L)) && !/\b(blue hour|after sunset|twilight|dusk)\b/.test(txt(L)), night = /\b(night|neon|moon)\b/.test((P.name || '').toLowerCase()); /* blue hour is dusk, not night (deck.py hand_lint) */ const warm = /\b(golden|sunset|warm)\b/.test((P.name || '').toLowerCase()), dark = /\b(night|moon|blue hour|neon|led|sodium)\b/.test((L.name || '').toLowerCase()); if (day && night) out.push(`${L.name} is daylight; ${P.name} is a night palette.`); else if (dark && warm && !/\bsunset\b/.test(txt(L))) out.push(`${L.name} is night light; ${P.name} is a golden-hour palette.`); } }
+  { const L = h.light, subj = (S.subject || '').toLowerCase(); const OUT = /\b(town|streets?|park|beach|fields?|forest|woods|mountains?|outdoors?|outside|garden|market|square|plaza|road|trail|hills?|lake|river|sea|coast|rooftop|alley|sidewalk|highway|desert|meadow|farm|harbou?r|pier|boardwalk|countryside|village|city|driveway|yard|backyard|glen|valley|shore|porch|patio|courtyard|cliffs?)\b/; const IN = /\b(chapel|church|room|kitchen|cafe|café|studio|library|office|bar|diner|interior|indoors|hall|shop|bakery|restaurant|garage|bedroom|attic|classroom|school hallway|inside|station|spaceship|space station|hydroponic|greenhouse|lab|laboratory|warehouse|gym|stage)\b/; const m = subj.match(OUT); if (L && /\binterior\b|\bindoors?\b|across the room\b|\bstudio\b|\bbackdrop\b|paper background|\bseamless\b/.test(txt(L)) && m && !IN.test(subj)) out.push(`${L.name} lights an interior; the subject is outdoors (${m[0]}). Pick an outdoor light, or move the subject inside.`); } /* Hand 237: the frog walked to school in a hallway */
   const lightC = h.light; if (lightC && film && /\b(night|nocturnal|midnight|streetlamp|sodium)\b/.test(txt(film)) && /\b(sun|golden hour|midday|noon|daylight)\b/.test(txt(lightC)) && !/\b(blue hour|after sunset|twilight|dusk)\b/.test(txt(lightC))) out.push(`${film.name} is a night look; ${lightC.name} is sunlight.`);
   { const subj = (S.subject || '').trim(); if (subj && !PERSON_RE.test(subj)) { const r = recipeTextFor(h); const hits = [...new Set((r.match(/\b(skin tones?|warm skin|people seen as shapes|portrait|faces?|figures?|over-the-shoulder|athletes?|crowds?|couple)\b/gi) || []).map(x => x.toLowerCase()))]; if (hits.length) out.push(`The prompt mentions ${hits.join(', ')} but the subject (${subj}) names no person.`); } }
   if (bw && col && col.kind === 'palette' && !(/greyscale|grayscale|black and white|ink black, charcoal/.test(txt(col)) || /monochrome|grey|gray|\bink\b/.test(col.name.toLowerCase()))) out.push(`${film.name} is black and white; ${col.name} is a colour palette.`);
   if (film && film.aspect && aspect && film.aspect !== aspect) out.push(`${film.name} is a ${film.aspect} look; the shape is ${aspect}.`);
   if (col && /no hue at all|greyscale/.test(txt(col)) && film && film.kind === 'grade' && /teal|orange|magenta|cyan/.test(txt(film))) out.push(`${col.name} drains colour that ${film.name} adds.`);
-  if (bw && col && col.kind === 'grade' && /magenta|cyan|teal|orange|amber|saturated/.test(txt(col))) out.push(`${film.name} is black and white; ${col.name} is a colour grade.`);
+  if (bw && col && col.kind === 'grade' && /magenta|cyan|teal|orange|amber|saturated|colou?r/.test(txt(col))) out.push(`${film.name} is black and white; ${col.name} is a colour grade.`);
+  if (film && col && col.kind === 'palette' && !bw && /\b(monochrome (orange|amber|blue|green|red|sepia|teal)|in one (blue )?colou?r family|one hue|single hue|duotone|colou?r collapsed)\b/.test(txt(film))) out.push(`${film.name} is a one-colour look; ${col.name} adds a full palette (keep one, or pick a palette in that hue).`);
+  if (film && col && /\bsaturat/.test(txt(film)) && !/\bdesaturat/.test(txt(film)) && /\b(muted|restrained|desaturated|washed)\b/.test(txt(col))) out.push(`${film.name} is saturated; ${col.name} is a muted palette.`);
+  if (h.light && cam && /\b(ring light|softbox|on-camera flash|shadowless light)\b/.test(txt(cam))) out.push(`${cam.name} brings its own light; ${h.light.name} also lights the shot (keep one).`); /* rules ported from deck.py hand_lint, 2026-10-10 */
   if (film && film.kind === 'grade' && col && col.kind === 'grade') out.push(`Two grades stacked: ${film.name} + ${col.name}. Keep one, pick a palette.`);
   if (film && film.kind === 'stock' && col && col.kind === 'grade') out.push(`${film.name} already sets the colour; ${col.name} grades it again.`);
   if (cam && /anamorphic/.test(txt(cam)) && ['9:16', '4:5', '1:1'].includes(aspect)) out.push(`Anamorphic scope lens in a ${aspect} frame.`);
@@ -2703,7 +2805,7 @@ function eraOverlaps(c) {
   return (hi == null || c.era.from <= hi) && (lo == null || to >= lo);
 }
 function spreadList() {
-  const q = S.find.trim().toLowerCase(); const f = q ? parseFeeling(q) : null;
+  const q = S.find.trim().toLowerCase();
   const all = q && S.findAll;
   const timeline = S.kind === 'timeline';
   let list = all ? SUITS.flatMap(s => BY_SUIT[s]) : timeline ? suitCards().filter(c => (c.era && c.kind !== 'aesthetic') || (S.undated && !c.era)).sort((a, b) => (a.era ? a.era.from : 99999) - (b.era ? b.era.from : 99999)) : suitCards().filter(c => S.kind === 'all' || c.kind === S.kind);
@@ -2712,7 +2814,7 @@ function spreadList() {
   if (!all && (ranged || S.sort === 'era' || timeline)) list = list.filter(eraOverlaps);
   if (!all && (S.sort === 'era' || ranged) && !S.undated) list = list.filter(c => c.era);
   if (q) {
-    list = list.map(c => { const hay = [c.name, ...(c.aka || []), ...(c.feels || []), ...(c.moods || []), c.what, c.ask, c.kind, c.lane || ''].join(' ').toLowerCase(); let s = hay.includes(q) ? 10 : 0; s += Math.max(0, scoreCard(c, f, new Set())); return [c, s]; }).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+    list = findCards(q, list)[0].map(x => x[0]); /* whole words over substrings, names over body text, aliases; mirrors find_cards() in deck.py and the MCP (2026-10-10) */
     if (S.sort === 'deck') return list;
   }
   if (S.sort === 'az') list = [...list].sort((a, b) => a.name.localeCompare(b.name));
