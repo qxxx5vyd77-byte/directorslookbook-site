@@ -43,7 +43,7 @@
 <ul><li><a href="/music/music-box/">Music Box</a></li><li><a href="/music/phonk/">Phonk</a></li><li><a href="/music/amapiano/">Amapiano</a></li><li><a href="/music/">See all: Suno music style prompts</a></li></ul>
 <h2>Build a full look around it</h2>
 <p>The Lookbook deals the camera, light, film look, palette and music that go with this card, and writes one prompt for the whole set.</p>
-<p><a class="cta" href="/#hand=score-dark-ambient-horror&amp;job=video">Open Dark Ambient Horror in the Lookbook</a></p>
+<p><a class="cta" href="/?from=guide#hand=score-dark-ambient-horror&amp;job=video">Open Dark Ambient Horror in the Lookbook</a></p>
 <footer class="pf">
 <p>More prompt guides: <a href="/music/">Suno music style prompts</a> · <a href="/camera/">Camera shot prompts</a> · <a href="/light/">Lighting prompts</a> · <a href="/film/">Film format prompts</a></p>
 <p>Not affiliated with Suno. Suno is a trademark of its owner, named here only to say where the text goes.</p>
@@ -51,5 +51,6 @@
 </footer>
 </main>
 <script>document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy]');if(!b)return;var el=document.getElementById(b.getAttribute('data-copy'));var t=el.textContent;var done=function(m){b.textContent=m;setTimeout(function(){b.textContent='Copy'},1600)};var sel=function(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);done('Selected')};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){done('Copied')},sel)}else sel()});</script>
+<script>(function(){if(!/(^|\.)directorslookbook\.app$/.test(location.hostname))return;var me=false;try{me=localStorage.getItem('dd.me')==='1'}catch(e){}if(me||navigator.webdriver===true)return;var U='https://lookbook-events.riverroadlabs.workers.dev/e?n=';function ev(n){try{navigator.sendBeacon(U+n)}catch(e){try{fetch(U+n,{method:'POST',mode:'no-cors',keepalive:true})}catch(e2){}}}function once(n){var d=new Date().toISOString().slice(0,10);try{if(localStorage.getItem('dd.'+n)===d)return;localStorage.setItem('dd.'+n,d)}catch(e){}ev(n)}var done=false,t=null,evs=['pointerdown','keydown','wheel','touchstart'];function fire(){if(done)return;done=true;clearTimeout(t);once('guide_visitor');if(/google|bing|duckduckgo|yahoo|ecosia|brave\.com|kagi/.test((document.referrer||'').toLowerCase()))once('guide_search')}function arm(){clearTimeout(t);if(document.visibilityState==='visible')t=setTimeout(fire,3000)}evs.forEach(function(x){addEventListener(x,fire,{capture:true,passive:true})});document.addEventListener('visibilitychange',arm);arm();document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy],a.cta');if(!b)return;if(b.matches('a.cta'))ev('guide_cta');else{ev('guide_copy');once('guide_copier')}},true)})();</script>
 </body>
 </html>

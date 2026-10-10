@@ -27,11 +27,11 @@
 <p>Do not type personal information into the feeling box. It is treated as an anonymous creative request.</p>
 
 <h2>What the MCP server collects</h2>
-<p>The MCP server is read-only. It answers from a bundled card library, writes nothing to storage, and does not log the content of your requests. It keeps a short-lived count of requests per IP address in memory, to stop abuse. That count is never written to storage and disappears within minutes. Your AI client, such as Claude, has its own privacy terms for your conversations.</p>
+<p>The MCP server is read-only. It answers from a bundled card library and does not log or store the content of your requests. It keeps anonymous daily counts of which tools are called: for each call, the tool name, the job type if one was given (such as photo or video), and the name your AI app reports for itself when it connects (such as "claude-ai" or "cursor"), or the app family from its user agent. Nothing else goes into the count: no request content, no feeling or subject text, no card ids, no IP address and no identifier. The counts are kept for 400 days. It also keeps a short-lived count of requests per IP address in memory, to stop abuse. That count is never written to storage and disappears within minutes. Your AI client, such as Claude, has its own privacy terms for your conversations.</p>
 
 <h2>Who processes data for us</h2>
 <ul>
-<li><strong>Cloudflare</strong> hosts the event counter and the MCP server, and runs Web Analytics and the AI model that reads a typed feeling.</li>
+<li><strong>Cloudflare</strong> hosts the event counter (which also holds the MCP server's daily tool counts) and the MCP server, and runs Web Analytics and the AI model that reads a typed feeling.</li>
 <li><strong>Anthropic</strong> (the Claude API) reads a typed feeling only when Cloudflare's free AI allowance for the day is used up. It receives the feeling text and the job type, nothing else.</li>
 <li><strong>GitHub Pages</strong> serves the website, and may keep standard server logs.</li>
 </ul>

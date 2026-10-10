@@ -88,6 +88,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 .edition{font:500 12px/1.6 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right}
 .thesis{font:700 clamp(19px,2.6vw,24px)/1.3 var(--f-body);max-width:46ch}
 .thesis small{display:block;font:400 15px/1.5 var(--f-body);color:var(--muted);margin-top:4px;max-width:62ch}
+/* the feeling box sits right under the subtitle so Get the look is on the first phone screen (scaling climb 2026-10-10) */
+.mast .feel-top{width:100%;max-width:760px;margin:0 auto;text-align:left}
+.mast .feel-top .lbl{display:block;margin:0 0 4px}
+.intro{font:400 15px/1.5 var(--f-body);color:var(--muted);max-width:62ch;margin:0}
+.feel-pointer{margin:4px 0 0;font:400 14px/1.4 var(--f-body);color:var(--muted)}
+.feel-pointer a{white-space:nowrap}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
 .legend button{display:inline-flex;align-items:baseline;gap:6px;border:1px solid var(--rule);background:transparent;border-radius:999px;padding:5px 12px;cursor:pointer;font:600 14px/1.2 var(--f-body)}
 .legend b{font:800 16px/1 var(--f-display)}
@@ -1245,6 +1251,7 @@ body{background-image:none;letter-spacing:-.005em}
 .thesis{font:italic 400 clamp(26px,3.4vw,38px)/1.15 var(--f-display);text-align:center;max-width:none;letter-spacing:0}
 .thesis small{font-style:normal;margin:10px auto 0}
 .legend{justify-content:center}
+.intro{text-align:center;margin:0 auto}
 .sec-h{font:400 clamp(30px,4.4vw,44px)/1 var(--f-display);letter-spacing:-.01em}
 .nm{font:500 10cqw/1.02 var(--f-display);letter-spacing:-.01em}
 .sh-name,.slate-head h2,.shots-head h2{font-family:var(--f-display);font-weight:400;letter-spacing:-.01em}
@@ -1260,18 +1267,8 @@ body{background-image:none;letter-spacing:-.005em}
       <p class="edition" id="edition"></p>
       <p class="tagline">661 named looks: an AI style library for image, video and music prompts</p>
     </div>
-    <p class="thesis">Say the feeling. Get the look.<small>Type a feeling, a place or a trend (cozy bakery, y2k, dark academia, old money), then get the look. Keep the cards you like and get another look. Every card gives you words to paste into any AI image or video tool (ChatGPT, Midjourney, Runway, Kling and more).</small></p>
-    <ul class="legend" id="legend"></ul>
-  </header>
-
-  <section class="deal" aria-labelledby="deal-h">
-    <h2 id="deal-h" class="sr-only">Get a look</h2>
-    <div class="jobrow step"><h3 class="step-h"><span class="step-n">1</span> What are you making? <a class="howto-link" href="#howto-sec">How it works, under a minute ↓</a></h3><div class="jobs" id="jobs" role="group" aria-label="What you are making"></div></div>
-    <div class="startwith step"><h3 class="step-h"><span class="step-n">2</span> Start with</h3><div class="sw-tabs" role="tablist" aria-label="How to start"><button class="sw-tab" type="button" role="tab" id="tab-feel" aria-controls="sw-feel" aria-selected="true" data-start-tab="feel">Say a feeling</button><button class="sw-tab" type="button" role="tab" id="tab-look" aria-controls="sw-look" aria-selected="false" data-start-tab="look">Pick a ready look</button><button class="sw-tab" type="button" role="tab" id="tab-build" aria-controls="sw-build" aria-selected="false" data-start-tab="build">Build it yourself</button></div></div>
-    <div class="sw-panel" id="sw-feel" role="tabpanel" aria-labelledby="tab-feel">
-    <p class="lbl moods-l" id="moods-l">Pick a mood <small>optional, tap more than one</small></p>
-    <div class="moods" id="moods" role="group" aria-labelledby="moods-l"></div>
-    <form id="feel-form" autocomplete="off">
+    <p class="thesis">Say the feeling. Get the look.</p>
+    <form id="feel-form" class="feel-top" autocomplete="off">
       <label for="feel" class="lbl">Describe it in your words</label>
       <div class="feel-row">
         <input id="feel" name="feel" type="text" placeholder="rainy cafe at night, or a loaf of sourdough on a wooden counter">
@@ -1282,6 +1279,18 @@ body{background-image:none;letter-spacing:-.005em}
       </div>
       <p class="feel-note">Say the vibe, the place, or the thing itself. Your words pick the cards and become the subject of your prompt; you can change the subject below.</p>
     </form>
+    <p class="intro">Type a feeling, a place or a trend (cozy bakery, y2k, dark academia, old money), then get the look. Keep the cards you like and get another look. Every card gives you words to paste into any AI image or video tool (ChatGPT, Midjourney, Runway, Kling and more).</p>
+    <ul class="legend" id="legend"></ul>
+  </header>
+
+  <section class="deal" aria-labelledby="deal-h">
+    <h2 id="deal-h" class="sr-only">Get a look</h2>
+    <div class="jobrow step"><h3 class="step-h"><span class="step-n">1</span> What are you making? <a class="howto-link" href="#howto-sec">How it works, under a minute ↓</a></h3><div class="jobs" id="jobs" role="group" aria-label="What you are making"></div></div>
+    <div class="startwith step"><h3 class="step-h"><span class="step-n">2</span> Start with</h3><div class="sw-tabs" role="tablist" aria-label="How to start"><button class="sw-tab" type="button" role="tab" id="tab-feel" aria-controls="sw-feel" aria-selected="true" data-start-tab="feel">Say a feeling</button><button class="sw-tab" type="button" role="tab" id="tab-look" aria-controls="sw-look" aria-selected="false" data-start-tab="look">Pick a ready look</button><button class="sw-tab" type="button" role="tab" id="tab-build" aria-controls="sw-build" aria-selected="false" data-start-tab="build">Build it yourself</button></div></div>
+    <div class="sw-panel" id="sw-feel" role="tabpanel" aria-labelledby="tab-feel">
+    <p class="lbl moods-l" id="moods-l">Pick a mood <small>optional, tap more than one</small></p>
+    <div class="moods" id="moods" role="group" aria-labelledby="moods-l"></div>
+    <p class="feel-pointer">Tap a mood for a look now, or pick moods and then type your feeling in the box at the top. <a href="#feel" class="to-feel">Type a feeling ↑</a></p>
     </div>
     <div class="sw-panel" id="sw-look" role="tabpanel" aria-labelledby="tab-look" hidden><section class="starts" id="starts" aria-labelledby="starts-h"><h2 id="starts-h" class="lbl">Ready looks for what you are making. Use one, then type your own subject.</h2><div class="start-row" id="start-row"></div></section></div>
     <div class="sw-panel" id="sw-build" role="tabpanel" aria-labelledby="tab-build" hidden><div class="guide" id="guide"></div><section class="cheats" id="cheats" aria-labelledby="cheats-h"><h2 id="cheats-h" class="lbl">Or browse any sheet</h2><div class="cheat-row" id="cheat-row"></div></section></div>
@@ -3580,7 +3589,7 @@ function boot(hot) {
   if (linked) {
     const q = new URLSearchParams(hash0); S.linkFeel = q.get('feel') || ''; const ids = (q.get('hand') || '').split(',').filter(Boolean); const job = q.get('job'); if (job === 'drama') { S.job = 'video'; S.drama = true; S.dramaSec = dramaSeconds(Number(q.get('sec')) || 30)[0]; } else if (JOB_SUITS[job]) { S.job = job; S.drama = false; }
     ids.forEach(id => { const c = BY_ID.get(id); if (c) { S.hand[slotFor(c)] = id; S.holds[slotFor(c)] = true; } });
-    if (ids.length) { S.deal = { by: 'link' }; setTimeout(() => { const h = $('#look-h'); if (h) h.scrollIntoView({ behavior: 'auto' }); }, 400); } /* a shared look opens on the look, not the header (round 10) */
+    if (ids.length) { S.deal = { by: 'link' }; S.fromHandLink = true; toHandLook(); } /* a shared look opens on the look with its first Copy button in view, not the header (round 10; scaling climb 2026-10-10) */
     if (q.get('campaign') === '1') S.campaign = true;
     if (q.get('shelf')) shelfIds = q.get('shelf').split(',').filter(id => BY_ID.get(id));
     if (ids.length || q.get('seed')) shared = { subject: q.get('subject'), aspect: q.get('aspect'), title: q.get('title') };
@@ -3612,6 +3621,16 @@ function boot(hot) {
   else if (shelfIds) $('#deck-h').scrollIntoView({ behavior: 'auto' });
   initCaps();
 }
+/* a #hand= link (share links, the MCP's site_url, the guide pages) lands on Your look with the first Copy button on screen.
+   Re-checked after fonts and images settle, until the visitor scrolls, taps or types themselves. */
+function toHandLook() {
+  let moved = false; const stop = () => { moved = true; }; ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(t => window.addEventListener(t, stop, { once: true, passive: true, capture: true }));
+  const go = () => { if (moved) return; const h = $('#look-h'); if (!h) return; h.scrollIntoView({ behavior: 'auto', block: 'start' });
+    const cp = [...document.querySelectorAll('button.copy')].find(b => b.offsetParent && /^\s*Copy\s*$/.test(b.textContent || ''));
+    if (cp) { const r = cp.getBoundingClientRect(); if (r.top < 0 || r.bottom > window.innerHeight - 8) cp.scrollIntoView({ behavior: 'auto', block: 'center' }); } };
+  setTimeout(go, 400); setTimeout(go, 1500); window.addEventListener('load', () => setTimeout(go, 50), { once: true });
+}
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a.to-feel'); if (!a) return; e.preventDefault(); const f = $('#feel'); if (!f) return; f.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'center' }); f.focus({ preventScroll: true }); }); /* the mood panel's pointer back to the feeling box at the top */
 const HOT = window.claude && window.claude.hot;
 try { if (HOT && HOT.snapshot) HOT.snapshot(() => ({ hand: S.hand, holds: S.holds, take: S.take, tab: S.tab, job: S.job, moods: [...S.moods], subject: S.subject, aspect: S.aspect, aspectUser: S.aspectUser, title: S.title, shots: S.shots, feeling: $('#feel').value })); } catch (e) {}
 if (HOT && HOT.ready) HOT.ready(boot); else boot((HOT && HOT.data) || null);
@@ -3712,15 +3731,22 @@ if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port ===
   const URL_ = 'https://lookbook-events.riverroadlabs.workers.dev/e?n=';
   /* ?me=1 once marks this browser as ours: it never counts in the usage stats again (Matt, 2026-10-09); ?me=0 clears it */
   let ME = false; try { const q = new URLSearchParams(location.search); if (q.get('me') === '1') localStorage.setItem('dd.me', '1'); if (q.get('me') === '0') localStorage.removeItem('dd.me'); ME = localStorage.getItem('dd.me') === '1'; } catch (e) {}
-  const ev = n => { if (ME) return; try { navigator.sendBeacon(URL_ + n); } catch (e) { try { fetch(URL_ + n, { method: 'POST', mode: 'no-cors', keepalive: true }); } catch (e2) {} } };
+  const BOT = (() => { try { return navigator.webdriver === true; } catch (e) { return false; } })(); /* automated browsers (headless crawlers, test rigs) never count (scaling climb 2026-10-10) */
+  const ev = n => { if (ME || BOT) return; try { navigator.sendBeacon(URL_ + n); } catch (e) { try { fetch(URL_ + n, { method: 'POST', mode: 'no-cors', keepalive: true }); } catch (e2) {} } };
   const once = n => { const d = new Date().toISOString().slice(0, 10); try { if (localStorage.getItem('dd.' + n) === d) return; localStorage.setItem('dd.' + n, d); } catch (e) {} ev(n); };
   const getter = () => once('getter');
   document.addEventListener('play', e => { if (e.target && e.target.closest && e.target.closest('#howto')) once('tutorial_play'); }, true);
-  once('visitor'); /* one per browser per day: unique visitors without an id */
-  { const q = new URLSearchParams(location.search).get('from'); const r = (document.referrer || '').toLowerCase();
-    const src = q && /^(ig|tt|x|yt|fb)$/.test(q) ? q : !r ? 'direct' : /instagram/.test(r) ? 'ig' : /tiktok/.test(r) ? 'tt' : /(^|\/\/)(t\.co|x\.com|twitter)/.test(r) ? 'x' : /youtube|youtu\.be/.test(r) ? 'yt' : /facebook|fb\.com/.test(r) ? 'fb' : /google|bing|duckduckgo|yahoo|ecosia/.test(r) ? 'search' : /directorslookbook/.test(r) ? '' : 'other';
-    if (src) once('src_' + src); }
-  const copier = () => { const d = new Date().toISOString().slice(0, 10); try { if (localStorage.getItem('dd.copier') === d) return; localStorage.setItem('dd.copier', d); } catch (e) {} ev('copier'); };
+  /* a visitor counts only once they are a person on the page: a tap, a key, a wheel or touch scroll, or 3 s with the tab visible.
+     One per browser per day (unique visitors without an id); the source rides on the same moment. */
+  const src = (() => { const q = new URLSearchParams(location.search).get('from'); const r = (document.referrer || '').toLowerCase();
+    if (q && /^(ig|tt|x|yt|fb|hn|rd|meta|mcp|guide)$/.test(q)) return q;
+    return !r ? 'direct' : /instagram/.test(r) ? 'ig' : /tiktok/.test(r) ? 'tt' : /(^|\/\/)(t\.co|x\.com|twitter)/.test(r) ? 'x' : /youtube|youtu\.be/.test(r) ? 'yt' : /facebook|fb\.com|fb\.me/.test(r) ? 'fb' : /news\.ycombinator/.test(r) ? 'hn' : /reddit\.com|redd\.it/.test(r) ? 'rd' : /google|bing|duckduckgo|yahoo|ecosia|brave\.com|kagi/.test(r) ? 'search' : /directorslookbook\.app\/(music|camera|light|film|mcp|privacy)\//.test(r) ? 'guide' : /directorslookbook/.test(r) ? '' : 'other'; })();
+  { let done = false, t = null; const evs = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+    const fire = () => { if (done) return; done = true; clearTimeout(t); evs.forEach(x => window.removeEventListener(x, fire, true)); document.removeEventListener('visibilitychange', arm); once('visitor'); if (src) once('src_' + src); };
+    const arm = () => { clearTimeout(t); if (document.visibilityState === 'visible') t = setTimeout(fire, 3000); };
+    if (!ME && !BOT) { evs.forEach(x => window.addEventListener(x, fire, { capture: true, passive: true })); document.addEventListener('visibilitychange', arm); arm(); } }
+  let linkCopied = false; /* copies on a page that opened from a #hand= link: one hand_link_copy per page load */
+  const copier = () => { if (S.fromHandLink && !linkCopied) { linkCopied = true; ev('hand_link_copy'); } const d = new Date().toISOString().slice(0, 10); try { if (localStorage.getItem('dd.copier') === d) return; localStorage.setItem('dd.copier', d); } catch (e) {} ev('copier'); };
   document.addEventListener('submit', e => { if (e.target && e.target.id === 'feel-form') getter(); }, true);
   document.addEventListener('click', e => {
     const t = e.target.closest('button, a, [data-job], [data-palette], [data-start], [data-start-copy], #start-more, #copy-multi, #seq-toggle, [data-cheat], [data-cheat-copy], [data-cheat-open], [data-guide], [data-start-tab], [data-browse], #cheat-add'); if (!t) return;
