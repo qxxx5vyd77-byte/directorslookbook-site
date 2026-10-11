@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wave-Line Shader: turn a photo into banknote line art</title>
+<meta name="description" content="A free wave-line shader: turn any photo into banknote-style line art, where horizontal wavy lines swell in the shadows and thin in the lights. Runs in your browser; your photo never leaves your device.">
+<link rel="canonical" href="https://directorslookbook.app/tools/wave-line/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://directorslookbook.app/tools/wave-line/">
+<meta property="og:title" content="Wave-Line Shader: turn a photo into banknote line art">
+<meta property="og:description" content="Horizontal wavy lines that swell in the shadows and thin in the lights, in one ink on paper. Free, in your browser, nothing uploaded.">
+<meta property="og:image" content="https://directorslookbook.app/recreate/banknote/look-a-shader.webp">
+<link rel="icon" href="/icon-512.png">
+<link rel="stylesheet" href="/pages.css">
+<style>
+.stage{margin:16px 0 8px;border-radius:8px;overflow:hidden;background:rgba(127,127,127,.12);line-height:0}
+.stage canvas{display:block;width:100%;height:auto;max-width:100%}
+.ctl{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px 20px;margin:16px 0}
+.ctl label{display:block;font-size:14px;font-weight:600}
+.ctl output{font-weight:400;color:var(--muted);margin-left:6px}
+.ctl input[type=range]{width:100%;margin:6px 0 0;min-height:32px}
+.ctl input[type=color]{width:56px;height:36px;padding:0;border:1px solid var(--rule);border-radius:6px;background:none;margin-top:6px;vertical-align:middle}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.btn{font:600 14px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;min-height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--text);background:transparent;color:var(--text);cursor:pointer;display:inline-flex;align-items:center}
+.btn.primary{background:var(--text);color:var(--bg)}
+.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.drop{outline:2px dashed var(--rule);outline-offset:4px}
+.note{font-size:14px;color:var(--muted)}
+.private{border-left:3px solid var(--text);padding:4px 0 4px 12px;margin:16px 0}
+</style>
+<!-- Cloudflare Web Analytics is left off this page on purpose: nothing but the page loads here. The photo stays in this tab. -->
+</head>
+<body>
+<main>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Director&#x27;s Lookbook</a> / <span aria-current="page">Wave-Line Shader</span></nav>
+<h1>Wave-Line Shader</h1>
+<p>Turn any photo into banknote line art. Every bit of tone becomes a horizontal wavy line that swells in the shadows and thins to a hairline in the lights, in one ink on paper. It is the <a href="/?from=tool#hand=film-banknote-wave-line&amp;job=photo">Banknote Wave-Line</a> look from the Lookbook, done exactly instead of described to an image model.</p>
+<p class="private"><b>Your photo never leaves your browser.</b> The picture is drawn on this page, on your device. Nothing is uploaded, stored or sent anywhere.</p>
+
+<div class="row">
+<label class="btn primary" for="file">Choose a photo<input id="file" type="file" accept="image/*"></label>
+<button class="btn" type="button" id="save">Download PNG</button>
+<button class="btn" type="button" id="demo">Next demo</button>
+<button class="btn" type="button" id="reset">Reset controls</button>
+</div>
+<p class="note" id="status" role="status" aria-live="polite">Loading the demo image…</p>
+<div class="stage" id="stage"><canvas id="out" width="1280" height="720" aria-label="The photo redrawn in wave lines"></canvas></div>
+<p class="note">Tip: drop a photo onto the picture, or paste one. Big shapes with clear light and shade work best: a face, a statue, a building against the sky.</p>
+
+<div class="ctl">
+<div><label for="lines">Line density<output id="lines-o" for="lines"></output></label><input type="range" id="lines" min="30" max="260" step="1" value="96"></div>
+<div><label for="amp">Wave amplitude<output id="amp-o" for="amp"></output></label><input type="range" id="amp" min="0" max="2" step="0.02" value="0.55"></div>
+<div><label for="freq">Wave frequency<output id="freq-o" for="freq"></output></label><input type="range" id="freq" min="1" max="60" step="0.5" value="13"></div>
+<div><label for="contrast">Contrast<output id="contrast-o" for="contrast"></output></label><input type="range" id="contrast" min="0.5" max="2.5" step="0.05" value="1.2"></div>
+<div><label for="ink">Ink colour</label><input type="color" id="ink" value="#1f4d3a"></div>
+<div><label for="paper">Paper colour</label><input type="color" id="paper" value="#ece8d9"></div>
+</div>
+
+<h2>How it works</h2>
+<p>The page draws a set of evenly spaced horizontal lines and bends each one along a sine wave. For every line it reads how dark the photo is under that line, and makes the line that thick: thick in the shadows, so the dark areas fill in, and a hairline in the lights. A second, slower wave runs through the first, which gives the faint moiré you see on engraved notes. It runs as a WebGL fragment shader, with a slower Canvas fallback for browsers without WebGL.</p>
+<p>The two demo pictures were made with an image model from the <a href="/?from=tool#hand=film-banknote-wave-line&amp;job=photo">Banknote Wave-Line card</a>'s prompt. The model drew them with ordinary crosshatching; the shader turns them into true wave lines. The <a href="/recreate/banknote/">recreate page</a> shows both side by side.</p>
+<p><a class="cta" href="/?from=tool#hand=film-banknote-wave-line&amp;job=photo">Open the card in Director&#x27;s Lookbook</a></p>
+
+<footer class="pf">
+<p>More: <a href="/recreate/banknote/">Recreate the banknote look</a> · <a href="/recreate/loud-type/">Recreate the loud-type look</a> · <a href="/film/">Film format prompts</a> · <a href="/camera/">Camera shot prompts</a></p>
+<p><a href="/">Director's Lookbook</a> is a free library of named looks for image, video and music prompts, made by River Road Labs. <a href="/privacy/">Privacy</a></p>
+</footer>
+</main>
+<script>
+(function () {
+  'use strict';
+  var DEMOS = [['demo-bust.jpg', 'Demo: an AI-made marble bust'], ['demo-lighthouse.jpg', 'Demo: an AI-made lighthouse']], demoIx = 0;
+  var Q = new URLSearchParams(location.search);
+  var DEF = { lines: 96, amp: 0.55, freq: 13, contrast: 1.2, ink: '#1f4d3a', paper: '#ece8d9' };
+  var MAX_SIDE = 2400, MIN_SIDE = Math.min(MAX_SIDE, Math.max(640, parseInt(Q.get('side'), 10) || 1280));   /* ?side=1920 sets the saved size of small images */
+  var $ = function (id) { return document.getElementById(id); };
+  var cv = $('out'), status = $('status');
+  var img = null, gl = null, prog = null, tex = null, loc = {}, ctx2d = null, mode = '';
+
+  function hex(h) { h = h.replace('#', ''); var n = parseInt(h, 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
+  function val(id) { return parseFloat($(id).value); }
+  function params() { return { lines: val('lines'), amp: val('amp'), freq: val('freq'), contrast: val('contrast'), ink: hex($('ink').value), paper: hex($('paper').value) }; }
+
+  var VS = 'attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*0.5+0.5,0.5-p.y*0.5);gl_Position=vec4(p,0.0,1.0);}';
+  var FS = [
+    'precision highp float;',
+    'uniform sampler2D img;uniform vec2 res;uniform float lines,amp,freq,contrast;uniform vec3 ink,paper;varying vec2 uv;',
+    'const float TAU=6.2831853;',
+    'float lum(vec2 q){vec3 c=texture2D(img,clamp(q,vec2(0.0),vec2(1.0))).rgb;return dot(c,vec3(0.299,0.587,0.114));}',
+    'float wob(vec2 px,float sp){float x=px.x/res.x,y=px.y/res.y;return amp*sp*(sin(TAU*freq*x)+0.35*sin(TAU*(freq*0.37*x+1.7*y)));}',
+    'void main(){',
+    '  vec2 px=uv*res;float sp=res.y/lines;',
+    '  float w=wob(px,sp);float k=(px.y+w)/sp;',
+    '  float cy=(floor(k)+0.5)*sp-w;',            /* this line's centre at this x, in pixels */
+    '  vec2 c=vec2(uv.x,cy/res.y);vec2 d=vec2(sp*0.45)/res;',  /* soft 9-tap read, so fine detail does not alias into the lines */
+    '  float l=(lum(c)*4.0+lum(c+vec2(d.x,0.0))+lum(c-vec2(d.x,0.0))+lum(c+vec2(0.0,d.y))+lum(c-vec2(0.0,d.y))+lum(c+d)+lum(c-d)+lum(c+vec2(d.x,-d.y))+lum(c+vec2(-d.x,d.y)))/12.0;',
+    '  l=clamp((l-0.5)*contrast+0.5,0.0,1.0);',
+    '  float hw=0.5*clamp(0.05+0.95*(1.0-l),0.0,1.0);',  /* half the line width, in line spacings: 0.5 = solid */
+    '  float dist=abs(fract(k)-0.5);float aa=0.8/sp;',
+    '  float on=1.0-smoothstep(hw-aa,hw+aa,dist);',
+    '  gl_FragColor=vec4(mix(paper,ink,on),1.0);',
+    '}'].join('\n');
+
+  function initGL() {
+    try { gl = cv.getContext('webgl', { preserveDrawingBuffer: true, antialias: false }) || cv.getContext('experimental-webgl', { preserveDrawingBuffer: true }); } catch (e) { gl = null; }
+    if (!gl) return false;
+    function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+    try {
+      prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+    } catch (e) { gl = null; return false; }
+    gl.useProgram(prog);
+    var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+    var p = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(p); gl.vertexAttribPointer(p, 2, gl.FLOAT, false, 0, 0);
+    ['img', 'res', 'lines', 'amp', 'freq', 'contrast', 'ink', 'paper'].forEach(function (n) { loc[n] = gl.getUniformLocation(prog, n); });
+    tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); gl = null; mode = 'canvas'; ctx2d = null; });
+    return true;
+  }
+
+  function sizeFor(w, h) {
+    var s = Math.max(w, h), t = Math.min(MAX_SIDE, Math.max(MIN_SIDE, s)), k = t / s;
+    return [Math.round(w * k), Math.round(h * k)];
+  }
+
+  /* Canvas2D fallback: the same maths per pixel on the CPU (smaller cap so it stays quick) */
+  var lumBuf = null, lumW = 0, lumH = 0;
+  function prepLum() {
+    var o = document.createElement('canvas'); lumW = Math.min(img.naturalWidth, 900); lumH = Math.max(1, Math.round(img.naturalHeight * lumW / img.naturalWidth));
+    o.width = lumW; o.height = lumH; var x = o.getContext('2d'); x.filter = 'blur(1px)'; x.drawImage(img, 0, 0, lumW, lumH);
+    var d = x.getImageData(0, 0, lumW, lumH).data; lumBuf = new Float32Array(lumW * lumH);
+    for (var i = 0, j = 0; i < lumBuf.length; i++, j += 4) lumBuf[i] = (0.299 * d[j] + 0.587 * d[j + 1] + 0.114 * d[j + 2]) / 255;
+  }
+  function drawCanvas(P) {
+    if (!ctx2d) ctx2d = cv.getContext('2d');
+    if (!ctx2d) { status.textContent = 'This browser cannot draw on a canvas.'; return; }
+    var W = cv.width, H = cv.height, out = ctx2d.createImageData(W, H), o = out.data, sp = H / P.lines, TAU = Math.PI * 2;
+    var ink = P.ink.map(function (v) { return v * 255; }), pap = P.paper.map(function (v) { return v * 255; }), aa = 0.8 / sp;
+    for (var y = 0; y < H; y++) {
+      for (var x = 0; x < W; x++) {
+        var fx = x / W, fy = y / H, w = P.amp * sp * (Math.sin(TAU * P.freq * fx) + 0.35 * Math.sin(TAU * (P.freq * 0.37 * fx + 1.7 * fy)));
+        var k = (y + w) / sp, cy = (Math.floor(k) + 0.5) * sp - w;
+        var lx = Math.min(lumW - 1, Math.max(0, (fx * lumW) | 0)), ly = Math.min(lumH - 1, Math.max(0, (cy / H * lumH) | 0));
+        var l = Math.min(1, Math.max(0, (lumBuf[ly * lumW + lx] - 0.5) * P.contrast + 0.5));
+        var half = 0.5 * Math.min(1, 0.05 + 0.95 * (1 - l)), dist = Math.abs(k - Math.floor(k) - 0.5);
+        var t = (dist - (half - aa)) / (2 * aa); t = t < 0 ? 0 : t > 1 ? 1 : t; var on = 1 - t * t * (3 - 2 * t);
+        var i = (y * W + x) * 4; o[i] = pap[0] + (ink[0] - pap[0]) * on; o[i + 1] = pap[1] + (ink[1] - pap[1]) * on; o[i + 2] = pap[2] + (ink[2] - pap[2]) * on; o[i + 3] = 255;
+      }
+    }
+    ctx2d.putImageData(out, 0, 0);
+  }
+
+  var queued = false;
+  function render() {
+    if (!img || queued) return; queued = true;
+    requestAnimationFrame(function () { queued = false; drawNow(); });
+  }
+  function drawNow() {
+    { var P = params();
+      ['lines', 'amp', 'freq', 'contrast'].forEach(function (n) { $(n + '-o').textContent = n === 'lines' ? P.lines + ' lines' : (Math.round(P[n] * 100) / 100); });
+      if (mode === 'webgl' && gl) {
+        gl.viewport(0, 0, cv.width, cv.height);
+        gl.uniform1i(loc.img, 0); gl.uniform2f(loc.res, cv.width, cv.height);
+        gl.uniform1f(loc.lines, P.lines); gl.uniform1f(loc.amp, P.amp); gl.uniform1f(loc.freq, P.freq); gl.uniform1f(loc.contrast, P.contrast);
+        gl.uniform3fv(loc.ink, P.ink); gl.uniform3fv(loc.paper, P.paper);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      } else drawCanvas(P);
+    }
+  }
+  /* the preview renders at the size it is shown (device pixels), so fine lines do not alias into moire on a small screen; Download renders the full size */
+  var full = [0, 0];
+  function viewSize() {
+    var cssW = (document.getElementById('stage').clientWidth || full[0]) * (window.devicePixelRatio || 1), k = Math.min(1, cssW / full[0]);
+    return [Math.max(1, Math.round(full[0] * k)), Math.max(1, Math.round(full[1] * k))];
+  }
+  function setSize(s) { cv.width = s[0]; cv.height = s[1]; }
+  window.addEventListener('resize', function () { if (!img) return; var s = viewSize(); if (s[0] !== cv.width) { setSize(s); render(); } });
+
+  function use(im, label) {
+    img = im; var s = sizeFor(im.naturalWidth, im.naturalHeight);
+    if (mode === 'webgl') {
+      var maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE) || 4096, src = im;
+      if (Math.max(im.naturalWidth, im.naturalHeight) > maxTex) { var o = document.createElement('canvas'), k = maxTex / Math.max(im.naturalWidth, im.naturalHeight); o.width = Math.round(im.naturalWidth * k); o.height = Math.round(im.naturalHeight * k); o.getContext('2d').drawImage(im, 0, 0, o.width, o.height); src = o; }
+      full = s; setSize(viewSize());
+      gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+    } else {
+      var c = Math.min(1, 1600 / Math.max(s[0], s[1])); full = [Math.round(s[0] * c), Math.round(s[1] * c)]; setSize(viewSize()); prepLum();
+    }
+    status.textContent = label + ' · saves at ' + full[0] + ' × ' + full[1] + (mode === 'webgl' ? ' · WebGL' : ' · Canvas fallback');
+    render();
+  }
+
+  function loadURL(url, label, revoke) {
+    var im = new Image();
+    im.onload = function () { if (revoke) URL.revokeObjectURL(url); use(im, label); };
+    im.onerror = function () { if (revoke) URL.revokeObjectURL(url); status.textContent = 'That file could not be read as an image. Try a JPEG or PNG.'; };
+    im.src = url;
+  }
+  function loadFile(f) {
+    if (!f || !/^image\//.test(f.type)) { status.textContent = 'Pick an image file (JPEG, PNG, WebP).'; return; }
+    loadURL(URL.createObjectURL(f), 'Your photo (kept on this device)', true);
+  }
+
+  mode = (/[?&]nogl\b/.test(location.search) || !initGL()) ? 'canvas' : 'webgl';   /* ?nogl forces the Canvas fallback (testing) */
+  ['lines', 'amp', 'freq', 'contrast', 'ink', 'paper'].forEach(function (n) { $(n).addEventListener('input', render); });
+  $('file').addEventListener('change', function (e) { loadFile(e.target.files && e.target.files[0]); e.target.value = ''; });
+  $('reset').addEventListener('click', function () { Object.keys(DEF).forEach(function (k) { $(k).value = DEF[k]; }); render(); });
+  $('save').addEventListener('click', function () {
+    if (!img) return;
+    var go = function (blob) { if (!blob) { status.textContent = 'Could not make the PNG.'; return; } var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'wave-line.png'; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000); };
+    var view = [cv.width, cv.height]; setSize(full); drawNow();
+    cv.toBlob(function (b) { setSize(view); drawNow(); go(b); }, 'image/png');
+  });
+  var stage = $('stage');
+  stage.addEventListener('dragover', function (e) { e.preventDefault(); stage.classList.add('drop'); });
+  stage.addEventListener('dragleave', function () { stage.classList.remove('drop'); });
+  stage.addEventListener('drop', function (e) { e.preventDefault(); stage.classList.remove('drop'); loadFile(e.dataTransfer.files && e.dataTransfer.files[0]); });
+  document.addEventListener('paste', function (e) { var it = e.clipboardData && Array.prototype.find.call(e.clipboardData.items, function (x) { return /^image\//.test(x.type); }); if (it) loadFile(it.getAsFile()); });
+  $('demo').addEventListener('click', function () { demoIx = (demoIx + 1) % DEMOS.length; loadURL(DEMOS[demoIx][0], DEMOS[demoIx][1], false); });
+  if (Q.get('demo') === '1') demoIx = 1;
+  loadURL(DEMOS[demoIx][0], DEMOS[demoIx][1], false);
+})();
+</script>
+</body>
+</html>

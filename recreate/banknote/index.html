@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recreate the banknote wave-line look with Director&#x27;s Lookbook</title>
+<meta name="description" content="The banknote wave-line look: the exact Director&#x27;s Lookbook hand, the paste-ready image prompt, the frame it made, and a free in-browser shader that does it to your own photo.">
+<link rel="canonical" href="https://directorslookbook.app/recreate/banknote/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://directorslookbook.app/recreate/banknote/">
+<meta property="og:title" content="Recreate the banknote wave-line look with Director&#x27;s Lookbook">
+<meta property="og:description" content="The banknote wave-line look: the exact Director&#x27;s Lookbook hand, the paste-ready image prompt, the frame it made, and a free in-browser shader that does it to your own photo.">
+<meta property="og:image" content="https://directorslookbook.app/recreate/banknote/look-a-shader.webp">
+<link rel="stylesheet" href="/pages.css">
+<style>.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0 8px}.pair figure{margin:0}.pair b{display:block;font-size:14px;margin-bottom:6px}@media (max-width:560px){.pair{grid-template-columns:1fr}}.hand{padding-left:20px}.hand li{margin:2px 0}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Director's Lookbook", "item": "https://directorslookbook.app/"}, {"@type": "ListItem", "position": 2, "name": "Recreate the banknote wave-line look", "item": "https://directorslookbook.app/recreate/banknote/"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Recreate the banknote wave-line look with Director's Lookbook", "description": "The banknote wave-line look: the exact Director's Lookbook hand, the paste-ready image prompt, the frame it made, and a free in-browser shader that does it to your own photo.", "image": "https://directorslookbook.app/recreate/banknote/look-a-shader.webp", "url": "https://directorslookbook.app/recreate/banknote/", "inLanguage": "en", "dateModified": "2026-10-11", "author": {"@type": "Organization", "name": "River Road Labs"}, "publisher": {"@type": "Organization", "name": "River Road Labs", "url": "https://riverroadlabs.app/"}, "isPartOf": {"@type": "WebSite", "name": "Director's Lookbook", "url": "https://directorslookbook.app/"}}</script>
+<!-- Cloudflare Web Analytics, site directorslookbook.app (created 2026-10-08 in Matt's account; token is per hostname, not the riverroadlabs.app one). Loaded by script so a browser tagged ?me=1 (ours, incl. test agents) is never counted (2026-10-09). -->
+<script>(function(){try{var q=new URLSearchParams(location.search);if(q.get('me')==='1')localStorage.setItem('dd.me','1');if(q.get('me')==='0')localStorage.removeItem('dd.me');if(localStorage.getItem('dd.me')==='1')return;}catch(e){}var s=document.createElement('script');s.type='module';s.src='https://static.cloudflareinsights.com/beacon.min.js';s.setAttribute('data-cf-beacon','{"token": "4748b66a4a594bb79a29acbc9f9ea886"}');document.head.appendChild(s);})();</script>
+</head>
+<body>
+<main>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Director&#x27;s Lookbook</a> / <span aria-current="page">Recreate the banknote wave-line look</span></nav>
+<h1>Recreate the banknote wave-line look with Director&#x27;s Lookbook</h1>
+<p class="muted">Inspired by a post about a wave-line shader.</p>
+<p>The look comes from engraved banknotes. Every bit of tone is a horizontal wavy line: the lines swell in the shadows and thin to hairlines in the lights, in one dark green ink on cream paper. We added it to the Lookbook as a card, <b>Banknote Wave-Line</b>, then asked for a hand, took its prompt as written and ran it once through an image model. The words are our own.</p>
+<p>Image models get the palette and the fields of lines. On solid shapes they slip back into ordinary crosshatching. For the exact effect, where all of the tone is wave lines, run the free shader below on your own photo.</p>
+<section class="look" id="look-a">
+<h2>1. Banknote lighthouse</h2>
+<p>An invented lighthouse on a headland, printed like the back of a banknote.</p>
+<h3>The hand</h3>
+<ul class="hand"><li><a href="/?from=recreate#hand=camera-lowangle&amp;job=photo">Worm&#x27;s-Eye Low Angle</a> <span class="muted">(Camera)</span></li><li><a href="/?from=recreate#hand=film-banknote-wave-line&amp;job=photo">Banknote Wave-Line</a> <span class="muted">(Film)</span></li></ul>
+<div class="box"><h3>Image prompt</h3><pre class="prompt" id="p-a">a lone stone lighthouse on a rocky headland above a calm sea. banknote wavy-line engraving, tone built only from dense parallel horizontal wavy lines that swell thick in shadows and thin to hairlines in highlights, one dark money-green ink on cream paper, plain wavy-line background with faint moire. low angle shot from near ground level looking up at the subject, wide lens. Aspect ratio 4:5.</pre><button class="copy" type="button" data-copy="p-a">Copy</button></div>
+<div class="pair"><figure><b>What the prompt gets you</b><img src="look-a.webp" width="720" height="894" alt="What the prompt gets you: an AI image of a lone stone lighthouse on a rocky headland above a calm sea, in green lines on cream, with crosshatched rocks"><figcaption>FLUX 1.1 pro ultra, 4:5, one take of the prompt above. The sky and the sea came out as lines in one green ink. The rocks and the tower slipped into crosshatching, and the model ignored the low angle.</figcaption></figure><figure><b>The shader version</b><img src="look-a-shader.webp" width="720" height="894" alt="The shader version: the same lighthouse redrawn entirely in horizontal wave lines that swell in the shadows" loading="lazy"><figcaption>The same frame run through our free Wave-Line shader: every bit of tone is now a wave line.</figcaption></figure></div>
+<p><b>Image models can&#x27;t hold this look. The shader can.</b> <a href="/tools/wave-line/">Try the Wave-Line shader</a> on your own photo.</p>
+<p><a class="cta" href="/?from=recreate#hand=camera-lowangle%2Cfilm-banknote-wave-line&amp;job=photo&amp;subject=a+lone+stone+lighthouse+on+a+rocky+headland+above+a+calm+sea&amp;aspect=4%3A5">Open this hand in the Lookbook</a></p>
+</section>
+<section id="shader">
+<h2>2. Do it to your own photo</h2>
+<p>The <a href="/tools/wave-line/">Wave-Line shader</a> turns any photo into this look in your browser. You set the line density, wave size and inks, then save a PNG. Your photo never leaves your device. It is free.</p>
+<p><a class="cta" href="/tools/wave-line/">Open the Wave-Line shader</a></p>
+</section>
+<h2>Make your own</h2>
+<p>Type a feeling into the Lookbook, or ask Claude to deal a hand with the Director's Lookbook connector, hold <b>Banknote Wave-Line</b>, then swap any card that does not fit. Statues, ruins, stags and lighthouses take this look well: big shapes with clear light and shade.</p>
+<p><a class="cta" href="/?from=recreate">Open Director&#x27;s Lookbook</a></p>
+<footer class="pf">
+<p>More: <a href="/recreate/loud-type/">Recreate the loud-type look</a> · <a href="/film/">Film format prompts</a> · <a href="/camera/">Camera shot prompts</a> · <a href="/light/">Lighting prompts</a> · <a href="/music/">Suno music style prompts</a></p>
+<p><a href="/">Director's Lookbook</a> is a free library of named looks for image, video and music prompts, made by River Road Labs. <a href="/privacy/">Privacy</a></p>
+</footer>
+</main>
+<script>document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy]');if(!b)return;var el=document.getElementById(b.getAttribute('data-copy'));var t=el.textContent;var done=function(m){b.textContent=m;setTimeout(function(){b.textContent='Copy'},1600)};var sel=function(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);done('Selected')};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){done('Copied')},sel)}else sel()});</script>
+<script>(function(){if(!/(^|\.)directorslookbook\.app$/.test(location.hostname))return;var me=false;try{me=localStorage.getItem('dd.me')==='1'}catch(e){}if(me||navigator.webdriver===true)return;var U='https://lookbook-events.riverroadlabs.workers.dev/e?n=';function ev(n){try{navigator.sendBeacon(U+n)}catch(e){try{fetch(U+n,{method:'POST',mode:'no-cors',keepalive:true})}catch(e2){}}}function once(n){var d=new Date().toISOString().slice(0,10);try{if(localStorage.getItem('dd.'+n)===d)return;localStorage.setItem('dd.'+n,d)}catch(e){}ev(n)}var done=false,t=null,evs=['pointerdown','keydown','wheel','touchstart'];function fire(){if(done)return;done=true;clearTimeout(t);once('guide_visitor');if(/google|bing|duckduckgo|yahoo|ecosia|brave\.com|kagi/.test((document.referrer||'').toLowerCase()))once('guide_search')}function arm(){clearTimeout(t);if(document.visibilityState==='visible')t=setTimeout(fire,3000)}evs.forEach(function(x){addEventListener(x,fire,{capture:true,passive:true})});document.addEventListener('visibilitychange',arm);arm();document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy],a.cta');if(!b)return;if(b.matches('a.cta'))ev('guide_cta');else{ev('guide_copy');once('guide_copier')}},true)})();</script>
+</body>
+</html>
