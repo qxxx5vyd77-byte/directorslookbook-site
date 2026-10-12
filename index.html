@@ -2651,7 +2651,7 @@ function paletteRows(r) {
 }
 function hexRgb(hex) { const n = parseInt(String(hex).replace('#', ''), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
 /* GIMP palette: plain text, one "R G B name" line per colour */
-function gplText(p) { return ['GIMP Palette', `Name: ${p.name}`, 'Columns: 0', '#'].concat(p.rows.map(x => { const [r, g, b] = hexRgb(x.hex); return `${String(r).padStart(3)} ${String(g).padStart(3)} ${String(b).padStart(3)}\t${x.name} ${x.hex}`; })).join('\n') + '\n'; }
+function gplText(p) { return ['GIMP Palette', `Name: ${p.name}`, 'Columns: 0', '# From Director\'s Lookbook, directorslookbook.app'].concat(p.rows.map(x => { const [r, g, b] = hexRgb(x.hex); return `${String(r).padStart(3)} ${String(g).padStart(3)} ${String(b).padStart(3)}\t${x.name} ${x.hex}`; })).join('\n') + '\n'; }
 /* Adobe swatch exchange: ASEF, version 1.0, one group of RGB entries, big-endian */
 function aseBytes(p) {
   const utf16 = s => { const str = String(s), out = []; for (let i = 0; i < str.length; i++) out.push((str.charCodeAt(i) >> 8) & 255, str.charCodeAt(i) & 255); out.push(0, 0); return out; };
