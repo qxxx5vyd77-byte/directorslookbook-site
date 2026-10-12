@@ -788,6 +788,17 @@ label.step-h{font:600 15px/1.2 var(--f-body)!important;text-transform:none!impor
 .mj-opts input[type=range]{accent-color:var(--text)}
 
 .mj-opts .mj-msg{grid-column:1 / -1;margin-top:-4px} .mj-opts .mj-msg:empty{display:none}
+/* Phone tap targets and label sizes (2026-10-12): a 390 px audit found most buttons and chips 24 to 34 px tall and labels at 10 to 11 px.
+   Phone widths only: buttons and chips to 44 px (40 px for the in-card star and the paired pager arrows), labels to 12.5 px. */
+@media (max-width:759px){
+  .btn.small,.hand .slot-tools .btn,.quick-tools .copy{min-height:44px}
+  .chip,.seg .chip{min-height:40px;padding:8px 14px}
+  .card .star{min-width:40px;min-height:40px}
+  .hand-pos .hp-b{width:40px;height:40px}
+  .clear-x{width:40px;height:40px;right:0}
+  .slot-cat,.quick-bar #quick-l,.quick-in label,.lbl small{font-size:12.5px}
+  #deck-m select,.iconbtn,#era-from,#era-to{min-height:40px}
+}
 
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
