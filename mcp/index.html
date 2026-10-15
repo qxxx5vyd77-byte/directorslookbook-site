@@ -40,7 +40,12 @@
 </ol>
 <p>Then ask, for example: <em>"Use the Lookbook to give me a look for a rainy cafe at night, then write the image and video prompts."</em></p>
 
-<h2>Add it to Cursor or another client</h2>
+<h2>One-click install</h2>
+<p><a class="cta" href="cursor://anysphere.cursor-deeplink/mcp/install?name=directors-lookbook&config=eyJ1cmwiOiAiaHR0cHM6Ly9sb29rYm9vay1tY3Aucml2ZXJyb2FkbGFicy53b3JrZXJzLmRldi9tY3AifQ%3D%3D">Add to Cursor</a> <a class="cta" href="vscode:mcp/install?%7B%22name%22%3A%22directors-lookbook%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A//lookbook-mcp.riverroadlabs.workers.dev/mcp%22%7D">Add to VS Code</a></p>
+<p>Claude Code, in a terminal:</p>
+<pre>claude mcp add --transport http directors-lookbook https://lookbook-mcp.riverroadlabs.workers.dev/mcp</pre>
+
+<h2>Add it to another client</h2>
 <pre>{
   "mcpServers": {
     "directors-lookbook": {
