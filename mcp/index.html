@@ -69,6 +69,8 @@ smithery mcp add riverroadlabs/directors-lookbook --client claude-code</pre>
 <p>Restart the client afterwards.</p>
 <p class="muted">Installs through Smithery connect via Smithery's gateway, so Smithery handles those requests under <a href="https://smithery.ai/privacy">its own terms</a>. The direct server URL above reaches our server only.</p>
 
+<p class="muted">Probing it from Python's standard library? Set a <code>User-Agent</code> header. Cloudflare blocks the default <code>Python-urllib</code> agent on workers.dev with error 1010; curl, requests and every MCP client pass.</p>
+
 <h2>Tools</h2>
 <p>All six tools are read-only.</p>
 <table>
