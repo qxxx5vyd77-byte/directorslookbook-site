@@ -3883,7 +3883,7 @@ if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port ===
   /* a visitor counts only once they are a person on the page: a tap, a key, a wheel or touch scroll, or 3 s with the tab visible.
      One per browser per day (unique visitors without an id); the source rides on the same moment. */
   const src = (() => { const q = new URLSearchParams(location.search).get('from'); const r = (document.referrer || '').toLowerCase();
-    if (q && /^(ig|tt|x|yt|fb|hn|rd|meta|mcp|guide)$/.test(q)) return q;
+    if (q && /^(ig|tt|x|yt|fb|hn|rd|meta|mcp|guide|share)$/.test(q)) return q;
     return !r ? 'direct' : /instagram/.test(r) ? 'ig' : /tiktok/.test(r) ? 'tt' : /(^|\/\/)(t\.co|x\.com|twitter)/.test(r) ? 'x' : /youtube|youtu\.be/.test(r) ? 'yt' : /facebook|fb\.com|fb\.me/.test(r) ? 'fb' : /news\.ycombinator/.test(r) ? 'hn' : /reddit\.com|redd\.it/.test(r) ? 'rd' : /google|bing|duckduckgo|yahoo|ecosia|brave\.com|kagi/.test(r) ? 'search' : /directorslookbook\.app\/(music|camera|light|film|mcp|privacy)\//.test(r) ? 'guide' : /directorslookbook/.test(r) ? '' : 'other'; })();
   { let done = false, t = null; const evs = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
     const fire = () => { if (done) return; done = true; clearTimeout(t); evs.forEach(x => window.removeEventListener(x, fire, true)); document.removeEventListener('visibilitychange', arm); once('visitor'); if (src) once('src_' + src); };
