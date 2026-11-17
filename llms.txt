@@ -1,0 +1,69 @@
+# Director's Lookbook
+
+> A free library of named looks for image, video and music prompts, made by River Road Labs. Every look has exact prompt wording and an example. No account or login.
+
+## Start here
+
+- [Director's Lookbook](https://directorslookbook.app/): say the feeling, get the look, copy the prompt
+- [Example gallery](https://directorslookbook.app/gallery/): example images, each with the exact wording that made it
+- [Lookbook MCP server](https://directorslookbook.app/mcp/): the same library as a free, read-only MCP server for Claude and other AI clients
+
+## Suno music style prompts
+
+- [Suno music style prompts](https://directorslookbook.app/music/): Copy-ready Suno style lines for 25 genres, each with tempo, key, who carries the tune, and an Exclude line that keeps the track from drifting.
+- [Suno Phonk Prompt: Style and Exclude Lines](https://directorslookbook.app/music/phonk/): Copy-ready Suno style line for Phonk: 140 bpm, F# phrygian, distorted cowbell melody on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Amapiano Prompt: Style and Exclude Lines](https://directorslookbook.app/music/amapiano/): Copy-ready Suno style line for Amapiano: 113 bpm, F minor, chant-like vocal ad-libs, electric piano chords on lead, plus an Exclude line.
+- [Suno City Pop Prompt: Style and Exclude Lines](https://directorslookbook.app/music/city-pop/): Copy-ready Suno style line for City Pop: 116 bpm, Db major, smooth female vocal in Japanese on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Synthwave Prompt: Style and Exclude Lines](https://directorslookbook.app/music/synthwave/): Copy-ready Suno style line for Synthwave: 100 bpm, E minor, bright sawtooth synth on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Drum and Bass Prompt: Style and Exclude Lines](https://directorslookbook.app/music/drum-and-bass/): Copy-ready Suno style line for Drum and Bass: 174 bpm, F minor, soft electric piano and pad line on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Trap Prompt: Style and Exclude Lines](https://directorslookbook.app/music/trap/): Copy-ready Suno style line for Trap: 140 bpm, C minor, confident male rap vocal on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Deep House Prompt: Style and Exclude Lines](https://directorslookbook.app/music/deep-house/): Copy-ready Suno style line for Deep House: 122 bpm, F minor, electric piano chords, chopped vocal on lead, plus an Exclude line that keeps the track on genre.
+- [Suno UK Drill Prompt: Style and Exclude Lines](https://directorslookbook.app/music/uk-drill/): Copy-ready Suno style line for UK Drill: 142 bpm, C# minor, low male rap vocal on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Dubstep Prompt: Style and Exclude Lines](https://directorslookbook.app/music/dubstep/): Copy-ready Suno style line for Dubstep: 140 bpm, F minor, growling wobble bass on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Shoegaze Prompt: Style and Exclude Lines](https://directorslookbook.app/music/shoegaze/): Copy-ready Suno style line for Shoegaze: 112 bpm, E major, fuzz guitar wall on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Hyperpop Prompt: Style and Exclude Lines](https://directorslookbook.app/music/hyperpop/): Copy-ready Suno style line for Hyperpop: 160 bpm, C major, pitched-up autotuned vocal on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Reggaeton Prompt: Style and Exclude Lines](https://directorslookbook.app/music/reggaeton/): Copy-ready Suno style line for Reggaeton: 94 bpm, A minor, smooth male lead vocal in Spanish on lead, plus an Exclude line that keeps the track on genre.
+- [Suno UK Garage Prompt: Style and Exclude Lines](https://directorslookbook.app/music/uk-garage/): Copy-ready Suno style line for UK Garage: 132 bpm, G minor, chopped organ and electric piano stabs on lead, plus an Exclude line.
+- [Suno Heavy Metal Prompt: Style and Exclude Lines](https://directorslookbook.app/music/heavy-metal/): Copy-ready Suno style line for Heavy Metal: 160 bpm, E minor, high male vocal, twin lead guitars on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Sea Shanty Prompt: Style and Exclude Lines](https://directorslookbook.app/music/sea-shanty/): Copy-ready Suno style line for Sea Shanty: 96 bpm, D minor, rough lead singer, crew chorus answers on lead, plus an Exclude line.
+- [Suno Lo-fi Hip Hop Prompt: Style and Exclude Lines](https://directorslookbook.app/music/lo-fi-hip-hop/): Copy-ready Suno style line for Lo-fi Hip Hop: 78 bpm, C major, warm electric piano loop on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Afrobeat Prompt: Style and Exclude Lines](https://directorslookbook.app/music/afrobeat/): Copy-ready Suno style line for Afrobeat: 112 bpm, D dorian, unison horn section on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Bossa Nova Prompt: Style and Exclude Lines](https://directorslookbook.app/music/bossa-nova/): Copy-ready Suno style line for Bossa Nova: 66 bpm, D major, gentle flute, or a nylon guitar melody on lead, plus an Exclude line.
+- [Suno Gospel Choir Prompt: Style and Exclude Lines](https://directorslookbook.app/music/gospel-choir/): Copy-ready Suno style line for Gospel Choir: 70 bpm, Ab major, lead vocalist, the choir answers on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Cumbia Prompt: Style and Exclude Lines](https://directorslookbook.app/music/cumbia/): Copy-ready Suno style line for Cumbia: 96 bpm, G major, accordion melody, male vocal in Spanish on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Jersey Club Prompt: Style and Exclude Lines](https://directorslookbook.app/music/jersey-club/): Copy-ready Suno style line for Jersey Club: 140 bpm, G minor, chopped call-out chant vocals on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Grunge Prompt: Style and Exclude Lines](https://directorslookbook.app/music/grunge/): Copy-ready Suno style line for Grunge: 112 bpm, D minor, raspy male vocal on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Vocal Trance Prompt: Style and Exclude Lines](https://directorslookbook.app/music/vocal-trance/): Copy-ready Suno style line for Vocal Trance: 136 bpm, A minor, breathy female vocal on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Dark Ambient Prompt: Style and Exclude Lines](https://directorslookbook.app/music/dark-ambient/): Copy-ready Suno style line for Dark Ambient: 60 bpm, atonal, C# pedal, none: texture and silence on lead, plus an Exclude line that keeps the track on genre.
+- [Suno Music Box Prompt: Style and Exclude Lines](https://directorslookbook.app/music/music-box/): Copy-ready Suno style line for Music Box: 84 bpm, F major, music box comb on lead, plus an Exclude line that keeps the track on genre.
+
+## Camera shot prompts
+
+- [Camera shot prompts](https://directorslookbook.app/camera/): Exact prompt wording for eight camera shots and moves, from dolly zoom to over-the-shoulder, each with an example frame and the look it gets confused with.
+- [Dolly Zoom Prompt for AI Video: Exact Wording and Example](https://directorslookbook.app/camera/dolly-zoom/): The exact dolly zoom prompt wording for AI image and video tools, with an example frame. Track backward while zooming in, or the reverse.
+- [Dutch Angle Prompt: Exact Wording and Example Frame](https://directorslookbook.app/camera/dutch-angle/): The exact dutch angle prompt wording for AI image and video tools, with an example frame. The camera rolls sideways so the horizon tilts.
+- [Low Angle Shot Prompt: Exact Wording and Example Frame](https://directorslookbook.app/camera/low-angle-shot/): The exact low angle shot prompt wording for AI image and video tools, with an example frame. The camera sits near the ground and looks up.
+- [High Angle Shot Prompt: Exact Wording and Example Frame](https://directorslookbook.app/camera/high-angle-shot/): The exact high angle shot prompt wording, with an example frame. The camera looks down on the subject from above, but not straight down.
+- [Orbit Shot Prompt for AI Video: Exact Wording and Example](https://directorslookbook.app/camera/orbit-shot/): The exact orbit shot prompt wording for AI image and video tools, with an example frame. The camera circles the subject while keeping them centred.
+- [Extreme Close-Up Prompt: Exact Wording and Example Frame](https://directorslookbook.app/camera/extreme-close-up/): The exact extreme close-up prompt wording, with an example frame. The frame crops inside the face or the object: one eye, a hand on a latch.
+- [Over-the-Shoulder Shot Prompt: Exact Wording and Example Frame](https://directorslookbook.app/camera/over-the-shoulder-shot/): The exact over-the-shoulder shot prompt wording, with an example frame. A soft dark shoulder and head of one person frame the other person.
+- [Fisheye Prompt: Exact Wording and Example Frame](https://directorslookbook.app/camera/fisheye/): The exact fisheye prompt wording, with an example frame. An ultra-wide lens bends straight lines into curves and pushes the centre toward you.
+
+## Lighting prompts
+
+- [Lighting prompts](https://directorslookbook.app/light/): Exact prompt wording for rim light, Rembrandt lighting, golden hour and blue hour, each with an example frame and what it is not.
+- [Rim Light Prompt: Exact Wording and Example Frame](https://directorslookbook.app/light/rim-light/): The exact rim light prompt wording, with an example frame. A light behind and to the side of the subject draws a bright line along hair, cheek and shoulder.
+- [Rembrandt Lighting Prompt: Exact Wording and Example Frame](https://directorslookbook.app/light/rembrandt-lighting/): The exact Rembrandt lighting prompt wording, with an example frame. Key light high and 45 degrees to one side.
+- [Golden Hour Prompt: Exact Wording and Example Frame](https://directorslookbook.app/light/golden-hour/): The exact golden hour prompt wording, with an example frame. The low sun just after sunrise or before sunset: warm raking light, long soft shadows.
+- [Blue Hour Prompt: Exact Wording and Example Frame](https://directorslookbook.app/light/blue-hour/): The exact blue hour prompt wording, with an example frame. After sunset, before night: a deep blue sky with no direct sun.
+
+## Film format prompts
+
+- [Film format prompts](https://directorslookbook.app/film/): Exact prompt wording for three consumer camera looks: VHS camcorder, disposable camera and 2000s digicam, with example frames.
+- [VHS Prompt: Exact Wording and Example Frame](https://directorslookbook.app/film/vhs/): The exact VHS prompt wording, with an example frame. Consumer analog video from a shoulder camcorder: soft low-resolution image, colour smearing past edges.
+- [Disposable Camera Prompt: Exact Wording and Example Frame](https://directorslookbook.app/film/disposable-camera/): The exact disposable camera prompt wording, with an example frame. A single-use plastic camera: harsh on-camera flash, soft plastic-lens corners.
+- [2000s Digicam Prompt: Exact Wording and Example Frame](https://directorslookbook.app/film/2000s-digicam/): The exact 2000s digicam prompt wording, with an example frame. An early 2000s compact digital camera: small sensor, blown flash, cool cast, digital noise.
+
+## Card pages
+
+- [Sitemap](https://directorslookbook.app/sitemap.xml): every card has its own page under /look/ with its prompt wording, what it is not, and related looks
