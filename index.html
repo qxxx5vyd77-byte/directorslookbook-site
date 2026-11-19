@@ -812,6 +812,29 @@ label.step-h{font:600 15px/1.2 var(--f-body)!important;text-transform:none!impor
   #deck-m select,.iconbtn,#era-from,#era-to{min-height:40px}
 }
 
+/* first-screen pass (2026-11-18): one-tap row, the example/result panel under the feeling box, advanced controls folded */
+.try{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-top:-4px}
+.try .lbl{margin:0}
+.try-chip{font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--text);border-radius:999px;background:transparent;color:inherit;cursor:pointer}
+.try-chip:hover,.try-chip:focus-visible{background:var(--text);color:var(--table)}
+.peek{box-sizing:border-box;width:100%;max-width:880px;margin:0 auto;border:1px solid var(--text);padding:14px;display:flex;flex-direction:column;gap:10px;text-align:left;scroll-margin-top:12px}
+.peek-head{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.peek-h{font:600 13px/1.3 var(--f-body);letter-spacing:.06em;text-transform:uppercase;margin:0}
+.peek-names{margin:0;font-size:14px;color:var(--muted);min-width:0}
+.peek-imgs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.peek-imgs:empty{display:none}
+.peek-imgs img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.peek-t{margin:0;font-size:14px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.peek-act{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.peek-more{font-size:14px;color:inherit}
+.adjust{margin:4px 0}
+.adjust>summary{cursor:pointer;font-size:14px;color:var(--muted);padding:4px 0}
+.adjust[open]>summary{margin-bottom:8px}
+@media (max-width:759px){.peek-imgs{grid-template-columns:repeat(2,minmax(0,1fr))}.wordmark{font-size:46px}.edition{display:none}.try{justify-content:flex-start}}
+.peek-imgs.one{grid-template-columns:1fr}
+.peek-imgs.one img{aspect-ratio:auto;max-height:420px;object-fit:contain;background:var(--well)}
+@media (max-width:759px){.peek-imgs.one img{max-height:240px;width:100%;object-fit:cover}}
+
 /* Camera stage: one storyboard scene (sky, sun, hills, a figure, foreground), re-shot by each card's preset.
    Layers are 150% of the frame so the camera can move without showing an edge. */
 .stage{--sg-sky-t:#E4E8EB;--sg-sky-b:#F6F6F2;--sg-sun:#FFFFFF;--sg-sunl:#B3BAC0;--sg-far:#CAD0D3;--sg-mid:#A9B0B5;--sg-tree:#959DA3;--sg-subj:#262A2E;--sg-fg:#6E767C;--sg-win:#F2D48A;--sg-hand:#8A7A6E;--sg-ground:#CBD0C9;--sg-road:#9AA09D;--sg-zebra:#F6F6F2;--sg-door:#8C4E46;--sg-pic:#EADCC5;--vfc:rgba(30,34,38,.35);
@@ -1368,9 +1391,9 @@ body{background-image:none;letter-spacing:-.005em}
         <button type="button" class="btn" id="undo-btn" disabled aria-label="Back to the previous look" title="No earlier look yet">‹ Back</button>
         <button type="button" class="btn" id="ask-btn" hidden>Ask Claude to pick</button>
       </div>
-      <p class="feel-note">Describe the mood, the place or the thing itself. Your words choose the cards and become the subject of your prompt. You can edit the subject below.</p>
     </form>
-    <p class="intro">Type a feeling, a place or a trend (cozy bakery, y2k, dark academia, old money), then get the look. Keep the cards you like and get another look. Every card gives you words to paste into any AI image or video tool (ChatGPT, Midjourney, Runway, Kling and more).</p>
+    <div class="try" role="group" aria-labelledby="try-l"><span class="lbl" id="try-l">Or tap one:</span><button class="try-chip" type="button" data-try="rainy cafe at night">rainy cafe at night</button><button class="try-chip" type="button" data-try="y2k skate video">y2k skate video</button><button class="try-chip" type="button" data-try="cozy bakery photo">cozy bakery photo</button><button class="try-chip" type="button" data-try="dark academia poster">dark academia poster</button></div>
+    <section class="peek" id="peek" aria-labelledby="peek-h"><div class="peek-head"><h2 id="peek-h" class="peek-h">Example look</h2><p class="peek-names" id="peek-names"></p></div><div class="peek-imgs" id="peek-imgs"></div><p class="peek-t" id="peek-t"></p><div class="peek-act"><button class="btn primary copy" type="button" data-copy="quick-t" aria-label="Copy the whole prompt">Copy prompt</button><a class="peek-more" href="#look-h">Change cards, tool or shape ↓</a></div></section>
     <ul class="legend" id="legend"></ul>
   </header>
 
@@ -1387,7 +1410,7 @@ body{background-image:none;letter-spacing:-.005em}
     <div class="sw-panel" id="sw-build" role="tabpanel" aria-labelledby="tab-build" hidden><div class="guide" id="guide"></div><section class="cheats" id="cheats" aria-labelledby="cheats-h"><h2 id="cheats-h" class="lbl">Or browse any sheet</h2><div class="cheat-row" id="cheat-row"></div></section></div>
     <div class="cheat" id="cheat" hidden role="dialog" aria-modal="true" aria-labelledby="cheat-title"><div class="cheat-in"><div class="cheat-top"><h2 id="cheat-title"></h2><div class="cheat-act"><button class="btn small" type="button" id="cheat-skip" hidden>Skip</button><button class="btn small" type="button" id="cheat-print">Print or save PDF</button><button class="btn small" type="button" id="cheat-close" aria-label="Close the cheat sheet">Close</button></div></div><p class="cheat-hint">Tap cards to select them, then add them to your look.</p><div id="cheat-body"></div><div class="cheat-bar" id="cheat-bar" hidden><span id="cheat-n"></span><button class="btn small primary" type="button" id="cheat-add">Add to my look</button><button class="btn small" type="button" id="cheat-copysel">Copy their words</button><button class="btn small" type="button" id="cheat-clear">Clear</button></div><p class="cheat-foot">directorslookbook.app · say the feeling, get the look</p></div></div>
     <p class="job-note" id="job-note"></p>
-    <div class="dealtools"><span class="lbl" id="spice-l">Get the look</span><div class="seg" id="spice" role="group" aria-labelledby="spice-l" title="Safer stays near the look's moods; Wilder leans away from the obvious pick"></div><button type="button" class="btn small" id="shake" disabled title="Keep a card first">Change the rest (0 kept)</button><button type="button" class="btn small" id="pin-hand" title="Pin this look as A, then get another look to compare">Pin this look</button></div>
+    <details class="adjust" id="adjust"><summary>More controls: safer or wilder, change the rest, compare</summary><div class="dealtools"><span class="lbl" id="spice-l">Get the look</span><div class="seg" id="spice" role="group" aria-labelledby="spice-l" title="Safer stays near the look's moods; Wilder leans away from the obvious pick"></div><button type="button" class="btn small" id="shake" disabled title="Keep a card first">Change the rest (0 kept)</button><button type="button" class="btn small" id="pin-hand" title="Pin this look as A, then get another look to compare">Pin this look</button></div></details>
     <p class="deal-note" id="deal-note" aria-live="polite"></p>
   </section>
 
@@ -2818,6 +2841,7 @@ function renderRecipe() {
     const a = hint.querySelector('a'); if (a) a.onclick = e => { e.preventDefault(); const q = $('#q-subject'); if (q) { q.scrollIntoView({ block: 'center' }); q.focus(); } }; } }
   { const lk = $('#look'); if (lk) { const imgs = JOB_SUITS[S.job].map(s => BY_ID.get(S.hand[s])).filter(c => c && c.example).map(c => `<figure><img src="${esc(c.example.img)}" alt="${esc(c.name)}" loading="lazy"><figcaption>${esc(c.name)}</figcaption></figure>`); lk.innerHTML = imgs.length ? `<p class="lbl">The look at a glance</p><div class="look-row">${imgs.join('')}</div>` : ''; } }
   { const mh = $('#mini-hand'), mm = $('#mini-hand-m'); const html = JOB_SUITS[S.job].map(s => { const c = BY_ID.get(S.hand[s]); return c ? `<span class="mh${S.holds[s] ? ' kept' : ''}" title="${esc(c.name)}${S.holds[s] ? ' (kept)' : ''}"><b class="ink-${SUIT[s].ink}">${SUIT[s].glyph}</b> ${esc(c.name)}</span>` : ''; }).join(''); if (mh) mh.innerHTML = html; if (mm) mm.innerHTML = html; }
+  renderPeek();
   $('#quick [data-copy="quick-t"]').setAttribute('aria-label', 'Copy ' + $('#quick-l').textContent.toLowerCase());
   $('#quick-n-x').textContent = FULL_NOTE[S.job];
   $('#r-site').textContent = r.site; $('#r-palette').textContent = r.palette; $('#recipes').dataset.job = S.job;
@@ -2946,8 +2970,17 @@ function renderHandPos() {
   box.innerHTML = `<button class="hp-b" type="button" data-hand-step="-1" aria-label="Previous card in the look"${i === 0 ? ' disabled' : ''}>‹</button><span class="hp-n">${i + 1} / ${n}</span><span class="hp-dots" aria-hidden="true">${slots.map((_, k) => `<i${k === i ? ' class="on"' : ''}></i>`).join('')}</span><button class="hp-b" type="button" data-hand-step="1" aria-label="Next card in the look"${i === n - 1 ? ' disabled' : ''}>›</button>`;
 }
 function keptCount() { return JOB_SUITS[S.job].filter(s => S.holds[s]).length; }
+/* first-screen pass (2026-11-18): the look and its prompt, right under the feeling box, so a visitor sees what they get before typing */
+function renderPeek() {
+  const pk = $('#peek'); if (!pk) return; const cards = JOB_SUITS[S.job].map(s => BY_ID.get(S.hand[s])).filter(Boolean);
+  $('#peek-h').textContent = S.deal && S.deal.by === 'start' ? 'Example look' : 'Your look';
+  $('#peek-names').textContent = cards.map(c => c.name).join(' · ');
+  const hero = S.deal && S.deal.by === 'start' && S.firstHero; $('#peek-imgs').classList.toggle('one', !!hero);
+  $('#peek-imgs').innerHTML = hero ? `<img src="${esc(hero.img)}" alt="${esc(hero.alt)}">` : cards.filter(c => c.example).slice(0, 4).map(c => `<img src="${esc(c.example.img)}" alt="${esc(c.name)}" loading="lazy">`).join('');
+  $('#peek-t').textContent = $('#quick-t').textContent;
+}
 function renderDealTools() {
-  const k = keptCount(), sh = $('#shake'); if (sh) { sh.textContent = `Change the rest (${k} kept)`; sh.disabled = !k; sh.title = k ? 'New cards for the ones you have not kept, chosen to go with the kept ones' : 'Keep a card first'; }
+  const k = keptCount(), sh = $('#shake'); { const ad = $('#adjust'); if (ad && k) ad.open = true; } /* a kept card makes Change the rest the next step: show it */ if (sh) { sh.textContent = `Change the rest (${k} kept)`; sh.disabled = !k; sh.title = k ? 'New cards for the ones you have not kept, chosen to go with the kept ones' : 'Keep a card first'; }
   const b = $('#undo-btn'); if (b) { b.disabled = !S.undo.length; b.title = S.undo.length ? `Back to the previous look (${S.undo.length} in memory, or press Z)` : 'No earlier look yet'; }
   $$('#spice .chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.spice === S.spice)));
   $$('#moods .chip').forEach(x => x.setAttribute('aria-pressed', String(S.moods.has(x.dataset.mood))));
@@ -3062,7 +3095,7 @@ function dealCore(slots, f, chipMoods, js, force) {
   return S.lastNeutral;
 }
 /* opts: text (overrides the feel box), chipMoods (overrides the mood chips), by + mood + kept (the note), keepSeed (replay), noSnapshot, silent (no render) */
-function afterDealScroll() { if (!window.matchMedia('(max-width: 759px)').matches) return; const q = $('#quick') || $('#hand'); if (q) q.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); }
+function afterDealScroll() { if (S.fromTop) return; /* a deal started at the top of the page shows in the example panel there (first-screen pass 2026-11-18) */ if (!window.matchMedia('(max-width: 759px)').matches) return; const q = $('#quick') || $('#hand'); if (q) q.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); }
 /* "for instagram", "from my feed", "for a printmaking history lesson": what the picture is FOR is not what is IN it (persona round 3) */
 /* a feeling that is only style words (card names, moods, look words) is not a subject: leave the placeholder (round 12) */
 function subjectFrom(t) { let s = ' ' + String(t).toLowerCase().replace(/[^a-z0-9'\s-]/g, ' ') + ' '; [...BY_ID.values()].forEach(c => [c.name].concat(c.aka || []).forEach(n => { const k = String(n).toLowerCase(); if (k.length > 4) s = s.split(k).join(' '); })); (MOODS || []).forEach(m => { s = s.replace(new RegExp('\\b' + m + '\\b', 'g'), ' '); }); s = s.replace(/\b(shot|shots|look|style|vibe|feel|feeling|track|music|video|photo|prompt|with|and|a|an|the|of|in|on|for|warm|cool|dark|bright|soft|moody|cinematic|aesthetic|flare|lo-fi|lofi|tracking|lateral|anamorphic|game|cozy|handmade|farming)\b/g, ' '); return s.trim().split(/\s+/).filter(w => w.length > 2).length >= 1; }
@@ -3616,6 +3649,12 @@ function renderStarts() {
   }).join('') ;
 }
 
+/* first-screen pass (2026-11-18): a first visit opens on a finished example (one of today's ready looks for the job, with its own subject), not a hand that says [your subject] */
+function firstLook() {
+  const ex = D.examples || []; const i = startOrder().find(k => (ex[k].job || 'photo') === S.job && ex[k].subject && ex[k].img) ?? startOrder().find(k => (ex[k].job || 'photo') === S.job && ex[k].subject); if (i == null) return; const x = ex[i]; S.firstHero = x.img ? { img: x.img, alt: `${x.title}: ${x.subject}` } : null; /* the example shows its own picture, not the cards' unrelated samples */
+  for (const v of Object.values(x.cards)) { const c = BY_ID.get(v); if (c) S.hand[c.kind === 'light' ? 'light' : c.kind === 'fx' ? 'fx' : c.suit] = v; }
+  repairHand(); setSubject(x.subject, true); if (!S.aspectUser && x.aspect) setAspect(x.aspect); S.feeling = x.title.toLowerCase();
+}
 function startLook(i) {
   const x = (D.examples || [])[i]; if (!x) return; const cards = {}; for (const [k, v] of Object.entries(x.cards)) { const c = BY_ID.get(v); if (c) cards[c.kind === 'light' ? 'light' : c.kind === 'fx' ? 'fx' : c.suit] = v; }
   JOB_SUITS[x.job].forEach(s => { S.holds[s] = false; }); /* a starting point, not a lock: the next feeling re-deals it (persona playtest 10-09) */
@@ -3758,12 +3797,12 @@ async function aiPick(text) {
 const JOB_WORD = [['site', /\b(landing page|web ?site|web ?page|home ?page|hero section|web app|dashboard)\b/i], ['video', /\b(videos?|reels?|tiktoks?|b-roll|broll|b roll|shorts|clips?|footage|trailer|commercial)\b/i], ['photo', /\b(photos?|photographs?|photoshoot|headshots?|pictures?|thumbnails?)\b/i]];
 function jobFromWords(text) { if (S.jobUser || S.drama || !text) return; const hit = JOB_WORD.find(([, re]) => re.test(text)); if (!hit || hit[0] === S.job) return; S.job = hit[0]; if (!S.aspectUser) setAspect(ASPECT_DEF[hit[0]]); repairHand(); campaignHold(); renderStarts(); renderCheatTiles(); renderGuide(); }
 $('#feel-form').addEventListener('submit', async e => {
-  e.preventDefault(); const b = $('#deal-btn'), text = $('#feel').value.trim(); if (refusedNext(text)) { showRefusal(); return; } jobFromWords(text); const k = S.job + '|' + text.toLowerCase();
+  e.preventDefault(); S.fromTop = true; const b = $('#deal-btn'), text = $('#feel').value.trim(); if (refusedNext(text)) { showRefusal(); return; } jobFromWords(text); const k = S.job + '|' + text.toLowerCase();
   let ai = null, first = false; aiTimedOut = false;
   if (AI_ON && text && !aiResting) { if (AI_CACHE.has(k)) ai = AI_CACHE.get(k); else { b.disabled = true; b.classList.add('busy'); const lbl = b.textContent; b.textContent = 'Reading…'; { const sr = $('#sr-count'); if (sr) sr.textContent = 'Reading your feeling…'; } ai = await aiPick(text); b.textContent = lbl; b.disabled = false; b.classList.remove('busy'); if (ai) { AI_CACHE.set(k, ai); first = true; } } } /* repeat Gets deal another of the AI's top picks, no new read */
   if (refusedNext(text)) { showRefusal(); return; } /* the AI reader refused it */
   dealLocal(undefined, ai ? { ai, aiFirst: first } : {});
-  { const h = $('#look-h'); if (h) { const r = h.getBoundingClientRect(); if (r.top > window.innerHeight * 0.6 || r.top < 0) h.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); } } /* the new look lands in view (round 10: it sat 1,300 px below the fold) */
+  S.fromTop = false; { const pk = $('#peek'); if (pk && pk.offsetParent) { const r = pk.getBoundingClientRect(); if (r.top < 0 || r.top > window.innerHeight * 0.75) pk.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); } else { const h = $('#look-h'); if (h) { const r = h.getBoundingClientRect(); if (r.top > window.innerHeight * 0.6 || r.top < 0) h.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); } } } /* the new look lands in the example panel under the box (first-screen pass 2026-11-18; round 10: it sat 1,300 px below the fold) */
   const note = $('#deal-note'); if (note && text) { const sl = S.aiSlots; const tail = ai && S.aiAnother && sl && sl.kept === sl.asked ? ' Another take from the AI reader\'s top choices.' : ai ? (sl && sl.kept < sl.asked ? ` Read by the AI reader: ${sl.kept} of ${sl.asked} cards are its picks; swapped: ${(sl.swapped || []).join(', ')}.` : ' Read by the AI reader.') : aiTimedOut ? ' The AI reader was slow, so this look is matched by keywords. Get the look again to retry.' : aiResting ? ' The AI reader has hit its free daily limit, so this look is matched by keywords; it is back tomorrow.' : ''; if (ai) note.innerHTML = note.innerHTML.replace(/\s*Matched “[^”]*” on \d+ slots?(, \d+ had no match and got a plain card)?\.?/, '').replace(/\s*Nothing in the library matches “[^”]*” yet\.[^.]*\.[^.]*\./, ''); if (tail) note.insertAdjacentHTML('beforeend', `<span class="ai-note">${tail}</span>`);
     { /* a starter hand gets one plain sentence and a way out (playtest r3: the beginner got the sample hand with no explanation) */
       const def = D.default_hand || {}, d = S.deal || {}; const same = JOB_SUITS[S.job].filter(s => !OPTIONAL.has(s)).every(s => !S.hand[s] || S.hand[s] === def[s]);
@@ -3868,6 +3907,7 @@ function boot(hot) {
   if (hot && hot.feeling && !replay) $('#feel').value = hot.feeling;
   if (S.linkFeel && !replay && !$('#feel').value) { $('#feel').value = S.linkFeel; S.feeling = S.linkFeel; }
   S.deal = (S.deal && S.deal.by === 'link') ? S.deal : { by: shared ? 'load' : saved.hand ? 'resume' : 'start' };
+  if (S.deal.by === 'start' && !replay) firstLook();
   renderLegend(); renderHere();
   if (replay) { if (replay.moods.length === 1) rnd(); /* surprise() spends one draw on the mood */ dealLocal(null, { keepSeed: true, noSnapshot: true, silent: true, by: 'seed' }); }
   renderHand(false); renderSaved(); renderInbox();
@@ -3886,6 +3926,7 @@ function toHandLook() {
     if (cp) { const r = cp.getBoundingClientRect(); if (r.top < 0 || r.bottom > window.innerHeight - 8) cp.scrollIntoView({ behavior: 'auto', block: 'center' }); } };
   setTimeout(go, 400); setTimeout(go, 1500); window.addEventListener('load', () => setTimeout(go, 50), { once: true });
 }
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-try]'); if (!b) return; const f = $('#feel'), fm = $('#feel-form'); if (!f || !fm) return; f.value = b.dataset.try; if (fm.requestSubmit) fm.requestSubmit(); else fm.dispatchEvent(new Event('submit', { cancelable: true })); }); /* one-tap examples: fill the box and get the look, so the first try needs no typing (2026-11-18) */
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a.to-feel'); if (!a) return; e.preventDefault(); const f = $('#feel'); if (!f) return; f.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'center' }); f.focus({ preventScroll: true }); }); /* the mood panel's pointer back to the feeling box at the top */
 const HOT = window.claude && window.claude.hot;
 try { if (HOT && HOT.snapshot) HOT.snapshot(() => ({ hand: S.hand, holds: S.holds, take: S.take, tab: S.tab, job: S.job, moods: [...S.moods], subject: S.subject, subjectAuto: S.subjectAuto, aspect: S.aspect, aspectUser: S.aspectUser, title: S.title, shots: S.shots, feeling: $('#feel').value })); } catch (e) {}
@@ -4009,6 +4050,7 @@ if (/(^|\.)directorslookbook\.app$/.test(location.hostname) || location.port ===
   document.addEventListener('submit', e => { if (e.target && e.target.id === 'feel-form') getter(); }, true);
   document.addEventListener('click', e => {
     const t = e.target.closest('button, a, [data-job], [data-palette], [data-start], [data-start-copy], #start-more, #copy-multi, #seq-toggle, [data-cheat], [data-cheat-copy], [data-cheat-open], [data-guide], [data-start-tab], [data-browse], #cheat-add'); if (!t) return;
+    if (t.id === 'surprise-btn' || t.closest('#moods') || (t.dataset && t.dataset.start != null)) getter(); /* every way of getting a look counts, not only the typed form (2026-11-18) */
     if (t.id === 'deal-btn') return; /* the form's submit already counts it */
     else if (t.id === 'start-more') ev('start_more');
     else if (t.id === 'copy-multi') { ev('copy_multi'); copier(); }
