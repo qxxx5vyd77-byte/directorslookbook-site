@@ -7,6 +7,7 @@
 - [Director's Lookbook](https://directorslookbook.app/): say the feeling, get the look, copy the prompt
 - [Example gallery](https://directorslookbook.app/gallery/): example images, each with the exact wording that made it
 - [Lookbook MCP server](https://directorslookbook.app/mcp/): the same library as a free, read-only MCP server for Claude and other AI clients
+- [Search API](https://lookbook-mcp.riverroadlabs.workers.dev/search?q=rainy+neon+night): GET /search?q=<words>, optional suit (type, camera, film, color, score, web) and top (1 to 10). Returns matching looks as Markdown with the prompt wording, the page and an example image for each
 
 ## Suno music style prompts
 

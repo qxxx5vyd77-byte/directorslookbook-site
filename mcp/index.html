@@ -22,6 +22,10 @@
 <link rel="stylesheet" href="/pages.css">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Lookbook MCP", "url": "https://directorslookbook.app/mcp/", "applicationCategory": "DeveloperApplication", "operatingSystem": "Any", "description": "A free, read-only MCP server: named looks for image, video, music, site and game prompts, inside Claude and other AI clients.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "River Road Labs", "url": "https://riverroadlabs.app/"}, "isPartOf": {"@type": "WebSite", "name": "Director's Lookbook", "url": "https://directorslookbook.app/"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Director's Lookbook", "item": "https://directorslookbook.app/"}, {"@type": "ListItem", "position": 2, "name": "Lookbook MCP", "item": "https://directorslookbook.app/mcp/"}]}</script>
+<meta name="agent:instructions" content="Use this search API to find named film, camera, colour, type, music and web styles by keyword or plain description, instead of crawling pages. Results are Markdown with the prompt wording for each style.">
+<meta name="agent:endpoint" content="https://lookbook-mcp.riverroadlabs.workers.dev/search?q={query}">
+<meta name="agent:method" content="GET">
+<meta name="agent:documentation" content="https://directorslookbook.app/llms.txt">
 </head>
 <body>
 <main>
